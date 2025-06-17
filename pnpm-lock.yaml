@@ -8,9 +8,24 @@ importers:
 
   .:
     devDependencies:
+      '@rbxts/charm':
+        specifier: ^0.10.0
+        version: 0.10.0
       '@rbxts/compiler-types':
         specifier: 3.0.0-types.0
         version: 3.0.0-types.0
+      '@rbxts/react':
+        specifier: ^17.2.3
+        version: 17.2.3
+      '@rbxts/react-charm':
+        specifier: ^0.3.0
+        version: 0.3.0(@rbxts/charm@0.10.0)(@rbxts/react@17.2.3)
+      '@rbxts/react-roblox':
+        specifier: ^17.2.3
+        version: 17.2.3
+      '@rbxts/services':
+        specifier: ^1.5.5
+        version: 1.5.5
       '@rbxts/types':
         specifier: ^1.0.858
         version: 1.0.858
@@ -23,8 +38,29 @@ importers:
 
 packages:
 
+  '@rbxts/charm@0.10.0':
+    resolution: {integrity: sha512-pcGpNyqNOcJ7r9UbAjFaUqU0F9Q+wCr4/2kUs8L0hh4dVhUN7t6ur4P7zAMzNuMJQG8YP47a9rq0l0/LlhLuow==}
+
   '@rbxts/compiler-types@3.0.0-types.0':
     resolution: {integrity: sha512-VGOHJPoL7+56NTatMGqQj3K7xWuzEV+aP4QD5vZiHu+bcff3kiTmtoadaF6NkJrmwfFAvbsd4Dg764ZjWNceag==}
+
+  '@rbxts/react-charm@0.3.0':
+    resolution: {integrity: sha512-w64HoO6SxRSX86yNPiGazPQpR7cWBaWVATK9jkCphLQYmzdUV1BL9pRNN1Y1VMAk/PKiZ1mJdwX3PnwwvLXFvg==}
+    peerDependencies:
+      '@rbxts/charm': 0.10.0
+      '@rbxts/react': '*'
+
+  '@rbxts/react-roblox@17.2.3':
+    resolution: {integrity: sha512-YgS+C3tf92iM1NTK1f6R2O2G8+nbcKFnblA0mTs2Nt878OsWLgxhnhkCBZ6wYv+yeDGD9/sssKHZ6s2LzUWTrQ==}
+
+  '@rbxts/react-vendor@17.2.3':
+    resolution: {integrity: sha512-dWCiVelvTK6h920geaFH/OQ5zoWHyhyqyfH51hKx2/iVZ6OiiyNVJ5UqEIkJMG4HsJ8JnkTORizV3+MtQ41BtA==}
+
+  '@rbxts/react@17.2.3':
+    resolution: {integrity: sha512-IoOB8e2W8MxT0MKWFf0Ls0vT61ImYL6ctHQgz5+oazma6z8bqFtJjgPxOuy6jmMSuyfBe7rYp/muou0kIjZT+Q==}
+
+  '@rbxts/services@1.5.5':
+    resolution: {integrity: sha512-Hu7QH2ecefS60zpakKG3T2vgABydoOJqpSG7nXr59wFAbPk/cA+OcsntYPHUWyHAat0VFGZ5jNZLTLdiqfssvg==}
 
   '@rbxts/types@1.0.858':
     resolution: {integrity: sha512-fGgTAnU3Yq86vozA7DoGrdwp5ZRI4xpLwG9WPBqVZciB1lGDpnu3vydZ2SNzzSNlLMD32cwfYpkKTAW+b6PgGA==}
@@ -234,7 +270,27 @@ packages:
 
 snapshots:
 
+  '@rbxts/charm@0.10.0': {}
+
   '@rbxts/compiler-types@3.0.0-types.0': {}
+
+  '@rbxts/react-charm@0.3.0(@rbxts/charm@0.10.0)(@rbxts/react@17.2.3)':
+    dependencies:
+      '@rbxts/charm': 0.10.0
+      '@rbxts/react': 17.2.3
+
+  '@rbxts/react-roblox@17.2.3':
+    dependencies:
+      '@rbxts/react': 17.2.3
+      '@rbxts/react-vendor': 17.2.3
+
+  '@rbxts/react-vendor@17.2.3': {}
+
+  '@rbxts/react@17.2.3':
+    dependencies:
+      '@rbxts/react-vendor': 17.2.3
+
+  '@rbxts/services@1.5.5': {}
 
   '@rbxts/types@1.0.858': {}
 

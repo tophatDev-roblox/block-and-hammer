@@ -12,7 +12,12 @@
   "license": "ISC",
   "packageManager": "pnpm@10.12.1",
   "devDependencies": {
+    "@rbxts/charm": "^0.10.0",
     "@rbxts/compiler-types": "3.0.0-types.0",
+    "@rbxts/react": "^17.2.3",
+    "@rbxts/react-charm": "^0.3.0",
+    "@rbxts/react-roblox": "^17.2.3",
+    "@rbxts/services": "^1.5.5",
     "@rbxts/types": "^1.0.858",
     "roblox-ts": "^3.0.0",
     "typescript": "^5.8.3"

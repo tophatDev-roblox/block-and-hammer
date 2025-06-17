@@ -1,0 +1,68 @@
+import NumberSpinner from './NumberSpinner';
+
+type IconState = 'Selected' | 'Deselected';
+type Alignment = 'Left' | 'Center' | 'Right';
+type SourceType = 'User' | 'OneClick' | 'AutoDeselect' | 'HideParentFeature' | 'Overflow';
+
+declare class Icon {
+	static getIcons(this: void): Record<string, Icon>;
+	static getIcon(this: void, nameOrUID: string): Icon;
+	static setTopbarEnabled(this: void, bool: boolean): void;
+	static modifyBaseTheme(this: void, modifications: any): void;
+	static setDisplayOrder(this: void, integer: number): void;
+	public setName(name: string): Icon;
+	public getInstance(instanceName: string): Instance;
+	public modifyTheme(modifications: any): Icon;
+	public modifyChildTheme(modifications: any): Icon;
+	public setEnabled(bool: boolean): Icon;
+	public select(): Icon;
+	public deselect(): Icon;
+	public notify(clearNoticeEvent: any): Icon;
+	public clearNotices(): Icon;
+	public disableOverlay(bool: boolean): Icon;
+	public setImage(imageId?: number, iconState?: IconState): Icon;
+	public setLabel(text?: string, iconState?: IconState): Icon;
+	public setOrder(order?: number, iconState?: IconState): Icon;
+	public setCornerRadius(scale?: number, offset?: number, iconState?: IconState): Icon;
+	public align(alignment: Alignment): Icon;
+	public setWidth(mininumSize?: number, iconState?: IconState): Icon;
+	public setImageScale(number?: number, iconState?: IconState): Icon;
+	public setImageRatio(number?: number, iconState?: IconState): Icon;
+	public setTextSize(number?: number, iconState?: IconState): Icon;
+	public setTextFont(font?: string | Enum.Font | number, fontWeight?: Enum.FontWeight, fontStyle?: Enum.FontStyle, iconState?: IconState): Icon;
+	public bindToggleItem(guiObjectOrLayerCollector: GuiObject | LayerCollector): Icon;
+	public unbindToggleItem(guiObjectOrLayerCollector: GuiObject | LayerCollector): Icon;
+	public bindEvent(iconEventName: string, callback: (...args: Array<any>) => void): Icon;
+	public unbindEvent(iconEventName: string): Icon;
+	public bindToggleKey(keyCodeEnum: Enum.KeyCode): Icon;
+	public unbindToggleKey(keyCodeEnum: Enum.KeyCode): Icon;
+	public call(func: () => void): Icon;
+	public addToJanitor(userdata: any): Icon;
+	public lock(): Icon;
+	public unlock(): Icon;
+	public debounce(seconds: number): Icon;
+	public autoDeselect(bool: boolean): Icon;
+	public oneClick(bool: boolean): Icon;
+	public setCaption(text: string): Icon;
+	public setCaptionHint(keyCodeEnum: Enum.KeyCode): Icon;
+	public setDropdown(arrayOfIcons: Array<Icon>): Icon;
+	public joinDropdown(parentIcon: Icon): Icon;
+	public setMenu(arrayOfIcons: Array<Icon>): Icon;
+	public joinMenu(parentIcon: Icon): Icon;
+	public leave(): Icon;
+	public convertLabelToNumberSpinner(numberSpinner: NumberSpinner): Icon;
+	public destroy(): Icon;
+	public selected: RBXScriptSignal<(fromSource: SourceType) => void>;
+	public deselected: RBXScriptSignal<(fromSource: SourceType) => void>;;
+	public toggled: RBXScriptSignal<(isSelected: boolean, fromSource: SourceType) => void>;
+	public viewingStarted: RBXScriptSignal<() => void>;
+	public viewingEnded: RBXScriptSignal<() => void>;
+	public notified: RBXScriptSignal<() => void>;
+	public readonly name: string;
+	public readonly isSelected: boolean;
+	public readonly isEnabled: boolean;
+	public readonly totalNotices: number;
+	public readonly locked: boolean;
+}
+
+export = Icon;
