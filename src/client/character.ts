@@ -2,7 +2,6 @@ import { Players, RunService, UserInputService, Workspace } from '@rbxts/service
 
 const camera = Workspace.WaitForChild('Camera') as Camera;
 const client = Players.LocalPlayer;
-let character: Model | undefined = undefined;
 let body: Part | undefined = undefined;
 let attachmentTarget: Attachment | undefined = undefined;
 
@@ -22,13 +21,13 @@ function onRenderStepped(dt: number): void {
 }
 
 function onCharacterAdded(newCharacter: Model): void {
-	character = newCharacter;
 	body = newCharacter.WaitForChild('Body') as Part;
 	attachmentTarget = body.WaitForChild('Target.1') as Attachment;
 }
 
 function onCharacterRemoving(): void {
-	character = undefined;
+	body = undefined;
+	attachmentTarget = undefined;
 }
 
 function processInput(input: InputObject): void {
@@ -62,7 +61,7 @@ function processInput(input: InputObject): void {
 	}
 	
 	if (targetPosition !== undefined) {
-		attachmentTarget.WorldCFrame = CFrame.lookAt(targetPosition, body.Position, Vector3.zAxis);
+		attachmentTarget.WorldCFrame = CFrame.lookAt(targetPosition.mul(new Vector3(1, 1, 0)), body.Position, Vector3.zAxis);
 	}
 }
 

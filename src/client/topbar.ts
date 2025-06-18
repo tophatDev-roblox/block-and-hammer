@@ -35,7 +35,8 @@ Icon.modifyBaseTheme(theme);
 const menuIcon = new Icon()
 	.setImage(79239443855874)
 	.setCaption('Toggle menu')
-	.setCaptionHint(Enum.KeyCode.M)
+	.bindToggleKey(Enum.KeyCode.B)
+	.bindToggleKey(Enum.KeyCode.ButtonB)
 	.setOrder(0)
 	.autoDeselect(false)
 	.modifyTheme(theme);
@@ -51,12 +52,8 @@ const dollarsIcon = new Icon()
 		['PaddingRight', 'Size', new UDim2(0, 24, 1, 0)],
 	]);
 
-menuIcon.selected.Connect(() => {
-	isMenuOpen(true);
-});
-
-menuIcon.deselected.Connect(() => {
-	isMenuOpen(false);
+menuIcon.toggled.Connect((toggled) => {
+	isMenuOpen(toggled);
 });
 
 dollarsIcon.selected.Connect(() => {
@@ -89,7 +86,7 @@ if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
 	});
 }
 
-function applyStyles(styles: StylesData): void {
+function applyStyles(_styles: StylesData): void {
 	// TODO: apply ui styles to topbar
 }
 
@@ -99,7 +96,7 @@ function onLastInputTypeChanged(lastInputType: Enum.UserInputType): void {
 	} else if (lastInputType.Value >= Enum.UserInputType.Gamepad1.Value && lastInputType.Value <= Enum.UserInputType.Gamepad8.Value) {
 		menuIcon.setCaptionHint(Enum.KeyCode.ButtonB);
 	} else {
-		menuIcon.setCaptionHint(Enum.KeyCode.M);
+		menuIcon.setCaptionHint(Enum.KeyCode.B);
 	}
 }
 
@@ -114,5 +111,5 @@ function onAttributeChanged(attribute: string) {
 applyStyles(defaultStyles);
 onAttributeChanged('dollars');
 
-UserInputService.LastInputTypeChanged.Connect(onLastInputTypeChanged)
+UserInputService.LastInputTypeChanged.Connect(onLastInputTypeChanged);
 client.AttributeChanged.Connect(onAttributeChanged);

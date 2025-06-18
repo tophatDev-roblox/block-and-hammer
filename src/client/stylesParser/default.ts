@@ -37,6 +37,11 @@ const data: StylesData = {
 				joinMode: 'miter',
 			},
 		},
+		centurion: {
+			bold: { fontId, weight: 700, italics: false },
+			medium: { fontId, weight: 500, italics: false },
+			regular: { fontId, weight: 400, italics: false },
+		},
 	},
 	container: {
 		background: {

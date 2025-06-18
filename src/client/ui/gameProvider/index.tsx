@@ -44,14 +44,11 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
 		};
 	}, []);
 	
-	useEffect(() => {
-		print(menuOpen);
-	}, [menuOpen]);
-	
 	return (
 		<GameContext.Provider
 			value={{
 				styles: defaultStyles,
+				menuOpen,
 				cube,
 				body,
 			}}

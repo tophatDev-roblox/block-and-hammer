@@ -48,6 +48,11 @@ export interface StylesData {
 		containerTitle: TextStyleData;
 		hudPrimary: TextStyleData;
 		hudSecondary: TextStyleData;
+		centurion: {
+			bold: FontStyleData;
+			medium: FontStyleData;
+			regular: FontStyleData;
+		};
 	};
 	container: {
 		background: ColorStyleDataWithAlpha | GradientStyleData;

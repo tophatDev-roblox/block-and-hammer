@@ -5,7 +5,9 @@ import Altitude from './Altitude';
 
 const HUD: React.FC = () => {
 	return (
-		<screengui>
+		<screengui
+			ResetOnSpawn={false}
+		>
 			<frame
 				BackgroundTransparency={1}
 				AnchorPoint={new Vector2(0.5, 1)}

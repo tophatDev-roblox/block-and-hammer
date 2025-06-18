@@ -8,6 +8,12 @@ importers:
 
   .:
     devDependencies:
+      '@rbxts/centurion':
+        specifier: ^1.0.1
+        version: 1.0.1
+      '@rbxts/centurion-ui':
+        specifier: ^1.0.8
+        version: 1.0.8(@rbxts/centurion@1.0.1)
       '@rbxts/charm':
         specifier: ^0.10.0
         version: 0.10.0
@@ -38,6 +44,17 @@ importers:
 
 packages:
 
+  '@rbxts/beacon@2.1.1':
+    resolution: {integrity: sha512-QeFMSGj+Iijp+tHcV9eyqVyeKZ/9zp7GqRJ/hecKiHmoTu4yFcyGnUQAaX7OdQKBCgLvWMJ9wK/FXMECjFA2Kg==}
+
+  '@rbxts/centurion-ui@1.0.8':
+    resolution: {integrity: sha512-E8uLASVsKphrf4cgm3TTPB5NornlyUN4JC7x2/+P9ZcJxaoYH3fSEV1sC+bY0xN9bTCkXCIGuULr7mHh9Vh0Nw==}
+    peerDependencies:
+      '@rbxts/centurion': ^1.0.1
+
+  '@rbxts/centurion@1.0.1':
+    resolution: {integrity: sha512-RFkIvnivn43/jYCg0ue90fXg+aRlhFUUc8OmYP0UWpIPRxTF3PTHpMKp7EZMXoZl7J7XzUngcqYcL1senBnenQ==}
+
   '@rbxts/charm@0.10.0':
     resolution: {integrity: sha512-pcGpNyqNOcJ7r9UbAjFaUqU0F9Q+wCr4/2kUs8L0hh4dVhUN7t6ur4P7zAMzNuMJQG8YP47a9rq0l0/LlhLuow==}
 
@@ -62,8 +79,17 @@ packages:
   '@rbxts/services@1.5.5':
     resolution: {integrity: sha512-Hu7QH2ecefS60zpakKG3T2vgABydoOJqpSG7nXr59wFAbPk/cA+OcsntYPHUWyHAat0VFGZ5jNZLTLdiqfssvg==}
 
+  '@rbxts/set-timeout@1.1.2':
+    resolution: {integrity: sha512-P/A0IiH9wuZdSJYr4Us0MDFm61nvIFR0acfKFHLkcOsgvIgELC90Up9ugiSsaMEHRIcIcO5UjE39LuS3xTzQHw==}
+
+  '@rbxts/t@3.2.1':
+    resolution: {integrity: sha512-/fnf2QSx+TI3HSJ6QW2ikvGQk0mlx/63UXo60pLAKGqbxXiAuTJh88bpKpHw6aCzfFLJAwrVIcgCUOokLMPcag==}
+
   '@rbxts/types@1.0.858':
     resolution: {integrity: sha512-fGgTAnU3Yq86vozA7DoGrdwp5ZRI4xpLwG9WPBqVZciB1lGDpnu3vydZ2SNzzSNlLMD32cwfYpkKTAW+b6PgGA==}
+
+  '@rbxts/vide@0.5.7':
+    resolution: {integrity: sha512-Q9R7ybzuHK1phtLicBHgAjQnlJ/dMsXDs2k296PIMLgLqK9aX/f1skOP7F1K/vo7IrSE0jCG3B3XTOtQL1Sb0Q==}
 
   '@roblox-ts/luau-ast@2.0.0':
     resolution: {integrity: sha512-cmMi093IdwBOLVxwuordhM8AmtbyTIyRpsTbB0D/JauidW4SXsQRQowSwWjHo4QP0DRJBXvOIlxtqEQi50uNzQ==}
@@ -270,6 +296,21 @@ packages:
 
 snapshots:
 
+  '@rbxts/beacon@2.1.1': {}
+
+  '@rbxts/centurion-ui@1.0.8(@rbxts/centurion@1.0.1)':
+    dependencies:
+      '@rbxts/centurion': 1.0.1
+      '@rbxts/services': 1.5.5
+      '@rbxts/set-timeout': 1.1.2
+      '@rbxts/vide': 0.5.7
+
+  '@rbxts/centurion@1.0.1':
+    dependencies:
+      '@rbxts/beacon': 2.1.1
+      '@rbxts/services': 1.5.5
+      '@rbxts/t': 3.2.1
+
   '@rbxts/charm@0.10.0': {}
 
   '@rbxts/compiler-types@3.0.0-types.0': {}
@@ -292,7 +333,15 @@ snapshots:
 
   '@rbxts/services@1.5.5': {}
 
+  '@rbxts/set-timeout@1.1.2':
+    dependencies:
+      '@rbxts/services': 1.5.5
+
+  '@rbxts/t@3.2.1': {}
+
   '@rbxts/types@1.0.858': {}
+
+  '@rbxts/vide@0.5.7': {}
 
   '@roblox-ts/luau-ast@2.0.0': {}
 

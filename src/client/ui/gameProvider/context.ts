@@ -5,12 +5,14 @@ import defaultStyles from 'client/stylesParser/default';
 
 interface GameContextType {
 	styles: StylesData;
+	menuOpen: boolean;
 	cube: Model | undefined;
 	body: Part | undefined;
 }
 
 export const GameContext = createContext<GameContextType>({
 	styles: defaultStyles,
+	menuOpen: false,
 	cube: undefined,
 	body: undefined,
 });

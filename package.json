@@ -12,6 +12,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.12.1",
   "devDependencies": {
+    "@rbxts/centurion": "^1.0.1",
+    "@rbxts/centurion-ui": "^1.0.8",
     "@rbxts/charm": "^0.10.0",
     "@rbxts/compiler-types": "3.0.0-types.0",
     "@rbxts/react": "^17.2.3",
