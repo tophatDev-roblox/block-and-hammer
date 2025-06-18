@@ -10,9 +10,8 @@ const Speedometer: React.FC = () => {
 	
 	const labelRef = useRef<TextLabel>();
 	
-	const labelFormat = '%.1fm/s';
-	
 	useEffect(() => {
+		const labelFormat = `%.${styles.text.hudSecondary.decimals}fm/s`;
 		const label = labelRef.current;
 		if (label === undefined || body === undefined) {
 			return;
@@ -27,7 +26,7 @@ const Speedometer: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [body]);
+	}, [body, styles.text.hudSecondary.decimals]);
 	
 	return (
 		<Text
@@ -37,26 +36,6 @@ const Speedometer: React.FC = () => {
 			automaticHeight
 		/>
 	);
-	// return (
-	// 	<textlabel
-	// 		ref={labelRef}
-	// 		BackgroundTransparency={1}
-	// 		FontFace={new Font('rbxassetid://12187365364', Enum.FontWeight.Heavy, Enum.FontStyle.Normal)}
-	// 		Text={'--'}
-	// 		TextColor3={Color3.fromRGB(200, 200, 200)}
-	// 		TextSize={25}
-	// 		LayoutOrder={0}
-	// 		Size={new UDim2(1, 0, 0, 0)}
-	// 		AutomaticSize={Enum.AutomaticSize.Y}
-	// 	>
-	// 		<uistroke>
-	// 			<uigradient
-	// 				Rotation={-90}
-	// 				Transparency={new NumberSequence(0, 0.7)}
-	// 			/>
-	// 		</uistroke>
-	// 	</textlabel>
-	// );
 };
 
 export default Speedometer;

@@ -22,6 +22,10 @@ function loadStyleFont(font: FontStyleData): Font {
 
 const client = Centurion.client();
 
+client.registry.registerGroup(
+	{ name: 'teleport', description: 'subcommands for teleporting yourself' },
+);
+
 const commandsContainer = script.FindFirstChild('commands')!;
 client.registry.load(commandsContainer);
 

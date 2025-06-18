@@ -17,25 +17,25 @@ const data: StylesData = {
 			size: 32,
 			outline: false,
 		},
+		version: {
+			font: { fontId, weight: 700, italics: false },
+			color: { red: 255, green: 255, blue: 255, alpha: 0.7 },
+			size: 16,
+			outline: { color: textOutlineGradient, thickness: 1, joinMode: 'miter' },
+		},
 		hudPrimary: {
 			font: { fontId, weight: 900, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 1 },
 			size: 40,
-			outline: {
-				color: textOutlineGradient,
-				thickness: 1,
-				joinMode: 'miter',
-			},
+			outline: { color: textOutlineGradient, thickness: 1, joinMode: 'miter' },
+			decimals: 1,
 		},
 		hudSecondary: {
 			font: { fontId, weight: 900, italics: false },
 			color: { red: 200, green: 200, blue: 200, alpha: 1 },
 			size: 25,
-			outline: {
-				color: textOutlineGradient,
-				thickness: 1,
-				joinMode: 'miter',
-			},
+			outline: { color: textOutlineGradient, thickness: 1, joinMode: 'miter' },
+			decimals: 1,
 		},
 		centurion: {
 			bold: { fontId, weight: 700, italics: false },

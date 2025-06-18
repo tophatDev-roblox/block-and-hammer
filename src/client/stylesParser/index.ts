@@ -36,6 +36,10 @@ export interface TextStyleData {
 	outline: OutlineStyleData | false;
 }
 
+export interface FloatStyleData {
+	decimals: number;
+}
+
 export interface ButtonStyleData {
 	text: TextStyleData;
 	background: ColorStyleDataWithAlpha | GradientStyleData;
@@ -46,8 +50,9 @@ export interface StylesData {
 	version: 1;
 	text: {
 		containerTitle: TextStyleData;
-		hudPrimary: TextStyleData;
-		hudSecondary: TextStyleData;
+		version: TextStyleData;
+		hudPrimary: TextStyleData & FloatStyleData;
+		hudSecondary: TextStyleData & FloatStyleData;
 		centurion: {
 			bold: FontStyleData;
 			medium: FontStyleData;

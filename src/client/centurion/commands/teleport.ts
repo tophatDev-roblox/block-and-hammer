@@ -1,11 +1,10 @@
-import { CenturionType, Command, CommandContext, Group, Register } from '@rbxts/centurion';
+import { CenturionType, Command, CommandContext, Group, Guard, Register } from '@rbxts/centurion';
 
-@Register({
-	groups: [
-		{name: 'teleport'},
-	],
-})
+import { createGroupRankGuard } from 'shared/centurion/guards';
+
+@Register()
 @Group('teleport')
+@Guard(createGroupRankGuard(200))
 export class TeleportCommand {
 	@Command({
 		name: 'player',
@@ -17,18 +16,18 @@ export class TeleportCommand {
 	public player(ctx: CommandContext, targetPlayer: Player): void {
 		const character = ctx.executor.Character;
 		if (character === undefined) {
-			ctx.reply('Executor character is undefined');
+			ctx.error('Executor character is undefined');
 			return;
 		}
 		
 		const toCharacter = targetPlayer.Character;
 		if (toCharacter === undefined) {
-			ctx.reply('Target character is undefined');
+			ctx.error('Target character is undefined');
 			return;
 		}
 		
 		character.PivotTo(toCharacter.GetPivot());
-		ctx.reply('Teleported');
+		ctx.reply(`Teleported to ${targetPlayer.DisplayName} (@${targetPlayer.Name})`);
 	}
 	
 	@Command({
@@ -41,7 +40,7 @@ export class TeleportCommand {
 	public level(ctx: CommandContext, level: string): void {
 		const character = ctx.executor.Character;
 		if (character === undefined) {
-			ctx.reply('Executor character is undefined');
+			ctx.error('Executor character is undefined');
 			return;
 		}
 		
@@ -52,9 +51,11 @@ export class TeleportCommand {
 				break;
 			}
 			default: {
-				ctx.reply(`Unknown level: '${level}'`);
-				break;
+				ctx.error(`Unknown level: '${level}'`);
+				return;
 			}
 		}
+		
+		ctx.reply(`Teleported to level: '${level}'`);
 	}
 }

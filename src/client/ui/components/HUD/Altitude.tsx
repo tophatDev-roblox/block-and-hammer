@@ -10,9 +10,8 @@ const Altitude: React.FC = () => {
 	
 	const labelRef = useRef<TextLabel>();
 	
-	const labelFormat = '%.1fm';
-	
 	useEffect(() => {
+		const labelFormat = `%.${styles.text.hudPrimary.decimals}fm`;
 		const label = labelRef.current;
 		if (label === undefined || body === undefined) {
 			return;
@@ -27,7 +26,7 @@ const Altitude: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [body]);
+	}, [body, styles.text.hudPrimary.decimals]);
 	
 	return (
 		<Text
@@ -37,26 +36,6 @@ const Altitude: React.FC = () => {
 			automaticHeight
 		/>
 	);
-	// return (
-	// 	<textlabel
-	// 		ref={labelRef}
-	// 		BackgroundTransparency={1}
-	// 		FontFace={new Font('rbxassetid://12187365364', Enum.FontWeight.Heavy, Enum.FontStyle.Normal)}
-	// 		Text={'--'}
-	// 		TextColor3={Color3.fromRGB(255, 255, 255)}
-	// 		TextSize={40}
-	// 		LayoutOrder={1}
-	// 		Size={new UDim2(1, 0, 0, 0)}
-	// 		AutomaticSize={Enum.AutomaticSize.Y}
-	// 	>
-	// 		<uistroke>
-	// 			<uigradient
-	// 				Rotation={-90}
-	// 				Transparency={new NumberSequence(0, 0.7)}
-	// 			/>
-	// 		</uistroke>
-	// 	</textlabel>
-	// );
 };
 
 export default Altitude;
