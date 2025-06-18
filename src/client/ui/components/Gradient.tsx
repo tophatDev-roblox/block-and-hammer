@@ -25,7 +25,7 @@ const Gradient: React.FC<GradientProps> = ({ styles: { colors, transparency, rot
 		if (keypoints.size() >= 2 && keypoints[0].Time === 0 && keypoints[keypoints.size() - 1].Time === 1) {
 			setColorSequence(new ColorSequence(keypoints));
 		} else {
-			warn('ui style - gradient color must have at least 2 keypoints, start at 0 and end at 1');
+			warn('[styleData::Gradient] color must have at least 2 keypoints, start at 0 and end at 1');
 			setColorSequence(new ColorSequence(Color3.fromRGB(255, 0, 255)));
 		}
 	}, [colors]);
@@ -45,7 +45,7 @@ const Gradient: React.FC<GradientProps> = ({ styles: { colors, transparency, rot
 		if (keypoints.size() >= 2 && keypoints[0].Time === 0 && keypoints[keypoints.size() - 1].Time === 1) {
 			setTransparencySequence(new NumberSequence(keypoints));
 		} else {
-			warn('ui style - gradient transparency must have at least 2 keypoints, start at 0 and end at 1');
+			warn('[styleData::Gradient] transparency must have at least 2 keypoints, start at 0 and end at 1');
 			setTransparencySequence(new NumberSequence(0.5));
 		}
 	}, [transparency]);

@@ -1,11 +1,19 @@
 import { RunService } from '@rbxts/services';
 import React from '@rbxts/react';
 
+import { TestingPlaceId } from 'shared/constants';
 import { useGameContext } from 'client/ui/gameProvider/context';
 import Text from '../Text';
 
 const Version: React.FC = () => {
 	const { styles } = useGameContext();
+	
+	let versionString = `block and hammer v${game.PlaceVersion}`;
+	if (RunService.IsStudio()) {
+		versionString = 'block and hammer [dev]';
+	} else if (game.PlaceId === TestingPlaceId) {
+		versionString += ' [test]';
+	}
 	
 	return (
 		<screengui
@@ -24,7 +32,7 @@ const Version: React.FC = () => {
 				/>
 				<Text
 					styles={styles.text.version}
-					text={RunService.IsStudio() ? 'block and hammer [dev]' : `block and hammer v${game.PlaceVersion}`}
+					text={versionString}
 					alignX={Enum.TextXAlignment.Right}
 					automaticHeight={true}
 				/>
