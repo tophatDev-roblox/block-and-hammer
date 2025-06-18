@@ -45,7 +45,7 @@ const dollarsIcon = new Icon()
 	.convertLabelToNumberSpinner(dollarsNumber)
 	.setCaption('Open shop')
 	.oneClick(true)
-	.setOrder(2)
+	.setOrder(10)
 	.modifyTheme(theme)
 	.modifyTheme([
 		['PaddingLeft', 'Size', new UDim2(0, 24, 1, 0)],
@@ -72,7 +72,7 @@ if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
 	const debugIcon = new Icon()
 		.setImage(6953984446)
 		.setCaption('Open debug panel')
-		.setOrder(1)
+		.setOrder(9)
 		.autoDeselect(false)
 		.modifyTheme(theme)
 		.modifyTheme(['IconImageScale', 'Value', 0.7]);

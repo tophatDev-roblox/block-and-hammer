@@ -23,6 +23,15 @@ function onRenderStepped(dt: number): void {
 function onCharacterAdded(newCharacter: Model): void {
 	body = newCharacter.WaitForChild('Body') as Part;
 	attachmentTarget = body.WaitForChild('Target.1') as Attachment;
+	
+	// TODO: fix voicechat
+	// const audioEmitter = newCharacter.WaitForChild('AudioEmitter') as AudioEmitter;
+	// const wire = audioEmitter.WaitForChild('Wire') as Wire;
+	// if (hasVoiceChat) {
+	// 	wire.SourceInstance = client.WaitForChild('AudioDeviceInput');
+	// } else {
+	// 	audioEmitter.Destroy();
+	// }
 }
 
 function onCharacterRemoving(): void {
@@ -56,7 +65,12 @@ function processInput(input: InputObject): void {
 		}
 	} else if (input.UserInputType.Value >= Enum.UserInputType.Gamepad1.Value && input.UserInputType.Value <= Enum.UserInputType.Gamepad8.Value) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
-			targetPosition = body.Position.add(input.Position.mul(maxHammerDistance).mul(new Vector3(-1, 1, 0)));
+			let direction = input.Position;
+			if (direction.Magnitude > 1) {
+				direction = direction.Unit;
+			}
+			
+			targetPosition = body.Position.add(direction.mul(maxHammerDistance).mul(new Vector3(-1, 1, 0)));
 		}
 	}
 	

@@ -24,7 +24,7 @@ const Version: React.FC = () => {
 				/>
 				<Text
 					styles={styles.text.version}
-					text={`block and hammer v${game.PlaceVersion}${RunService.IsStudio() ? ' [dev]' : ''}`}
+					text={RunService.IsStudio() ? 'block and hammer [dev]' : `block and hammer v${game.PlaceVersion}`}
 					alignX={Enum.TextXAlignment.Right}
 					automaticHeight={true}
 				/>
