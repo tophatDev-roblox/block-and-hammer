@@ -18,23 +18,24 @@ const Version: React.FC = () => {
 	return (
 		<screengui
 			ResetOnSpawn={false}
+			IgnoreGuiInset
 		>
 			<frame
 				BackgroundTransparency={1}
-				AnchorPoint={new Vector2(0.5, 1)}
-				Position={new UDim2(0.5, 0, 1, 0)}
+				AnchorPoint={new Vector2(0, 0)}
+				Position={new UDim2(0, 0, 0, 0)}
 				Size={new UDim2(1, 0, 0, 0)}
 				AutomaticSize={Enum.AutomaticSize.Y}
 			>
 				<uipadding
-					PaddingBottom={new UDim(0, 4)}
-					PaddingRight={new UDim(0, 2)}
+					PaddingTop={new UDim(0, 4)}
+					PaddingRight={new UDim(0, 4)}
 				/>
 				<Text
 					styles={styles.text.version}
 					text={versionString}
 					alignX={Enum.TextXAlignment.Right}
-					automaticHeight={true}
+					automaticHeight
 				/>
 			</frame>
 		</screengui>

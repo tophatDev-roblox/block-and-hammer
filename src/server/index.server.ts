@@ -1,3 +1,5 @@
+print('[server::index] initializing');
+
 import './players';
 import './centurion';
 

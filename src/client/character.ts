@@ -2,8 +2,20 @@ import { Players, RunService, UserInputService, Workspace } from '@rbxts/service
 
 const camera = Workspace.WaitForChild('Camera') as Camera;
 const client = Players.LocalPlayer;
+let character: Model | undefined = undefined;
 let body: Part | undefined = undefined;
+let hammer: Model | undefined = undefined;
 let attachmentTarget: Attachment | undefined = undefined;
+
+export function quickReset(): void {
+	if (character === undefined || hammer === undefined) {
+		return;
+	}
+	
+	const target = new CFrame(0, 3, 0);
+	character.PivotTo(target);
+	hammer.PivotTo(target);
+}
 
 function onRenderStepped(dt: number): void {
 	if (body === undefined) {
@@ -21,7 +33,11 @@ function onRenderStepped(dt: number): void {
 }
 
 function onCharacterAdded(newCharacter: Model): void {
+	newCharacter.SetAttribute('startTime', os.clock());
+	
+	character = newCharacter;
 	body = newCharacter.WaitForChild('Body') as Part;
+	hammer = newCharacter.WaitForChild('Hammer') as Model;
 	attachmentTarget = body.WaitForChild('Target.1') as Attachment;
 	
 	// TODO: fix voicechat
@@ -35,7 +51,9 @@ function onCharacterAdded(newCharacter: Model): void {
 }
 
 function onCharacterRemoving(): void {
+	character = undefined;
 	body = undefined;
+	hammer = undefined;
 	attachmentTarget = undefined;
 }
 
@@ -87,6 +105,5 @@ if (client.Character !== undefined) {
 
 client.CharacterAdded.Connect(onCharacterAdded);
 client.CharacterRemoving.Connect(onCharacterRemoving);
-
 UserInputService.InputBegan.Connect(processInput);
 UserInputService.InputChanged.Connect(processInput);

@@ -51,6 +51,8 @@ export interface StylesData {
 	text: {
 		containerTitle: TextStyleData;
 		version: TextStyleData;
+		timer: TextStyleData;
+		timerMillisecondsFontSize: number;
 		hudPrimary: TextStyleData & FloatStyleData;
 		hudSecondary: TextStyleData & FloatStyleData;
 		centurion: {

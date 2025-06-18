@@ -23,6 +23,13 @@ const data: StylesData = {
 			size: 16,
 			outline: { color: textOutlineGradient, thickness: 1, joinMode: 'miter' },
 		},
+		timer: {
+			font: { fontId, weight: 900, italics: false },
+			color: { red: 255, green: 255, blue: 255, alpha: 1 },
+			size: 40,
+			outline: { color: textOutlineGradient, thickness: 1, joinMode: 'miter' },
+		},
+		timerMillisecondsFontSize: 25,
 		hudPrimary: {
 			font: { fontId, weight: 900, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 1 },

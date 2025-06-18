@@ -10,9 +10,10 @@ interface TextProps extends React.PropsWithChildren {
 	automaticHeight: boolean;
 	alignX?: Enum.TextXAlignment;
 	alignY?: Enum.TextYAlignment;
+	richText?: boolean;
 }
 
-const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, outline }, text, automaticHeight, alignX, alignY, children }, ref) => {
+const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, outline }, text, automaticHeight, alignX, alignY, richText, children }, ref) => {
 	const fontWeight = useMemo<Enum.FontWeight>(() => {
 		for (const weight of Enum.FontWeight.GetEnumItems()) {
 			if (weight.Value === font.weight) {
@@ -38,6 +39,7 @@ const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, ou
 			TextXAlignment={alignX}
 			TextYAlignment={alignY}
 			Text={text}
+			RichText={richText}
 		>
 			{!isRGBA && (
 				<Gradient
