@@ -10,7 +10,7 @@ const Gradient: React.FC<GradientProps> = ({ styles: { colors, transparency, rot
 	const [colorSequence, setColorSequence] = useState<ColorSequence | undefined>(undefined);
 	const [transparencySequence, setTransparencySequence] = useState<NumberSequence | undefined>(undefined);
 	
-	useEffect(() => { // TODO: validate sequences due to possible error when given invalid sequences
+	useEffect(() => {
 		if (colors === undefined) {
 			setColorSequence(undefined);
 			return;
@@ -22,7 +22,12 @@ const Gradient: React.FC<GradientProps> = ({ styles: { colors, transparency, rot
 		}
 		
 		keypoints.sort((a, b) => a.Time < b.Time);
-		setColorSequence(new ColorSequence(keypoints));
+		if (keypoints.size() >= 2 && keypoints[0].Time === 0 && keypoints[keypoints.size() - 1].Time === 1) {
+			setColorSequence(new ColorSequence(keypoints));
+		} else {
+			warn('ui style - gradient color must have at least 2 keypoints, start at 0 and end at 1');
+			setColorSequence(new ColorSequence(Color3.fromRGB(255, 0, 255)));
+		}
 	}, [colors]);
 	
 	useEffect(() => {
@@ -37,7 +42,12 @@ const Gradient: React.FC<GradientProps> = ({ styles: { colors, transparency, rot
 		}
 		
 		keypoints.sort((a, b) => a.Time < b.Time);
-		setTransparencySequence(new NumberSequence(keypoints));
+		if (keypoints.size() >= 2 && keypoints[0].Time === 0 && keypoints[keypoints.size() - 1].Time === 1) {
+			setTransparencySequence(new NumberSequence(keypoints));
+		} else {
+			warn('ui style - gradient transparency must have at least 2 keypoints, start at 0 and end at 1');
+			setTransparencySequence(new NumberSequence(0.5));
+		}
 	}, [transparency]);
 	
 	return (
