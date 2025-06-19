@@ -1,13 +1,8 @@
 import { createContext, useContext } from '@rbxts/react';
+import { InputType } from 'client/inputType';
 
 import { StylesData } from 'client/stylesParser';
 import defaultStyles from 'client/stylesParser/default';
-
-export enum InputType {
-	Desktop,
-	Touch,
-	Controller,
-}
 
 interface GameContextType {
 	styles: StylesData;

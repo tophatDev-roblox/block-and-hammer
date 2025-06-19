@@ -1,4 +1,4 @@
-import { Players, RunService, UserInputService } from '@rbxts/services';
+import { Players, RunService } from '@rbxts/services';
 import { effect } from '@rbxts/charm';
 
 import Icon from 'shared/Icon';
@@ -6,6 +6,7 @@ import NumberSpinner from 'shared/NumberSpinner';
 import { MaxDollars, MinDollars, TestingPlaceId } from 'shared/constants';
 import { StylesData } from './stylesParser';
 import defaultStyles from './stylesParser/default';
+import { InputType, inputType } from './inputType';
 import { isMenuOpen } from './ui/gameProvider';
 
 const client = Players.LocalPlayer;
@@ -68,6 +69,28 @@ effect(() => {
 	}
 });
 
+effect(() => {
+	const currentInputType = inputType();
+	switch (currentInputType) {
+		case InputType.Desktop: {
+			menuIcon.setCaptionHint(Enum.KeyCode.B);
+			break;
+		}
+		case InputType.Touch: {
+			menuIcon.setCaptionHint(Enum.KeyCode.Unknown);
+			break;
+		}
+		case InputType.Controller: {
+			menuIcon.setCaptionHint(Enum.KeyCode.ButtonB);
+			break;
+		}
+		case InputType.Unknown: {
+			menuIcon.setCaptionHint(Enum.KeyCode.Unknown);
+			break;
+		}
+	}
+});
+
 if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
 	const debugIcon = new Icon()
 		.setImage(6953984446)
@@ -90,16 +113,6 @@ function applyStyles(_styles: StylesData): void {
 	// TODO: apply ui styles to topbar
 }
 
-function onLastInputTypeChanged(lastInputType: Enum.UserInputType): void {
-	if (lastInputType === Enum.UserInputType.Touch) {
-		menuIcon.setCaptionHint(Enum.KeyCode.Unknown);
-	} else if (lastInputType.Value >= Enum.UserInputType.Gamepad1.Value && lastInputType.Value <= Enum.UserInputType.Gamepad8.Value) {
-		menuIcon.setCaptionHint(Enum.KeyCode.ButtonB);
-	} else {
-		menuIcon.setCaptionHint(Enum.KeyCode.B);
-	}
-}
-
 function onAttributeChanged(attribute: string) {
 	if (attribute !== 'dollars') {
 		return;
@@ -111,5 +124,4 @@ function onAttributeChanged(attribute: string) {
 applyStyles(defaultStyles);
 onAttributeChanged('dollars');
 
-UserInputService.LastInputTypeChanged.Connect(onLastInputTypeChanged);
 client.AttributeChanged.Connect(onAttributeChanged);

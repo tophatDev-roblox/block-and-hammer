@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from '@rbxts/react';
 
-import { InputType, useGameContext } from 'client/ui/gameProvider/context';
+import { useGameContext } from 'client/ui/gameProvider/context';
 import Text from '../Text';
+import { InputType } from 'client/inputType';
 
 const MoveHint: React.FC = () => {
 	const { styles, cube, inputType } = useGameContext();
