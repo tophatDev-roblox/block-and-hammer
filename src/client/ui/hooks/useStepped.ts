@@ -9,7 +9,7 @@ RunService.Stepped.Connect((time, dt) => {
 		try {
 			callback(dt, time);
 		} catch (err) {
-			warn('[hooks::useStepped] an error occured in the useStepped hook:', err);
+			warn('[client::hooks/useStepped] an error occured in the useStepped hook:', err);
 		}
 	}
 });
