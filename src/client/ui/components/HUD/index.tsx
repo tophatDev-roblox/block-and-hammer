@@ -2,6 +2,7 @@ import React from '@rbxts/react';
 
 import Speedometer from './Speedometer';
 import Altitude from './Altitude';
+import MoveHint from './MoveHint';
 
 const HUD: React.FC = () => {
 	return (
@@ -22,6 +23,7 @@ const HUD: React.FC = () => {
 					FillDirection={Enum.FillDirection.Vertical}
 					Padding={new UDim(0, 0)}
 				/>
+				<MoveHint />
 				<Speedometer />
 				<Altitude />
 			</frame>

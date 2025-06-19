@@ -8,12 +8,13 @@ interface TextProps extends React.PropsWithChildren {
 	styles: TextStyleData;
 	text: string;
 	automaticHeight: boolean;
+	order?: number;
 	alignX?: Enum.TextXAlignment;
 	alignY?: Enum.TextYAlignment;
 	richText?: boolean;
 }
 
-const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, outline }, text, automaticHeight, alignX, alignY, richText, children }, ref) => {
+const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, outline }, text, automaticHeight, order, alignX, alignY, richText, children }, ref) => {
 	const fontWeight = useMemo<Enum.FontWeight>(() => {
 		for (const weight of Enum.FontWeight.GetEnumItems()) {
 			if (weight.Value === font.weight) {
@@ -36,6 +37,7 @@ const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, ou
 			TextColor3={isRGBA ? Color3.fromRGB(color.red, color.green, color.blue) : Color3.fromRGB(255, 255, 255)}
 			TextTransparency={isRGBA ? 1 - color.alpha : 0}
 			TextSize={size}
+			LayoutOrder={order}
 			TextXAlignment={alignX}
 			TextYAlignment={alignY}
 			Text={text}

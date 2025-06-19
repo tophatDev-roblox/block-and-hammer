@@ -33,6 +33,7 @@ const Speedometer: React.FC = () => {
 			ref={labelRef}
 			styles={styles.text.hudSecondary}
 			text={'--'}
+			order={1}
 			automaticHeight
 		/>
 	);

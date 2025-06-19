@@ -30,6 +30,12 @@ const data: StylesData = {
 			outline: { color: textOutlineGradient, thickness: 1, joinMode: 'miter' },
 		},
 		timerMillisecondsFontSize: 25,
+		moveHint: {
+			font: { fontId, weight: 700, italics: false },
+			color: { red: 255, green: 255, blue: 255, alpha: 0.7 },
+			size: 20,
+			outline: { color: textOutlineGradient, thickness: 1, joinMode: 'miter' },
+		},
 		hudPrimary: {
 			font: { fontId, weight: 900, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 1 },

@@ -3,18 +3,24 @@ import { createContext, useContext } from '@rbxts/react';
 import { StylesData } from 'client/stylesParser';
 import defaultStyles from 'client/stylesParser/default';
 
+export enum InputType {
+	Desktop,
+	Touch,
+	Controller,
+}
+
 interface GameContextType {
 	styles: StylesData;
 	menuOpen: boolean;
-	cube: Model | undefined;
-	body: Part | undefined;
+	inputType: InputType;
+	cube?: Model;
+	body?: Part;
 }
 
 export const GameContext = createContext<GameContextType>({
 	styles: defaultStyles,
 	menuOpen: false,
-	cube: undefined,
-	body: undefined,
+	inputType: InputType.Desktop,
 });
 
 export const useGameContext = (): GameContextType => {

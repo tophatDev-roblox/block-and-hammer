@@ -33,6 +33,7 @@ const Altitude: React.FC = () => {
 			ref={labelRef}
 			styles={styles.text.hudPrimary}
 			text={'--'}
+			order={2}
 			automaticHeight
 		/>
 	);
