@@ -14,7 +14,7 @@ function loadStyleFont(font: FontStyleData): Font {
 	}
 	
 	if (fontWeight === undefined) {
-		warn(`[client::centurion/index] ui style text font weight is invalid (${font.weight}), falling back to 400`);
+		warn(`[client::centurion] ui style text font weight is invalid (${font.weight}), falling back to 400`);
 	}
 	
 	return new Font(font.fontId, fontWeight, font.italics ? Enum.FontStyle.Italic : Enum.FontStyle.Normal);
@@ -42,8 +42,8 @@ client.start()
 			},
 		});
 		
-		print('[client::centurion/index] started');
+		print('[client::centurion] started');
 	})
 	.catch((err) => {
-		warn('[client::centurion/index] failed to start centurion:', err);
+		warn('[client::centurion] failed to start centurion:', err);
 	});

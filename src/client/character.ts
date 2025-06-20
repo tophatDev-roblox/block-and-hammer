@@ -1,16 +1,19 @@
 import { Players, RunService, StarterGui, UserInputService, Workspace } from '@rbxts/services';
+import { atom } from '@rbxts/charm';
 
 const camera = Workspace.WaitForChild('Camera') as Camera;
 const client = Players.LocalPlayer;
-let character: Model | undefined = undefined;
 let body: Part | undefined = undefined;
 let hammer: Model | undefined = undefined;
 let attachmentTarget: Attachment | undefined = undefined;
 let hasTimeStarted = false;
 
+export const characterAtom = atom<Model>();
+
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 
 export function quickReset(): void {
+	const character = characterAtom();
 	if (character === undefined || hammer === undefined || body === undefined || attachmentTarget === undefined) {
 		return;
 	}
@@ -33,6 +36,7 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
+	const character = characterAtom();
 	if (character === undefined || body === undefined || attachmentTarget === undefined) {
 		return;
 	}
@@ -98,7 +102,7 @@ function onCharacterAdded(newCharacter: Model): void {
 	hasTimeStarted = false;
 	newCharacter.SetAttribute('startTime', undefined);
 	
-	character = newCharacter;
+	characterAtom(newCharacter);
 	body = newCharacter.WaitForChild('Body') as Part;
 	hammer = newCharacter.WaitForChild('Hammer') as Model;
 	attachmentTarget = body.WaitForChild('Target.1') as Attachment;
@@ -116,7 +120,7 @@ function onCharacterAdded(newCharacter: Model): void {
 function onCharacterRemoving(): void {
 	print('[client::character] character removing');
 	
-	character = undefined;
+	characterAtom(undefined);
 	body = undefined;
 	hammer = undefined;
 	attachmentTarget = undefined;

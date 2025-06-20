@@ -76,14 +76,11 @@ effect(() => {
 			menuIcon.setCaptionHint(Enum.KeyCode.B);
 			break;
 		}
-		case InputType.Touch: {
-			menuIcon.setCaptionHint(Enum.KeyCode.Unknown);
-			break;
-		}
 		case InputType.Controller: {
 			menuIcon.setCaptionHint(Enum.KeyCode.ButtonB);
 			break;
 		}
+		case InputType.Touch:
 		case InputType.Unknown: {
 			menuIcon.setCaptionHint(Enum.KeyCode.Unknown);
 			break;

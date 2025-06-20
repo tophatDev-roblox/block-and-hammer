@@ -1,5 +1,5 @@
-import { atom } from '@rbxts/charm';
 import { UserInputService } from '@rbxts/services';
+import { atom } from '@rbxts/charm';
 
 export enum InputType {
 	Unknown,
@@ -9,6 +9,11 @@ export enum InputType {
 }
 
 export const inputType = atom<InputType>(InputType.Unknown);
+
+if (UserInputService.GetConnectedGamepads().size() > 0) {
+	print('[client::inputType] detected connected one or more connected gamepads, possibly using controller');
+	inputType(InputType.Controller);
+}
 
 const mouseInputTypes = new Set<Enum.UserInputType>([
 	Enum.UserInputType.MouseMovement,

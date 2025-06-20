@@ -1,13 +1,11 @@
-import { Players } from '@rbxts/services';
 import React, { useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { atom } from '@rbxts/charm';
 
 import defaultStyles from 'client/stylesParser/default';
 import { inputType } from 'client/inputType';
+import { characterAtom } from 'client/character';
 import { GameContext } from './context';
-
-const client = Players.LocalPlayer;
 
 export const isMenuOpen = atom<boolean>(false);
 
@@ -16,35 +14,19 @@ interface GameProviderProps {
 }
 
 const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
-	const [cube, setCube] = useState<Model | undefined>(undefined);
 	const [body, setBody] = useState<Part | undefined>(undefined);
 	
 	const inputTypeValue = useAtom(inputType);
 	const menuOpen = useAtom(isMenuOpen);
+	const cube = useAtom(characterAtom);
 	
 	useEffect(() => {
-		const onCharacterAdded = (character: Model) => {
-			setCube(character);
-			setBody(character.WaitForChild('Body') as Part);
-		};
-		
-		const onCharacterRemoving = () => {
-			setCube(undefined);
+		if (cube !== undefined) {
+			setBody(cube.WaitForChild('Body') as Part);
+		} else {
 			setBody(undefined);
-		};
-		
-		if (client.Character !== undefined) {
-			task.spawn(onCharacterAdded, client.Character);
 		}
-		
-		const characterAddedEvent = client.CharacterAdded.Connect(onCharacterAdded);
-		const characterRemovingEvent = client.CharacterRemoving.Connect(onCharacterRemoving);
-		
-		return () => {
-			characterAddedEvent.Disconnect();
-			characterRemovingEvent.Disconnect();
-		};
-	}, []);
+	}, [cube]);
 	
 	return (
 		<GameContext.Provider
