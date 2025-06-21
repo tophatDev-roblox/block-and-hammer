@@ -1,9 +1,9 @@
 export default class Units {
-	static studsToMeters(studs: number): number {
+	static studsToMeters(this: void, studs: number): number {
 		return studs * 0.28;
 	}
 	
-	static metersToStuds(meters: number): number {
+	static metersToStuds(this: void, meters: number): number {
 		return meters / 0.28;
 	}
 }

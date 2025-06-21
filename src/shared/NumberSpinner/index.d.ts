@@ -1,5 +1,5 @@
 declare class NumberSpinner {
-	static fromGuiObject(GuiObject: GuiObject): NumberSpinner;
+	static fromGuiObject(this: void, GuiObject: GuiObject): NumberSpinner;
 	public Value: number;
 	public Prefix: string;
 	public Suffix: string;

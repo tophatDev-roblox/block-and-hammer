@@ -89,7 +89,7 @@ function onRenderStepped(dt: number): void {
 	camera.CameraType = Enum.CameraType.Scriptable;
 	
 	const cameraCFrame = CFrame.lookAlong(new Vector3(body.Position.X, body.Position.Y, -30), Vector3.zAxis, Vector3.yAxis);
-	if (camera.CFrame.Position.sub(cameraCFrame.Position).Magnitude > 40) {
+	if (camera.CFrame.Position.sub(cameraCFrame.Position).Magnitude > 30) {
 		camera.CFrame = camera.CFrame.Lerp(cameraCFrame, 0.4);
 	} else {
 		camera.CFrame = camera.CFrame.Lerp(cameraCFrame, math.min(dt * 15, 1));
@@ -107,7 +107,7 @@ function onCharacterAdded(newCharacter: Model): void {
 	hammer = newCharacter.WaitForChild('Hammer') as Model;
 	attachmentTarget = body.WaitForChild('Target.1') as Attachment;
 	
-	// TODO: fix voicechat
+	// TODO: fix voicechat (idk how tho i havent found any guide for voicechat + new audio api)
 	// const audioEmitter = newCharacter.WaitForChild('AudioEmitter') as AudioEmitter;
 	// const wire = audioEmitter.WaitForChild('Wire') as Wire;
 	// if (hasVoiceChat) {

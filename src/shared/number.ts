@@ -1,7 +1,7 @@
 export default class Number {
 	static NaN = tonumber('nan')!;
 	
-	static isNaN(num: number): boolean {
+	static isNaN(this: void, num: number): boolean {
 		return num !== num;
 	}
 }

@@ -9,14 +9,20 @@ export interface ColorStyleDataWithAlpha extends ColorStyleData {
 }
 
 export interface GradientStyleData {
-	colors?: Record<number, ColorStyleData>;
-	transparency?: Record<number, number>;
+	colors?: Array<{
+		position: number;
+		color: ColorStyleData;
+	}>;
+	transparency?: Array<{
+		position: number;
+		transparency: number;
+	}>;
 	rotation: number;
 }
 
 export interface FontStyleData {
 	fontId: string;
-	weight: number;
+	weight: Enum.FontWeight['Value'];
 	italics: boolean;
 }
 
@@ -51,8 +57,8 @@ export interface StylesData {
 		timer: TextStyleData;
 		timerMillisecondsFontSize: number;
 		moveHint: TextStyleData;
-		hudPrimary: TextStyleData & FloatStyleData;
-		hudSecondary: TextStyleData & FloatStyleData;
+		hudPrimary: TextStyleData & { display: FloatStyleData };
+		hudSecondary: TextStyleData & { display: FloatStyleData };
 		centurion: {
 			bold: FontStyleData;
 			medium: FontStyleData;
@@ -70,7 +76,7 @@ export interface StylesData {
 	layout: {}; // TODO: ui layout
 }
 
-const fallbackColor = Color3.fromRGB(255, 0, 255);
+const fallbackColor = Color3.fromRGB(255, 255, 255);
 
 export function areSequenceKeypointsValid(keypoints: Array<{ Time: number }>): boolean {
 	return keypoints.size() >= 2 && keypoints[0].Time === 0 && keypoints[keypoints.size() - 1].Time === 1;
@@ -88,8 +94,8 @@ export function parseGradientColor(gradient: GradientStyleData): LuaTuple<[Color
 	let colorSequence: ColorSequence | undefined = undefined;
 	if (gradient.colors !== undefined) {
 		const colorKeypoints = new Array<ColorSequenceKeypoint>();
-		for (const [time, color] of pairs(gradient.colors)) {
-			colorKeypoints.push(new ColorSequenceKeypoint(time, parseColor(color)));
+		for (const { position, color } of gradient.colors) {
+			colorKeypoints.push(new ColorSequenceKeypoint(position, parseColor(color)));
 		}
 		
 		colorKeypoints.sort((a, b) => a.Time < b.Time);
@@ -104,8 +110,8 @@ export function parseGradientColor(gradient: GradientStyleData): LuaTuple<[Color
 	let numberSequence: NumberSequence | undefined;
 	if (gradient.transparency !== undefined) {
 		const numberKeypoints = new Array<NumberSequenceKeypoint>();
-		for (const [time, transparency] of pairs(gradient.transparency)) {
-			numberKeypoints.push(new NumberSequenceKeypoint(time, transparency));
+		for (const { position, transparency } of gradient.transparency) {
+			numberKeypoints.push(new NumberSequenceKeypoint(position, transparency));
 		}
 		
 		numberKeypoints.sort((a, b) => a.Time < b.Time);

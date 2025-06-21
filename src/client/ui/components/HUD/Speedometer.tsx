@@ -11,7 +11,7 @@ const Speedometer: React.FC = () => {
 	const labelRef = useRef<TextLabel>();
 	
 	useEffect(() => {
-		const labelFormat = `%.${styles.text.hudSecondary.decimals}fm/s`;
+		const labelFormat = `%.${styles.text.hudSecondary.display.decimals}fm/s`;
 		const label = labelRef.current;
 		if (label === undefined || body === undefined) {
 			return;
@@ -26,7 +26,7 @@ const Speedometer: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [body, styles.text.hudSecondary.decimals]);
+	}, [body, styles.text.hudSecondary.display.decimals]);
 	
 	return (
 		<Text

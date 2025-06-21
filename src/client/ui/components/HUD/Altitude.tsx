@@ -11,7 +11,7 @@ const Altitude: React.FC = () => {
 	const labelRef = useRef<TextLabel>();
 	
 	useEffect(() => {
-		const labelFormat = `%.${styles.text.hudPrimary.decimals}fm`;
+		const labelFormat = `%.${styles.text.hudPrimary.display.decimals}fm`;
 		const label = labelRef.current;
 		if (label === undefined || body === undefined) {
 			return;
@@ -26,7 +26,7 @@ const Altitude: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [body, styles.text.hudPrimary.decimals]);
+	}, [body, styles.text.hudPrimary.display.decimals]);
 	
 	return (
 		<Text

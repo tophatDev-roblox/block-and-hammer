@@ -3,4 +3,5 @@
 /include
 *.tsbuildinfo
 
-/src/server/anticheat
+/src/server/anticheat.ts
+/src/server/tophatApi.ts
