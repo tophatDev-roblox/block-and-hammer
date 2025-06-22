@@ -1,14 +1,61 @@
-import { Debris, RunService, Workspace } from '@rbxts/services';
+import { RunService, TweenService, Workspace } from '@rbxts/services';
 import { effect } from '@rbxts/charm';
 
 import { characterAtom } from 'client/character';
 import TimeSpan from 'shared/timeSpan';
 
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
-// const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
-const materialsFolder = script.WaitForChild('materials') as Folder;
+const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
 
 const RNG = new Random();
+
+interface ParticleData {
+	totalParticles: number;
+	colorScale: number;
+}
+
+// https://github.com/EgoMoose/Articles/blob/master/Rodrigues'%20rotation/Rodrigues'%20rotation.md
+function rodriguesRotation(v: Vector3, k: Vector3, t: number): Vector3 {
+	const cosTheta = math.cos(t);
+	const sinTheta = math.sin(t);
+	
+	return v.mul(cosTheta).add(k.mul((1 - cosTheta) * v.Dot(k)).add(k.Cross(v).mul(sinTheta)));
+}
+
+function getParticleData(particle: BasePart): ParticleData {
+	switch (particle.Material) {
+		case Enum.Material.Grass: {
+			return { totalParticles: RNG.NextInteger(3, 6), colorScale: 0.6 };
+		}
+		case Enum.Material.Sand: {
+			return { totalParticles: RNG.NextInteger(8, 12), colorScale: 1.1 };
+		}
+		default: {
+			print(`[client::effects] unsupported material: ${particle.Material}`);
+			
+			return { totalParticles: 0, colorScale: 1 };
+		}
+	}
+}
+
+function styleParticle(particle: BasePart): void {
+	switch (particle.Material) {
+		case Enum.Material.Grass: {
+			particle.Transparency = 0.75;
+			particle.Size = new Vector3(0.5, RNG.NextNumber(1, 3), 0.5);
+			break;
+		}
+		case Enum.Material.Sand: {
+			particle.Transparency = 0.3;
+			particle.Size = Vector3.one.mul(RNG.NextNumber(0.5, 1));
+			break;
+		}
+		default: {
+			particle.Size = new Vector3(1, 1, 1);
+			break;
+		}
+	}
+}
 
 effect(() => {
 	const character = characterAtom();
@@ -34,7 +81,7 @@ effect(() => {
 		const point = otherPart.GetClosestPointOnSurface(head.Position);
 		if (magnitude > 165) {
 			print(2);
-		} else if (magnitude > 35) {
+		} else if (magnitude > 50) {
 			const params = new RaycastParams();
 			params.FilterType = Enum.RaycastFilterType.Include;
 			params.FilterDescendantsInstances = [otherPart];
@@ -44,24 +91,43 @@ effect(() => {
 				return;
 			}
 			
-			const materialModule = materialsFolder.FindFirstChild(otherPart.Material.Name.lower()); // TODO: better particles system
-			if (materialModule?.IsA('ModuleScript')) {
-				try {
-					const attachment = require(materialModule) as Attachment;
-					
-					const effect = attachment.Clone();
-					effect.Position = point;
-					effect.CFrame = CFrame.lookAlong(point, result.Normal);
-					effect.FindFirstChildWhichIsA('ParticleEmitter')!.Emit(RNG.NextInteger(5, 10));
-					effect.Parent = Workspace.FindFirstChild('Terrain');
-					
-					Debris.AddItem(effect, 3);
-				} catch (err) {
-					print(`[client::effects] failed to run effect module for ${otherPart.Material}:`, err);
-				}
-			} else {
-				print(`[client::effects] unknown material: ${otherPart.Material}`);
+			const tweenInfo = new TweenInfo(3, Enum.EasingStyle.Linear);
+			const axisOfRotation = result.Normal.Unit;
+			
+			const baseParticle = Instance.fromExisting(otherPart);
+			baseParticle.Anchored = false;
+			baseParticle.Massless = true;
+			baseParticle.CanCollide = true;
+			baseParticle.CastShadow = false;
+			baseParticle.CollisionGroup = 'Particles';
+			
+			const { totalParticles, colorScale } = getParticleData(baseParticle);
+			baseParticle.Color = new Color3(
+				baseParticle.Color.R * colorScale,
+				baseParticle.Color.G * colorScale,
+				baseParticle.Color.B * colorScale,
+			);
+			
+			for (const i of $range(1, totalParticles)) {
+				const radius = RNG.NextNumber(0.2, 0.7);
+				const rotationVector = axisOfRotation.add(axisOfRotation.Cross(Vector3.zAxis).mul(radius));
+				const theta = (i - 1) / (totalParticles - 1) * 2 * math.pi;
+				const velocity = rodriguesRotation(rotationVector, axisOfRotation, theta);
+				
+				const particle = Instance.fromExisting(baseParticle);
+				styleParticle(particle);
+				particle.CFrame = CFrame.lookAlong(point, RNG.NextUnitVector());
+				particle.AssemblyLinearVelocity = velocity.Unit.mul(RNG.NextNumber(40, 50));
+				particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
+				particle.Parent = effectsFolder;
+				
+				const tween = TweenService.Create(particle, tweenInfo, { Transparency: 1 });
+				tween.Play();
+				
+				tween.Completed.Connect(() => particle.Destroy());
 			}
+			
+			baseParticle.Destroy();
 		} else {
 			return;
 		}

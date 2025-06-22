@@ -1,19 +1,20 @@
 const unreservedURLCharacters = new Set<string>(['-', '_', '.', '~']);
 
-for (const i of $range(48, 57)) {
+for (const i of $range(48, 57)) { // 0-9
 	unreservedURLCharacters.add(utf8.char(i));
 }
 
-for (const i of $range(65, 90)) {
+for (const i of $range(65, 90)) { // A-Z
 	unreservedURLCharacters.add(utf8.char(i));
 }
 
-for (const i of $range(97, 122)) {
+for (const i of $range(97, 122)) { // a-z
 	unreservedURLCharacters.add(utf8.char(i));
 }
 
 export default function encodeURIComponent(uriComponent: string): string {
 	const totalCodes = uriComponent.size();
+	
 	const buff = buffer.create(totalCodes);
 	buffer.writestring(buff, 0, uriComponent);
 	
