@@ -14,7 +14,6 @@ export function usePx(): (px: number, rounded?: boolean) => number {
 	const viewportSize = useViewportSize();
 	
 	const scale = useMemo(() => calculateScale(viewportSize), [viewportSize]);
-	print(scale);
 	
 	return (px, rounded) => rounded === false ? px * scale : math.round(px * scale);
 }
