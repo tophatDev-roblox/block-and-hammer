@@ -41,7 +41,7 @@ const Timer: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [cube]);
+	}, [cube, px]);
 	
 	return (
 		<screengui
