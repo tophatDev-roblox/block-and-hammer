@@ -71,7 +71,7 @@ effect(() => {
 	let lastEffectTime = -1;
 	
 	const touchedEvent = head.Touched.Connect((otherPart) => {
-		if (!otherPart.IsDescendantOf(mapFolder) || TimeSpan.timeSince(lastEffectTime) < TimeSpan.seconds(0.2)) {
+		if (!otherPart.IsDescendantOf(mapFolder) || TimeSpan.timeSince(lastEffectTime) < TimeSpan.seconds(0.1)) {
 			return;
 		}
 		
@@ -108,6 +108,8 @@ effect(() => {
 				baseParticle.Color.B * colorScale,
 			);
 			
+			const inheritedVelocity = hammerVelocity.mul(-0.2);
+			
 			for (const i of $range(1, totalParticles)) {
 				const radius = RNG.NextNumber(0.2, 0.7);
 				const rotationVector = axisOfRotation.add(axisOfRotation.Cross(Vector3.zAxis).mul(radius));
@@ -117,7 +119,7 @@ effect(() => {
 				const particle = Instance.fromExisting(baseParticle);
 				styleParticle(particle);
 				particle.CFrame = CFrame.lookAlong(point, RNG.NextUnitVector());
-				particle.AssemblyLinearVelocity = velocity.Unit.mul(RNG.NextNumber(40, 50));
+				particle.AssemblyLinearVelocity = velocity.Unit.mul(RNG.NextNumber(40, 50)).add(inheritedVelocity);
 				particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
 				particle.Parent = effectsFolder;
 				
