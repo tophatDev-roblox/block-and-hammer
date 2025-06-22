@@ -70,7 +70,7 @@ const data: StylesData = {
 	container: {
 		background: {
 			colors: [
-				{ position: 1, color: { red: 34, green: 34, blue: 34 } },
+				{ position: 0, color: { red: 34, green: 34, blue: 34 } },
 				{ position: 0.6, color: { red: 0, green: 0, blue: 0 } },
 				{ position: 1, color: { red: 0, green: 0, blue: 0 } },
 			],

@@ -8,15 +8,19 @@ export interface ColorStyleDataWithAlpha extends ColorStyleData {
 	alpha: number;
 }
 
+interface GradientColorKeypoint<T extends number = number> {
+	position: T;
+	color: ColorStyleData;
+}
+
+interface GradientTransparencyKeypoint<T extends number = number> {
+	position: T;
+	transparency: number;
+}
+
 export interface GradientStyleData {
-	colors?: Array<{
-		position: number;
-		color: ColorStyleData;
-	}>;
-	transparency?: Array<{
-		position: number;
-		transparency: number;
-	}>;
+	colors?: [GradientColorKeypoint<0>, ...Array<GradientColorKeypoint>, GradientColorKeypoint<1>];
+	transparency?: [GradientTransparencyKeypoint<0>, ...Array<GradientTransparencyKeypoint>, GradientTransparencyKeypoint<1>];
 	rotation: number;
 }
 
@@ -101,11 +105,16 @@ export function parseGradientColor(gradient: GradientStyleData): LuaTuple<[Color
 		}
 		
 		colorKeypoints.sort((a, b) => a.Time < b.Time);
+		
+		colorSequence = new ColorSequence(fallbackColor);
 		if (areSequenceKeypointsValid(colorKeypoints)) {
-			colorSequence = new ColorSequence(colorKeypoints);
+			try {
+				colorSequence = new ColorSequence(colorKeypoints);
+			} catch (err) {
+				warn(`[client::stylesParser/gradient] failed to create color sequence: ${err}`);
+			}
 		} else {
 			warn('[client::stylesParser/gradient] color must have at least 2 keypoints, start at 0 and end at 1');
-			colorSequence = new ColorSequence(fallbackColor);
 		}
 	}
 	
@@ -117,11 +126,16 @@ export function parseGradientColor(gradient: GradientStyleData): LuaTuple<[Color
 		}
 		
 		numberKeypoints.sort((a, b) => a.Time < b.Time);
+		
+		numberSequence = new NumberSequence(0);
 		if (areSequenceKeypointsValid(numberKeypoints)) {
-			numberSequence = new NumberSequence(numberKeypoints);
+			try {
+				numberSequence = new NumberSequence(numberKeypoints);
+			} catch (err) {
+				warn(`[client::stylesParser/gradient] failed to create transparency sequence: ${err}`);
+			}
 		} else {
 			warn('[client::stylesParser/gradient] transparency must have at least 2 keypoints, start at 0 and end at 1');
-			numberSequence = new NumberSequence(0);
 		}
 	}
 	
