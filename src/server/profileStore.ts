@@ -1,0 +1,67 @@
+import { Players, RunService } from '@rbxts/services';
+
+import ProfileStore from 'shared/ProfileStore';
+import Profile from 'shared/ProfileStore/Profile';
+import { MaxDollars, MinDollars } from 'shared/constants';
+import Number from 'shared/number';
+
+interface DataTemplate {
+	dollars: number
+}
+
+type LoadedProfile = Profile<DataTemplate>;
+
+let PlayerStore = ProfileStore.New<DataTemplate>('PlayerStore', {
+	dollars: 100,
+});
+
+if (RunService.IsStudio()) {
+	PlayerStore = PlayerStore.Mock;
+}
+
+const loadedProfiles = new Map<Player, LoadedProfile>();
+
+export function loadPlayer(player: Player): LoadedProfile | undefined {
+	const profile = PlayerStore.StartSessionAsync(`player_${player.UserId}`, {
+		Cancel: () => {
+			return player.Parent !== Players;
+		},
+	});
+	
+	if (profile === undefined) {
+		player.Kick('Profile failed to load, please rejoin');
+		return undefined;
+	}
+	
+	profile.AddUserId(player.UserId);
+	profile.Reconcile();
+	
+	profile.OnSessionEnd.Connect(() => {
+		loadedProfiles.delete(player);
+		player.Kick('Profile session ended - please rejoin');
+	});
+	
+	if (player.Parent !== Players) {
+		profile.EndSession();
+		return undefined;
+	}
+	
+	player.AttributeChanged.Connect((attribute) => {
+		if (attribute === 'dollars') {
+			const dollars = tonumber(player.GetAttribute('dollars'));
+			if (dollars === undefined || Number.isNaN(dollars)) {
+				return;
+			}
+			
+			profile.Data.dollars = math.clamp(dollars, MinDollars, MaxDollars);
+		}
+	});
+	
+	loadedProfiles.set(player, profile);
+	return profile;
+}
+
+export function unloadPlayer(player: Player): void {
+	const profile = loadedProfiles.get(player);
+	profile?.EndSession();
+}

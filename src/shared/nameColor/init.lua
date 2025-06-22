@@ -1,3 +1,5 @@
+-- https://devforum.roblox.com/t/your-name-color-in-chat-%E2%80%94-history-and-how-it-works/2702247
+
 NAME_COLORS =
 	{
 		Color3.new(253/255, 41/255, 67/255), -- BrickColor.new("Bright red").Color,

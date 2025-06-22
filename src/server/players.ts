@@ -2,6 +2,7 @@ import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/servic
 
 import { applyLeaderstats } from './leaderstats';
 import computeNameColor from 'shared/nameColor';
+import { loadPlayer, unloadPlayer } from './profileStore';
 
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
 const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
@@ -9,7 +10,12 @@ const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
 const createdCharacters = new Set<Model>();
 
 function onPlayerAdded(player: Player): void {
-	player.SetAttribute('dollars', 150);
+	const profile = loadPlayer(player);
+	if (profile === undefined) {
+		return;
+	}
+	
+	player.SetAttribute('dollars', profile.Data.dollars);
 	player.SetAttribute('color', computeNameColor(player.Name));
 	
 	applyLeaderstats(player);
@@ -17,6 +23,8 @@ function onPlayerAdded(player: Player): void {
 }
 
 function onPlayerRemoving(player: Player): void {
+	unloadPlayer(player);
+	
 	player.Character?.Destroy();
 }
 
@@ -32,11 +40,6 @@ function onStepped(_time: number, _dt: number): void {
 			character.Destroy();
 		}
 	}
-}
-
-function quickRespawn(cube: Model): void {
-	const spawnPivot = baseCharacter.GetPivot();
-	cube.PivotTo(spawnPivot);
 }
 
 function respawn(player: Player): void {
@@ -67,7 +70,7 @@ function respawn(player: Player): void {
 }
 
 for (const player of Players.GetPlayers()) {
-	onPlayerAdded(player);
+	task.spawn(onPlayerAdded, player);
 }
 
 Players.PlayerAdded.Connect(onPlayerAdded);
