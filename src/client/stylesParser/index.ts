@@ -30,6 +30,7 @@ export interface OutlineStyleData {
 	color: ColorStyleDataWithAlpha | GradientStyleData;
 	thickness: number;
 	joinMode: 'miter' | 'round' | 'bevel';
+	autoScale?: false;
 }
 
 export interface TextStyleData {
@@ -37,6 +38,7 @@ export interface TextStyleData {
 	color: ColorStyleDataWithAlpha | GradientStyleData;
 	size: number;
 	outline: OutlineStyleData | false;
+	autoScale?: false;
 }
 
 export interface FloatStyleData {

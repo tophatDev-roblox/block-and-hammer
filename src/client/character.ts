@@ -1,13 +1,13 @@
 import { Players, RunService, StarterGui, UserInputService, Workspace } from '@rbxts/services';
 import { atom } from '@rbxts/charm';
 
-const camera = Workspace.WaitForChild('Camera') as Camera;
 const client = Players.LocalPlayer;
 let body: Part | undefined = undefined;
 let hammer: Model | undefined = undefined;
 let attachmentTarget: Attachment | undefined = undefined;
 let hasTimeStarted = false;
 
+export const camera = Workspace.WaitForChild('Camera') as Camera;
 export const characterAtom = atom<Model>();
 
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);

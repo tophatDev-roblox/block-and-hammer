@@ -3,9 +3,11 @@ import React, { useEffect, useRef } from '@rbxts/react';
 import { useGameContext } from 'client/ui/gameProvider/context';
 import Text from '../Text';
 import { useStepped } from 'client/ui/hooks/useStepped';
+import { usePx } from 'client/ui/hooks/usePx';
 
 const Timer: React.FC = () => {
 	const { styles, cube } = useGameContext();
+	const px = usePx();
 	
 	const labelRef = useRef<TextLabel>();
 	
@@ -32,7 +34,7 @@ const Timer: React.FC = () => {
 			}
 			
 			const millisecondsString = string.format('%02d', math.floor(elapsedTime % 1 * 100));
-			label.Text = `${timeString}.<font size="${styles.text.timerMillisecondsFontSize}">${millisecondsString}</font>`;
+			label.Text = `${timeString}.<font size="${px(styles.text.timerMillisecondsFontSize)}">${millisecondsString}</font>`;
 		});
 		
 		return () => {

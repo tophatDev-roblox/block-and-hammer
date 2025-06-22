@@ -1,6 +1,7 @@
 import React, { forwardRef, useMemo } from '@rbxts/react';
 
 import { TextStyleData } from 'client/stylesParser';
+import { usePx } from '../hooks/usePx';
 import Gradient from './Gradient';
 import Outline from './Outline';
 
@@ -17,7 +18,9 @@ interface TextProps extends React.PropsWithChildren {
 	richText?: boolean;
 }
 
-const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, outline }, text, automaticHeight, automaticWidth, width, height, order, alignX, alignY, richText, children }, ref) => {
+const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, outline, autoScale }, text, automaticHeight, automaticWidth, width, height, order, alignX, alignY, richText, children }, ref) => {
+	const px = usePx();
+	
 	const fontWeight = useMemo<Enum.FontWeight>(() => {
 		for (const weight of Enum.FontWeight.GetEnumItems()) {
 			if (weight.Value === font.weight) {
@@ -55,7 +58,7 @@ const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, ou
 			FontFace={new Font(font.fontId, fontWeight, font.italics ? Enum.FontStyle.Italic : Enum.FontStyle.Normal)}
 			TextColor3={isRGBA ? Color3.fromRGB(color.red, color.green, color.blue) : Color3.fromRGB(255, 255, 255)}
 			TextTransparency={isRGBA ? 1 - color.alpha : 0}
-			TextSize={size}
+			TextSize={autoScale === false ? size : px(size)}
 			LayoutOrder={order}
 			TextXAlignment={alignX}
 			TextYAlignment={alignY}

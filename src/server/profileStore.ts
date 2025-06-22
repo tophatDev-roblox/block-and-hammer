@@ -16,7 +16,10 @@ let PlayerStore = ProfileStore.New<DataTemplate>('PlayerStore', {
 });
 
 if (RunService.IsStudio()) {
+	print('[server::profileStore] loading mock datastore');
 	PlayerStore = PlayerStore.Mock;
+} else {
+	print('[server::profileStore] loading live datastore');
 }
 
 const loadedProfiles = new Map<Player, LoadedProfile>();
