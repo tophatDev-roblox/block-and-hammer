@@ -52,6 +52,11 @@ function respawn(player: Player): void {
 	const character = baseCharacter.Clone();
 	character.Name = player.Name;
 	
+	// TODO: better system for billboard gui (+ make size responsive)
+	const billboardGui = character.FindFirstChildWhichIsA('BillboardGui', true)!;
+	(billboardGui.FindFirstChild('DisplayName') as TextLabel).Text = player.DisplayName;
+	(billboardGui.FindFirstChild('Username') as TextLabel).Text = `@${player.Name}`;
+	
 	createdCharacters.add(character);
 	
 	character.Destroying.Once(() => {
