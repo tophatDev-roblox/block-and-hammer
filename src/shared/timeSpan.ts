@@ -43,10 +43,14 @@ export default class TimeSpan {
 	}
 	
 	static timeUntil(timestamp: number): number {
-		return timestamp - os.clock();
+		return timestamp - this.now();
 	}
 	
 	static timeSince(timestamp: number): number {
-		return os.clock() - timestamp;
+		return this.now() - timestamp;
+	}
+	
+	static now(): number {
+		return os.clock();
 	}
 }

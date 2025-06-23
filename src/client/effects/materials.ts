@@ -1,3 +1,5 @@
+import { SoundService } from '@rbxts/services';
+
 export interface ParticleData {
 	totalParticles: number;
 	colorMultiplier: number;
@@ -5,6 +7,14 @@ export interface ParticleData {
 }
 
 interface MaterialConfig {
+	sound?: {
+		instance: Sound;
+		startTime: number;
+		volume: number;
+		speed: number;
+		volumeVariation?: number;
+		speedVariation?: number;
+	};
 	getData: () => ParticleData;
 	style: (particle: BasePart) => void;
 }
@@ -14,6 +24,13 @@ const RNG = new Random();
 export const materialConfiguration = new Map<Enum.Material, MaterialConfig>();
 
 materialConfiguration.set(Enum.Material.Grass, {
+	sound: {
+		instance: SoundService.WaitForChild('GrassHit') as Sound,
+		startTime: 0.05,
+		volume: 0.4,
+		speed: 1,
+		speedVariation: 0.05,
+	},
 	getData: () => ({ totalParticles: RNG.NextInteger(3, 6), colorMultiplier: 0.6, duration: 3 }),
 	style: (particle) => {
 		particle.Transparency = 0.75;
@@ -22,7 +39,14 @@ materialConfiguration.set(Enum.Material.Grass, {
 });
 
 materialConfiguration.set(Enum.Material.Ground, {
-	getData: () => ({ totalParticles: RNG.NextInteger(8, 14), colorMultiplier: 1.1, duration: 1 }),
+	sound: {
+		instance: SoundService.WaitForChild('DirtHit') as Sound,
+		startTime: 0,
+		volume: 0.3,
+		speed: 1,
+		speedVariation: 0.05,
+	},
+	getData: () => ({ totalParticles: RNG.NextInteger(8, 14), colorMultiplier: 1.1, duration: 1.5 }),
 	style: (particle) => {
 		particle.Transparency = 0.5;
 		particle.Size = Vector3.one.mul(RNG.NextNumber(0.2, 0.6));
@@ -30,7 +54,14 @@ materialConfiguration.set(Enum.Material.Ground, {
 });
 
 materialConfiguration.set(Enum.Material.Sand, {
-	getData: () => ({ totalParticles: RNG.NextInteger(8, 14), colorMultiplier: 1.1, duration: 1 }),
+	sound: {
+		instance: SoundService.WaitForChild('SandHit') as Sound,
+		startTime: 0,
+		volume: 0.3,
+		speed: 1,
+		speedVariation: 0.05,
+	},
+	getData: () => ({ totalParticles: RNG.NextInteger(8, 14), colorMultiplier: 1.1, duration: 1.5 }),
 	style: (particle) => {
 		particle.Transparency = 0.5;
 		particle.Size = Vector3.one.mul(RNG.NextNumber(0.2, 0.6));
@@ -38,6 +69,13 @@ materialConfiguration.set(Enum.Material.Sand, {
 });
 
 materialConfiguration.set(Enum.Material.Limestone, {
+	sound: {
+		instance: SoundService.WaitForChild('StoneHit') as Sound,
+		startTime: 0,
+		volume: 0.2,
+		speed: 0.9,
+		speedVariation: 0.05,
+	},
 	getData: () => ({ totalParticles: RNG.NextInteger(0, 3), colorMultiplier: 0.8, duration: 3 }),
 	style: (particle) => {
 		particle.Transparency = 0.3;
@@ -46,7 +84,14 @@ materialConfiguration.set(Enum.Material.Limestone, {
 });
 
 materialConfiguration.set(Enum.Material.Plastic, {
-	getData: () => ({ totalParticles: RNG.NextInteger(3, 6), colorMultiplier: 1.1, duration: 1 }),
+	sound: {
+		instance: SoundService.WaitForChild('PlasticHit') as Sound,
+		startTime: 0,
+		volume: 0.3,
+		speed: 1,
+		speedVariation: 0.05,
+	},
+	getData: () => ({ totalParticles: RNG.NextInteger(3, 6), colorMultiplier: 1.1, duration: 1.5 }),
 	style: (particle) => {
 		particle.Transparency = 0.5;
 		particle.Size = Vector3.one.mul(RNG.NextNumber(0.2, 0.6));

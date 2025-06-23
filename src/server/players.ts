@@ -43,9 +43,10 @@ function onStepped(_time: number, _dt: number): void {
 }
 
 function respawn(player: Player): void {
-	const existingCharacter = Workspace.FindFirstChild(player.Name);
+	const existingCharacter = Workspace.FindFirstChild(player.Name) ?? player.Character;
 	if (existingCharacter?.IsA('Model')) {
 		existingCharacter.Destroy();
+		createdCharacters.delete(existingCharacter);
 		player.Character = undefined;
 	}
 	
@@ -54,6 +55,7 @@ function respawn(player: Player): void {
 	
 	// TODO: better system for billboard gui (+ make size responsive)
 	const billboardGui = character.FindFirstChildWhichIsA('BillboardGui', true)!;
+	billboardGui.PlayerToHideFrom = player;
 	(billboardGui.FindFirstChild('DisplayName') as TextLabel).Text = player.DisplayName;
 	(billboardGui.FindFirstChild('Username') as TextLabel).Text = `@${player.Name}`;
 	
@@ -61,7 +63,6 @@ function respawn(player: Player): void {
 	
 	character.Destroying.Once(() => {
 		createdCharacters.delete(character);
-		
 		respawn(player);
 	});
 	

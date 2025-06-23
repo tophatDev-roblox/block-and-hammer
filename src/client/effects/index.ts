@@ -40,7 +40,7 @@ effect(() => {
 	let lastEffectTime = -1;
 	
 	const touchedEvent = head.Touched.Connect((otherPart) => {
-		if (TimeSpan.timeSince(lastEffectTime) < TimeSpan.seconds(0.1)) {
+		if (TimeSpan.timeSince(lastEffectTime) < 0.1) {
 			return;
 		}
 		
@@ -110,6 +110,7 @@ effect(() => {
 			
 			const sound = hammerHitSound.Clone();
 			sound.TimePosition = 0.1;
+			sound.PlaybackSpeed = RNG.NextNumber(0.95, 1.05);
 			sound.Parent = Workspace;
 			sound.Destroy();
 		} else if (magnitude > 50) {
@@ -146,6 +147,26 @@ effect(() => {
 				particles.add(particle);
 			}
 			
+			if (material.sound !== undefined) {
+				const configuration = material.sound;
+				
+				const sound = configuration.instance.Clone();
+				sound.TimePosition = configuration.startTime;
+				sound.Volume = configuration.volume;
+				sound.PlaybackSpeed = configuration.speed;
+				
+				if (configuration.volumeVariation !== undefined) {
+					sound.Volume += RNG.NextNumber(-configuration.volumeVariation, configuration.volumeVariation);
+				}
+				
+				if (configuration.speedVariation !== undefined) {
+					sound.PlaybackSpeed += RNG.NextNumber(-configuration.speedVariation, configuration.speedVariation);
+				}
+				
+				sound.Parent = Workspace;
+				sound.Destroy();
+			}
+			
 			task.delay(duration, () => {
 				for (const particle of particles) {
 					particle.Destroy();
@@ -154,7 +175,7 @@ effect(() => {
 		}
 		
 		baseParticle.Destroy();
-		lastEffectTime = os.clock();
+		lastEffectTime = TimeSpan.now();
 	});
 	
 	const steppedEvent = RunService.Stepped.Connect(() => {

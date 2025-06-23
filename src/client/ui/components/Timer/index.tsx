@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from '@rbxts/react';
 
+import TimeSpan from 'shared/timeSpan';
 import { useGameContext } from 'client/ui/gameProvider/context';
-import Text from '../Text';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { usePx } from 'client/ui/hooks/usePx';
+import Text from '../Text';
 
 const Timer: React.FC = () => {
 	const { styles, cube } = useGameContext();
@@ -18,7 +19,7 @@ const Timer: React.FC = () => {
 		}
 		
 		const disconnectSteppedEvent = useStepped(() => {
-			const currentTime = os.clock();
+			const currentTime = TimeSpan.now();
 			const startTime = tonumber(cube.GetAttribute('startTime')) ?? currentTime;
 			const elapsedTime = currentTime - startTime;
 			

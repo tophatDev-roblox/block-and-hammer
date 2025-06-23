@@ -1,6 +1,8 @@
 import { Players, RunService, StarterGui, UserInputService, Workspace } from '@rbxts/services';
 import { atom } from '@rbxts/charm';
 
+import TimeSpan from 'shared/timeSpan';
+
 const client = Players.LocalPlayer;
 let body: Part | undefined = undefined;
 let hammer: Model | undefined = undefined;
@@ -69,7 +71,7 @@ function processInput(input: InputObject): void {
 	
 	if (targetPosition !== undefined) {
 		if (!hasTimeStarted) {
-			character.SetAttribute('startTime', os.clock());
+			character.SetAttribute('startTime', TimeSpan.now());
 			hasTimeStarted = true;
 		}
 		
@@ -106,6 +108,10 @@ function onCharacterAdded(newCharacter: Model): void {
 	body = newCharacter.WaitForChild('Body') as Part;
 	hammer = newCharacter.WaitForChild('Hammer') as Model;
 	attachmentTarget = body.WaitForChild('Target.1') as Attachment;
+	
+	const bubbleChatOrigin = newCharacter.WaitForChild('BubbleChatOrigin') as Part;
+	const bubbleChatAttachment = bubbleChatOrigin.WaitForChild('Rigid.0') as Attachment;
+	bubbleChatAttachment.Position = new Vector3(0, -1.5, 2.5);
 	
 	// TODO: fix voicechat (idk how tho i havent found any guide for voicechat + new audio api)
 	// const audioEmitter = newCharacter.WaitForChild('AudioEmitter') as AudioEmitter;
