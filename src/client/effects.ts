@@ -1,4 +1,4 @@
-import { RunService, TweenService, Workspace } from '@rbxts/services';
+import { RunService, SoundService, TweenService, Workspace } from '@rbxts/services';
 import { effect } from '@rbxts/charm';
 
 import { characterAtom } from 'client/character';
@@ -8,6 +8,8 @@ const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
 
 const RNG = new Random();
+
+const hammerHitSound = SoundService.WaitForChild('HammerHit') as Sound;
 
 interface ParticleData {
 	totalParticles: number;
@@ -22,13 +24,19 @@ function rodriguesRotation(v: Vector3, k: Vector3, t: number): Vector3 {
 	return v.mul(cosTheta).add(k.mul((1 - cosTheta) * v.Dot(k)).add(k.Cross(v).mul(sinTheta)));
 }
 
+function getRandomSpreadDirection(theta: number, radius: number, axisOfRotation: Vector3): Vector3 {
+	const rotationVector = axisOfRotation.add(axisOfRotation.Cross(Vector3.zAxis).mul(radius));
+	const velocity = rodriguesRotation(rotationVector, axisOfRotation, theta);
+	return velocity;
+}
+
 function getParticleData(particle: BasePart): ParticleData {
 	switch (particle.Material) {
 		case Enum.Material.Grass: {
 			return { totalParticles: RNG.NextInteger(3, 6), colorScale: 0.6 };
 		}
 		case Enum.Material.Sand: {
-			return { totalParticles: RNG.NextInteger(8, 12), colorScale: 1.1 };
+			return { totalParticles: RNG.NextInteger(8, 14), colorScale: 1.1 };
 		}
 		default: {
 			print(`[client::effects] unsupported material: ${particle.Material}`);
@@ -46,8 +54,8 @@ function styleParticle(particle: BasePart): void {
 			break;
 		}
 		case Enum.Material.Sand: {
-			particle.Transparency = 0.3;
-			particle.Size = Vector3.one.mul(RNG.NextNumber(0.5, 1));
+			particle.Transparency = 0.5;
+			particle.Size = Vector3.one.mul(RNG.NextNumber(0.2, 0.6));
 			break;
 		}
 		default: {
@@ -71,35 +79,74 @@ effect(() => {
 	let lastEffectTime = -1;
 	
 	const touchedEvent = head.Touched.Connect((otherPart) => {
-		if (!otherPart.IsDescendantOf(mapFolder) || TimeSpan.timeSince(lastEffectTime) < TimeSpan.seconds(0.1)) {
+		if (TimeSpan.timeSince(lastEffectTime) < TimeSpan.seconds(0.1)) {
 			return;
 		}
 		
 		let magnitude = hammerVelocity.sub(otherPart.AssemblyLinearVelocity).sub(body.AssemblyLinearVelocity.div(4)).Magnitude;
 		magnitude *= 1.5;
+		if (magnitude < 50) {
+			return;
+		}
 		
-		const point = otherPart.GetClosestPointOnSurface(head.Position);
+		const params = new RaycastParams();
+		params.FilterType = Enum.RaycastFilterType.Include;
+		params.FilterDescendantsInstances = [mapFolder];
+		
+		const otherPoint = otherPart.GetClosestPointOnSurface(head.Position);
+		const direction = otherPoint.sub(head.Position);
+		const result = Workspace.Raycast(head.Position.sub(direction), direction.mul(3), params);
+		if (result === undefined) {
+			return;
+		}
+		
+		const targetPart = result.Instance;
+		const point = targetPart.GetClosestPointOnSurface(head.Position);
+		const inheritedVelocity = hammerVelocity.mul(-0.2);
+		
+		const tweenProperties: Partial<ExtractMembers<BasePart, Tweenable>> = {
+			Size: Vector3.zero,
+			LocalTransparencyModifier: 1,
+		};
+		
+		const baseParticle = Instance.fromExisting(targetPart);
+		baseParticle.Anchored = false;
+		baseParticle.Massless = true;
+		baseParticle.CanCollide = true;
+		baseParticle.CastShadow = false;
+		baseParticle.CollisionGroup = 'Particles';
+		
+		const axisOfRotation = result.Normal.Unit;
 		if (magnitude > 165) {
-			print(2);
-		} else if (magnitude > 50) {
-			const params = new RaycastParams();
-			params.FilterType = Enum.RaycastFilterType.Include;
-			params.FilterDescendantsInstances = [otherPart];
+			const tweenInfo = new TweenInfo(5, Enum.EasingStyle.Linear);
 			
-			const result = Workspace.Raycast(head.Position, point.sub(head.Position).mul(2), params);
-			if (result === undefined) {
-				return;
+			const velocityStrength = math.min((magnitude - 140) / 15, 15);
+			const totalParticles = RNG.NextInteger(10, 20);
+			for (const i of $range(1, totalParticles)) {
+				const theta = (i - 1) / (totalParticles - 1) * 2 * math.pi;
+				const spreadDirection = getRandomSpreadDirection(theta, RNG.NextNumber(0.1, 1), axisOfRotation);
+				
+				const particle = Instance.fromExisting(baseParticle);
+				particle.Size = Vector3.one.mul(RNG.NextNumber(0.6, 1.2));
+				particle.CFrame = CFrame.lookAlong(point, RNG.NextUnitVector());
+				particle.AssemblyLinearVelocity = spreadDirection.Unit.mul(RNG.NextNumber(5, 6) * velocityStrength).add(inheritedVelocity);
+				particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
+				particle.Parent = effectsFolder;
+				
+				const tween = TweenService.Create(particle, tweenInfo, tweenProperties);
+				tween.Play();
+				
+				tween.Completed.Connect(() => particle.Destroy());
 			}
 			
-			const tweenInfo = new TweenInfo(3, Enum.EasingStyle.Linear);
-			const axisOfRotation = result.Normal.Unit;
+			baseParticle.Destroy();
 			
-			const baseParticle = Instance.fromExisting(otherPart);
-			baseParticle.Anchored = false;
-			baseParticle.Massless = true;
-			baseParticle.CanCollide = true;
-			baseParticle.CastShadow = false;
-			baseParticle.CollisionGroup = 'Particles';
+			const sound = hammerHitSound.Clone();
+			sound.TimePosition = 0.1;
+			sound.Parent = Workspace;
+			sound.Destroy();
+		} else if (magnitude > 50) {
+			const tweenInfo = new TweenInfo(3, Enum.EasingStyle.Linear);
 			
 			const { totalParticles, colorScale } = getParticleData(baseParticle);
 			baseParticle.Color = new Color3(
@@ -108,30 +155,24 @@ effect(() => {
 				baseParticle.Color.B * colorScale,
 			);
 			
-			const inheritedVelocity = hammerVelocity.mul(-0.2);
-			
 			for (const i of $range(1, totalParticles)) {
-				const radius = RNG.NextNumber(0.2, 0.7);
-				const rotationVector = axisOfRotation.add(axisOfRotation.Cross(Vector3.zAxis).mul(radius));
 				const theta = (i - 1) / (totalParticles - 1) * 2 * math.pi;
-				const velocity = rodriguesRotation(rotationVector, axisOfRotation, theta);
+				const spreadDirection = getRandomSpreadDirection(theta, RNG.NextNumber(0.2, 0.7), axisOfRotation);
 				
 				const particle = Instance.fromExisting(baseParticle);
 				styleParticle(particle);
 				particle.CFrame = CFrame.lookAlong(point, RNG.NextUnitVector());
-				particle.AssemblyLinearVelocity = velocity.Unit.mul(RNG.NextNumber(40, 50)).add(inheritedVelocity);
+				particle.AssemblyLinearVelocity = spreadDirection.Unit.mul(RNG.NextNumber(40, 50)).add(inheritedVelocity);
 				particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
 				particle.Parent = effectsFolder;
 				
-				const tween = TweenService.Create(particle, tweenInfo, { Transparency: 1 });
+				const tween = TweenService.Create(particle, tweenInfo, tweenProperties);
 				tween.Play();
 				
 				tween.Completed.Connect(() => particle.Destroy());
 			}
 			
 			baseParticle.Destroy();
-		} else {
-			return;
 		}
 		
 		lastEffectTime = os.clock();
