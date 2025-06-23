@@ -1,7 +1,6 @@
 import { Players, RunService } from '@rbxts/services';
 
-import ProfileStore from 'shared/ProfileStore';
-import Profile from 'shared/ProfileStore/Profile';
+import ProfileStore, { Profile } from 'shared/ProfileStore';
 import { MaxDollars, MinDollars } from 'shared/constants';
 import Number from 'shared/number';
 
