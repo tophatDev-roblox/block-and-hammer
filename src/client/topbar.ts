@@ -7,7 +7,7 @@ import { MaxDollars, MinDollars, TestingPlaceId } from 'shared/constants';
 import { StylesData } from './stylesParser';
 import defaultStyles from './stylesParser/default';
 import { InputType, inputType } from './inputType';
-import { isMenuOpen } from './ui/gameProvider';
+import { isMenuOpen } from './ui/providers/game';
 
 const client = Players.LocalPlayer;
 

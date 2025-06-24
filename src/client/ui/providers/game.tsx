@@ -1,13 +1,29 @@
-import React, { useEffect, useState } from '@rbxts/react';
+import React, { createContext, useContext, useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { atom } from '@rbxts/charm';
 
-import defaultStyles from 'client/stylesParser/default';
-import { inputType } from 'client/inputType';
+import { InputType, inputType } from 'client/inputType';
 import { characterAtom } from 'client/character';
-import { GameContext } from './context';
 
 export const isMenuOpen = atom<boolean>(false);
+
+interface GameContextValue {
+	menuOpen: boolean;
+	inputType: InputType;
+	cube?: Model;
+	body?: Part;
+}
+
+export const GameContext = createContext<GameContextValue | undefined>(undefined);
+
+export function useGameContext(): GameContextValue {
+	const context = useContext(GameContext);
+	if (context === undefined) {
+		throw '[client::providers/game] useGameContext must be used in a GameProvider';
+	}
+	
+	return context;
+}
 
 interface GameProviderProps {
 	children: React.ReactNode;
@@ -31,7 +47,6 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
 	return (
 		<GameContext.Provider
 			value={{
-				styles: defaultStyles,
 				menuOpen,
 				inputType: inputTypeValue,
 				cube,
@@ -44,4 +59,3 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
 };
 
 export default GameProvider;
-

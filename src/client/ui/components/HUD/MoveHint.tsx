@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from '@rbxts/react';
 
-import { useGameContext } from 'client/ui/gameProvider/context';
+import { useStylesContext } from 'client/ui/providers/styles';
+import { useGameContext } from 'client/ui/providers/game';
 import Text from '../Text';
 import { InputType } from 'client/inputType';
 
 const MoveHint: React.FC = () => {
-	const { styles, cube, inputType } = useGameContext();
+	const { styles } = useStylesContext();
+	const { cube, inputType } = useGameContext();
 	
 	const [isVisible, setVisible] = useState<boolean>(true);
 	

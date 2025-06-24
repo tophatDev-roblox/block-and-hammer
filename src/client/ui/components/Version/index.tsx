@@ -2,11 +2,11 @@ import { RunService } from '@rbxts/services';
 import React from '@rbxts/react';
 
 import { TestingPlaceId } from 'shared/constants';
-import { useGameContext } from 'client/ui/gameProvider/context';
+import { useStylesContext } from 'client/ui/providers/styles';
 import Text from '../Text';
 
 const Version: React.FC = () => {
-	const { styles } = useGameContext();
+	const { styles } = useStylesContext();
 	
 	let versionString = `block and hammer v${game.PlaceVersion}`;
 	if (RunService.IsStudio()) {

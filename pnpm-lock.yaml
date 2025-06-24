@@ -38,6 +38,9 @@ importers:
       '@rbxts/types':
         specifier: ^1.0.858
         version: 1.0.858
+      '@rbxts/ui-labs':
+        specifier: ^2.3.8
+        version: 2.3.8
       roblox-ts:
         specifier: ^3.0.0
         version: 3.0.0
@@ -93,6 +96,9 @@ packages:
 
   '@rbxts/types@1.0.858':
     resolution: {integrity: sha512-fGgTAnU3Yq86vozA7DoGrdwp5ZRI4xpLwG9WPBqVZciB1lGDpnu3vydZ2SNzzSNlLMD32cwfYpkKTAW+b6PgGA==}
+
+  '@rbxts/ui-labs@2.3.8':
+    resolution: {integrity: sha512-W9HpPG80GXbCs3kOngA8oL3y4HlR7P5QteoLw7vBqZIG/QpRgPfWGnmaYDn8QBtmhe0w0vs8AeoYEwNMl/SAJA==}
 
   '@rbxts/vide@0.5.7':
     resolution: {integrity: sha512-Q9R7ybzuHK1phtLicBHgAjQnlJ/dMsXDs2k296PIMLgLqK9aX/f1skOP7F1K/vo7IrSE0jCG3B3XTOtQL1Sb0Q==}
@@ -348,6 +354,8 @@ snapshots:
   '@rbxts/t@3.2.1': {}
 
   '@rbxts/types@1.0.858': {}
+
+  '@rbxts/ui-labs@2.3.8': {}
 
   '@rbxts/vide@0.5.7': {}
 

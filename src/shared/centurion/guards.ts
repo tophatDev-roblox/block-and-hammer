@@ -1,20 +1,20 @@
 import { CommandContext } from '@rbxts/centurion';
 
-import { GroupId } from 'shared/constants';
+import { CommunityId } from 'shared/constants';
 
 const cachedRanks = new Map<number, number>();
 
-function getRank(player: Player, groupId: number): number {
+function getRank(player: Player, communityId: number): number {
 	if (!cachedRanks.has(player.UserId)) {
-		cachedRanks.set(player.UserId, player.GetRankInGroup(groupId));
+		cachedRanks.set(player.UserId, player.GetRankInGroup(communityId));
 	}
 	
 	return cachedRanks.get(player.UserId)!;
 }
 
-export function createGroupRankGuard(mininumRank: number, groupId: number = GroupId): (ctx: CommandContext) => boolean {
+export function createGroupRankGuard(mininumRank: number, communityId: number = CommunityId): (ctx: CommandContext) => boolean {
 	return (ctx) => {
-		if (getRank(ctx.executor, groupId) < mininumRank) {
+		if (getRank(ctx.executor, communityId) < mininumRank) {
 			ctx.error('Insufficient permission!');
 			return false;
 		}

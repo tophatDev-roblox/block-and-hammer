@@ -35,8 +35,10 @@ const data: StylesData = {
 			color: { red: 255, green: 255, blue: 255, alpha: 1 },
 			size: 70,
 			outline: { color: textOutlineGradient, thickness: 3, joinMode: 'miter' },
+			display: {
+				millisecondsFontSize: 45,
+			},
 		},
-		timerMillisecondsFontSize: 45,
 		moveHint: {
 			font: { fontId, weight: 700, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 0.7 },
@@ -65,6 +67,22 @@ const data: StylesData = {
 			bold: { fontId, weight: 700, italics: false },
 			medium: { fontId, weight: 500, italics: false },
 			regular: { fontId, weight: 400, italics: false },
+		},
+	},
+	world: {
+		nameplate: {
+			displayName: {
+				font: { fontId, weight: 700, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 35,
+				outline: { color: textOutlineGradient, thickness: 3, joinMode: 'miter' },
+			},
+			username: {
+				font: { fontId, weight: 700, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 25,
+				outline: { color: textOutlineGradient, thickness: 3, joinMode: 'miter' },
+			},
 		},
 	},
 	container: {

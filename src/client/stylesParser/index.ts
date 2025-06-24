@@ -60,8 +60,7 @@ export interface StylesData {
 	text: {
 		containerTitle: TextStyleData;
 		version: TextStyleData;
-		timer: TextStyleData;
-		timerMillisecondsFontSize: number;
+		timer: TextStyleData & { display: { millisecondsFontSize: number } };
 		moveHint: TextStyleData;
 		hudPrimary: TextStyleData & { display: FloatStyleData };
 		hudSecondary: TextStyleData & { display: FloatStyleData };
@@ -69,6 +68,12 @@ export interface StylesData {
 			bold: FontStyleData;
 			medium: FontStyleData;
 			regular: FontStyleData;
+		};
+	};
+	world: {
+		nameplate: {
+			displayName: TextStyleData;
+			username: TextStyleData;
 		};
 	};
 	container: {

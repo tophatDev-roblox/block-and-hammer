@@ -1,12 +1,14 @@
 import React, { useEffect, useRef } from '@rbxts/react';
 
-import { useGameContext } from 'client/ui/gameProvider/context';
+import { useStylesContext } from 'client/ui/providers/styles';
+import { useGameContext } from 'client/ui/providers/game';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import Units from 'shared/units';
 import Text from '../Text';
 
 const Speedometer: React.FC = () => {
-	const { styles, body } = useGameContext();
+	const { styles } = useStylesContext();
+	const { body } = useGameContext();
 	
 	const labelRef = useRef<TextLabel>();
 	
