@@ -19,6 +19,5 @@ camera.GetPropertyChangedSignal('ViewportSize').Connect(() => {
 });
 
 export function useViewportSize(): Vector2 {
-	const viewportSize = useAtom(viewportSizeAtom);
-	return viewportSize;
+	return useAtom(viewportSizeAtom);
 }

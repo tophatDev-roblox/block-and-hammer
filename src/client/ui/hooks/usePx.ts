@@ -1,4 +1,4 @@
-import { useMemo } from '@rbxts/react';
+import { useCallback, useMemo } from '@rbxts/react';
 
 import { useViewportSize } from './useViewportSize';
 
@@ -13,5 +13,5 @@ export function usePx(): (px: number, rounded?: boolean) => number {
 		return 2 ** centered;
 	}, [viewportSize]);
 	
-	return (px, rounded) => rounded === false ? px * scale : math.round(px * scale);
+	return useCallback((px, rounded) => rounded === false ? px * scale : math.round(px * scale), [scale]);
 }

@@ -1,5 +1,6 @@
 import { UserInputService } from '@rbxts/services';
 import { atom } from '@rbxts/charm';
+import { isControllerInput } from 'shared/controller';
 
 export enum InputType {
 	Unknown,
@@ -27,7 +28,7 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 	let newInputType: InputType | undefined = undefined;
 	if (userInputType === Enum.UserInputType.Touch) {
 		newInputType = InputType.Touch;
-	} else if (userInputType.Value >= Enum.UserInputType.Gamepad1.Value && userInputType.Value <= Enum.UserInputType.Gamepad8.Value) {
+	} else if (isControllerInput(userInputType)) {
 		newInputType = InputType.Controller;
 	} else if (mouseInputTypes.has(userInputType)) {
 		newInputType = InputType.Desktop;

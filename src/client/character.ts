@@ -2,6 +2,7 @@ import { Players, RunService, StarterGui, UserInputService, Workspace } from '@r
 import { atom } from '@rbxts/charm';
 
 import TimeSpan from 'shared/timeSpan';
+import { isControllerInput, isNotDeadzone } from 'shared/controller';
 
 const client = Players.LocalPlayer;
 let body: Part | undefined = undefined;
@@ -58,7 +59,7 @@ function processInput(input: InputObject): void {
 			const newPosition = new Vector3(body.Position.X + directionToTarget.X * scale, body.Position.Y + directionToTarget.Y * scale, 0);
 			targetPosition = newPosition;
 		}
-	} else if (input.UserInputType.Value >= Enum.UserInputType.Gamepad1.Value && input.UserInputType.Value <= Enum.UserInputType.Gamepad8.Value) {
+	} else if (isControllerInput(input.UserInputType) && isNotDeadzone(input)) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
 			let direction = input.Position;
 			if (direction.Magnitude > 1) {

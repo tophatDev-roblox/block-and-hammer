@@ -1,7 +1,7 @@
 import { Players, RunService } from '@rbxts/services';
 
 import ProfileStore, { Profile } from 'shared/ProfileStore';
-import { MaxDollars, MinDollars } from 'shared/constants';
+import { MaxDollars, MinDollars, TestingPlaceId } from 'shared/constants';
 import Number from 'shared/number';
 
 interface DataTemplate {
@@ -14,7 +14,7 @@ let PlayerStore = ProfileStore.New<DataTemplate>('PlayerStore', {
 	dollars: 100,
 });
 
-if (RunService.IsStudio()) {
+if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
 	print('[server::profileStore] loading mock datastore');
 	PlayerStore = PlayerStore.Mock;
 } else {
