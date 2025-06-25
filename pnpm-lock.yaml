@@ -20,6 +20,9 @@ importers:
       '@rbxts/compiler-types':
         specifier: 3.0.0-types.0
         version: 3.0.0-types.0
+      '@rbxts/iris':
+        specifier: 2.3.1-ts.1
+        version: 2.3.1-ts.1
       '@rbxts/react':
         specifier: ^17.2.3
         version: 17.2.3
@@ -66,6 +69,9 @@ packages:
 
   '@rbxts/compiler-types@3.0.0-types.0':
     resolution: {integrity: sha512-VGOHJPoL7+56NTatMGqQj3K7xWuzEV+aP4QD5vZiHu+bcff3kiTmtoadaF6NkJrmwfFAvbsd4Dg764ZjWNceag==}
+
+  '@rbxts/iris@2.3.1-ts.1':
+    resolution: {integrity: sha512-L/lja+ugKNH3ywdz5c8omXUS34L9oGKlul3yVifzTfQVJS4ryePU/hS6IdMaSbIwNda+qEOehXbSxglF9qxa/A==}
 
   '@rbxts/react-charm@0.3.0':
     resolution: {integrity: sha512-w64HoO6SxRSX86yNPiGazPQpR7cWBaWVATK9jkCphLQYmzdUV1BL9pRNN1Y1VMAk/PKiZ1mJdwX3PnwwvLXFvg==}
@@ -326,6 +332,8 @@ snapshots:
   '@rbxts/charm@0.10.0': {}
 
   '@rbxts/compiler-types@3.0.0-types.0': {}
+
+  '@rbxts/iris@2.3.1-ts.1': {}
 
   '@rbxts/react-charm@0.3.0(@rbxts/charm@0.10.0)(@rbxts/react@17.2.3)':
     dependencies:

@@ -7,4 +7,5 @@ import './chat';
 import './ui';
 import './leaveSound';
 import './disableCoreGuis';
+import './debugPanel';
 import './centurion';

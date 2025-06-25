@@ -1,12 +1,13 @@
 import { RunService } from '@rbxts/services';
 import React from '@rbxts/react';
+import { useAtom } from '@rbxts/react-charm';
 
 import { TestingPlaceId } from 'shared/constants';
-import { useStylesContext } from 'client/ui/providers/styles';
+import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const Version: React.FC = () => {
-	const { styles } = useStylesContext();
+	const styles = useAtom(stylesAtom);
 	
 	let versionString = `block and hammer v${game.PlaceVersion}`;
 	if (RunService.IsStudio()) {

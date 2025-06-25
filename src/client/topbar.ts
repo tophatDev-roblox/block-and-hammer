@@ -8,6 +8,7 @@ import { StylesData } from './stylesParser';
 import defaultStyles from './stylesParser/default';
 import { InputType, inputType } from './inputType';
 import { isMenuOpen } from './ui/providers/game';
+import { isDebugPanelOpen } from './debugPanel';
 
 const client = Players.LocalPlayer;
 
@@ -92,17 +93,26 @@ if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
 	const debugIcon = new Icon()
 		.setImage(6953984446)
 		.setCaption('Open debug panel')
+		.bindToggleKey(Enum.KeyCode.Quote)
 		.setOrder(9)
 		.autoDeselect(false)
 		.modifyTheme(theme)
 		.modifyTheme(['IconImageScale', 'Value', 0.7]);
 	
+	effect(() => {
+		if (isDebugPanelOpen()) {
+			debugIcon.select();
+		} else {
+			debugIcon.deselect();
+		}
+	});
+	
 	debugIcon.selected.Connect(() => {
-		print('open debug panel');
+		isDebugPanelOpen(true);
 	});
 	
 	debugIcon.deselected.Connect(() => {
-		print('close debug panel');
+		isDebugPanelOpen(false);
 	});
 }
 

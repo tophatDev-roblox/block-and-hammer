@@ -1,16 +1,18 @@
 import React, { useEffect, useRef } from '@rbxts/react';
+import { useAtom } from '@rbxts/react-charm';
 
-import { useStylesContext } from 'client/ui/providers/styles';
+import Units from 'shared/units';
 import { useGameContext } from 'client/ui/providers/game';
 import { useStepped } from 'client/ui/hooks/useStepped';
-import Units from 'shared/units';
+import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const Speedometer: React.FC = () => {
-	const { styles } = useStylesContext();
 	const { body } = useGameContext();
 	
 	const labelRef = useRef<TextLabel>();
+	
+	const styles = useAtom(stylesAtom);
 	
 	useEffect(() => {
 		const labelFormat = `%.${styles.text.hudSecondary.display.decimals}fm/s`;

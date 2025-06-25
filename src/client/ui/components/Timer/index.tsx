@@ -1,19 +1,20 @@
 import React, { useEffect, useRef } from '@rbxts/react';
+import { useAtom } from '@rbxts/react-charm';
 
 import TimeSpan from 'shared/timeSpan';
-import { useStylesContext } from 'client/ui/providers/styles';
 import { useGameContext } from 'client/ui/providers/game';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { usePx } from 'client/ui/hooks/usePx';
+import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const Timer: React.FC = () => {
-	const { styles } = useStylesContext();
 	const { cube } = useGameContext();
 	
-	const px = usePx();
-	
 	const labelRef = useRef<TextLabel>();
+	
+	const styles = useAtom(stylesAtom);
+	const px = usePx();
 	
 	useEffect(() => {
 		const label = labelRef.current;

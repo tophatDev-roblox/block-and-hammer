@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from '@rbxts/react';
+import { useAtom } from '@rbxts/react-charm';
 
-import { useStylesContext } from 'client/ui/providers/styles';
 import { useGameContext } from 'client/ui/providers/game';
-import Text from '../Text';
 import { InputType } from 'client/inputType';
+import { stylesAtom } from 'client/ui/styles';
+import Text from '../Text';
 
 const MoveHint: React.FC = () => {
-	const { styles } = useStylesContext();
 	const { cube, inputType } = useGameContext();
 	
 	const [isVisible, setVisible] = useState<boolean>(true);
+	
+	const styles = useAtom(stylesAtom);
 	
 	useEffect(() => {
 		if (cube === undefined) {

@@ -115,3 +115,18 @@ materialConfiguration.set(Enum.Material.WoodPlanks, {
 		particle.Size = new Vector3(RNG.NextNumber(1, 4), 0.2, RNG.NextNumber(0.8, 1.2));
 	},
 });
+
+materialConfiguration.set(Enum.Material.Cardboard, {
+	sound: {
+		instance: SoundService.WaitForChild('FabricHit') as Sound,
+		startTime: 0,
+		volume: 0.3,
+		speed: 1,
+		speedVariation: 0.05,
+	},
+	getData: () => ({ totalParticles: RNG.NextInteger(1, 3), colorMultiplier: 1, duration: 1 }),
+	style: (particle) => {
+		particle.Transparency = 0.15;
+		particle.Size = new Vector3(0.3, RNG.NextNumber(0.5, 2), 0.3);
+	},
+});

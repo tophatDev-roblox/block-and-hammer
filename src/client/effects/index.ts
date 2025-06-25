@@ -1,16 +1,16 @@
 import { RunService, SoundService, TweenService, Workspace } from '@rbxts/services';
 import { effect } from '@rbxts/charm';
 
-import { characterAtom } from 'client/character';
+import { characterAtom, ragdoll } from 'client/character';
 import { materialConfiguration } from './materials';
 import TimeSpan from 'shared/timeSpan';
 
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
+const hammerHitSound = SoundService.WaitForChild('HammerHit') as Sound;
+const explosionSound = SoundService.WaitForChild('Explosion') as Sound;
 
 const RNG = new Random();
-
-const hammerHitSound = SoundService.WaitForChild('HammerHit') as Sound;
 
 // https://github.com/EgoMoose/Articles/blob/master/Rodrigues'%20rotation/Rodrigues'%20rotation.md
 function rodriguesRotation(v: Vector3, k: Vector3, t: number): Vector3 {
@@ -36,6 +36,7 @@ effect(() => {
 	const hammer = character.WaitForChild('Hammer') as Model;
 	const head = hammer.WaitForChild('Head') as Part;
 	
+	let previousBodyVelocity = body.AssemblyLinearVelocity.Magnitude;
 	let hammerVelocity = Vector3.zero;
 	let lastEffectTime = -1;
 	
@@ -182,6 +183,32 @@ effect(() => {
 		hammerVelocity = head.AssemblyLinearVelocity;
 		// i just copied the hit detection from the original block and hammer,
 		// not sure why this works so much better than getting AssemblyLinearVelocity directly
+		
+		const bodyVelocity = body.AssemblyLinearVelocity.Magnitude;
+		if (character.GetAttribute('justReset')) {
+			previousBodyVelocity = bodyVelocity;
+			
+			character.SetAttribute('justReset', undefined);
+		}
+		
+		const impactMagnitude = math.abs(bodyVelocity - previousBodyVelocity);
+		if (impactMagnitude > 130) {
+			ragdoll(math.clamp(1 + (impactMagnitude - 160) / 10, 1, 3));
+			
+			const sound = explosionSound.Clone() as Sound;
+			sound.PlaybackSpeed = RNG.NextNumber(0.97, 1.03);
+			sound.Parent = Workspace;
+			sound.Destroy();
+			
+			const explosion = new Instance('Explosion');
+			explosion.Position = body.Position;
+			explosion.BlastPressure = 0;
+			explosion.BlastRadius = 0;
+			explosion.ExplosionType = Enum.ExplosionType.NoCraters;
+			explosion.Parent = Workspace;
+		}
+		
+		previousBodyVelocity = bodyVelocity;
 	});
 	
 	return () => {
