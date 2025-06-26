@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { useGameContext } from 'client/ui/providers/game';
-import { InputType } from 'client/inputType';
+import { InputType, inputTypeAtom } from 'client/inputType';
+import { characterAtom } from 'client/character/atoms';
 import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const MoveHint: React.FC = () => {
-	const { character: characterParts, inputType } = useGameContext();
+	const character = useAtom(characterAtom);
+	const inputType = useAtom(inputTypeAtom);
 	
 	const [isVisible, setVisible] = useState<boolean>(true);
 	
 	const styles = useAtom(stylesAtom);
 	
 	useEffect(() => {
-		if (characterParts === undefined) {
+		if (character === undefined) {
 			setVisible(false);
 			return;
 		}
@@ -26,7 +27,7 @@ const MoveHint: React.FC = () => {
 				return;
 			}
 			
-			if (characterParts.model.GetAttribute('startTime') !== undefined) {
+			if (character.model.GetAttribute('startTime') !== undefined) {
 				setVisible(false);
 			} else {
 				setVisible(true);
@@ -34,12 +35,12 @@ const MoveHint: React.FC = () => {
 		};
 		
 		onAttributeChanged('startTime');
-		const attributeChangedEvent = characterParts.model.AttributeChanged.Connect(onAttributeChanged);
+		const attributeChangedEvent = character.model.AttributeChanged.Connect(onAttributeChanged);
 		
 		return () => {
 			attributeChangedEvent.Disconnect();
 		};
-	}, [characterParts]);
+	}, [character]);
 	
 	if (!isVisible) {
 		return undefined;
@@ -51,6 +52,7 @@ const MoveHint: React.FC = () => {
 				styles={styles.text.moveHint}
 				text={'[tap the screen to move]'}
 				order={0}
+				automaticWidth
 				automaticHeight
 			/>
 		);
@@ -60,6 +62,7 @@ const MoveHint: React.FC = () => {
 				styles={styles.text.moveHint}
 				text={'[use the right joystick to move]'}
 				order={0}
+				automaticWidth
 				automaticHeight
 			/>
 		);

@@ -1,30 +1,31 @@
 import React, { useEffect, useRef } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
+import { calculateUIRotation } from 'shared/calculateShake';
 import TimeSpan from 'shared/timeSpan';
-import { useGameContext } from 'client/ui/providers/game';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { usePx } from 'client/ui/hooks/usePx';
 import { stylesAtom } from 'client/ui/styles';
+import { shakeStrengthAtom, characterAtom } from 'client/character/atoms';
 import Text from '../Text';
+import { peek } from '@rbxts/charm';
 
 const Timer: React.FC = () => {
-	const { character: characterParts } = useGameContext();
-	
 	const labelRef = useRef<TextLabel>();
 	
+	const character = useAtom(characterAtom);
 	const styles = useAtom(stylesAtom);
 	const px = usePx();
 	
 	useEffect(() => {
 		const label = labelRef.current;
-		if (label === undefined || characterParts === undefined) {
+		if (label === undefined || character === undefined) {
 			return;
 		}
 		
-		const disconnectSteppedEvent = useStepped(() => {
+		const disconnectSteppedEvent = useStepped((_, time) => {
 			const currentTime = TimeSpan.now();
-			const startTime = tonumber(characterParts.model.GetAttribute('startTime')) ?? currentTime;
+			const startTime = tonumber(character.model.GetAttribute('startTime')) ?? currentTime;
 			const elapsedTime = currentTime - startTime;
 			
 			const seconds = math.floor(elapsedTime) % 60;
@@ -40,16 +41,18 @@ const Timer: React.FC = () => {
 			
 			const millisecondsString = string.format('%02d', math.floor(elapsedTime % 1 * 100));
 			label.Text = `${timeString}.<font size="${px(styles.text.timer.display.millisecondsFontSize)}">${millisecondsString}</font>`;
+			label.Rotation = calculateUIRotation(peek(shakeStrengthAtom), time, 1);
 		});
 		
 		return () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [characterParts, px]);
+	}, [character, px]);
 	
 	return (
 		<screengui
+			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>
 			<frame
@@ -63,14 +66,25 @@ const Timer: React.FC = () => {
 					PaddingBottom={new UDim(0, 8)}
 					PaddingLeft={new UDim(0, 12)}
 				/>
-				<Text
-					ref={labelRef}
-					styles={styles.text.timer}
-					text={'--'}
-					alignX={Enum.TextXAlignment.Left}
-					automaticHeight
-					richText
+				<uilistlayout
+					FillDirection={Enum.FillDirection.Horizontal}
+					HorizontalAlignment={Enum.HorizontalAlignment.Left}
 				/>
+				<frame
+					BackgroundTransparency={1}
+					Size={new UDim2(0, 0, 1, 0)}
+					AutomaticSize={Enum.AutomaticSize.X}
+				>
+					<Text
+						ref={labelRef}
+						styles={styles.text.timer}
+						text={'--'}
+						alignX={Enum.TextXAlignment.Left}
+						automaticHeight
+						automaticWidth
+						richText
+					/>
+				</frame>
 			</frame>
 		</screengui>
 	);

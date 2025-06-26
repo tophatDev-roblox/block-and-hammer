@@ -9,11 +9,11 @@ export enum InputType {
 	Controller,
 }
 
-export const inputType = atom<InputType>(InputType.Unknown);
+export const inputTypeAtom = atom<InputType>(InputType.Unknown);
 
 if (UserInputService.GetConnectedGamepads().size() > 0) {
 	print('[client::inputType] detected connected one or more connected gamepads, possibly using controller');
-	inputType(InputType.Controller);
+	inputTypeAtom(InputType.Controller);
 }
 
 const mouseInputTypes = new Set<Enum.UserInputType>([
@@ -34,8 +34,8 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 		newInputType = InputType.Desktop;
 	}
 	
-	if (newInputType !== undefined && newInputType !== inputType()) {
-		inputType(newInputType);
+	if (newInputType !== undefined && newInputType !== inputTypeAtom()) {
+		inputTypeAtom(newInputType);
 		print('[client::inputType] set to', InputType[newInputType]);
 	}
 }

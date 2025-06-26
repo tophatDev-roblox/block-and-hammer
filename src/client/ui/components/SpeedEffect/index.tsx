@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from '@rbxts/react';
-import { useStepped } from 'client/ui/hooks/useStepped';
+import { useAtom } from '@rbxts/react-charm';
 
-import { useGameContext } from 'client/ui/providers/game';
+import { characterAtom } from 'client/character/atoms';
+import { useStepped } from 'client/ui/hooks/useStepped';
 
 const imageIds = [
 	'rbxassetid://13484709347',
@@ -12,13 +13,13 @@ const imageIds = [
 ];
 
 const SpeedEffect: React.FC = () => {
-	const { character: characterParts } = useGameContext();
+	const character = useAtom(characterAtom);
 	
 	const imageLabelRef = useRef<ImageLabel>();
 	
 	useEffect(() => {
 		const imageLabel = imageLabelRef.current;
-		if (imageLabel === undefined || characterParts === undefined) {
+		if (imageLabel === undefined || character === undefined) {
 			return;
 		}
 		
@@ -31,7 +32,7 @@ const SpeedEffect: React.FC = () => {
 				currentIndex = newIndex;
 			}
 			
-			const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
+			const velocity = character.body.AssemblyLinearVelocity.Magnitude;
 			const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
 			const size = math.clamp((110 - fieldOfView) / 10, 1.4, 6);
 			imageLabel.ImageTransparency = 1 - (6 - size) / 4.6;
@@ -41,10 +42,11 @@ const SpeedEffect: React.FC = () => {
 		return () => {
 			disconnectStepped();
 		};
-	}, [characterParts]);
+	}, [character]);
 	
 	return (
 		<screengui
+			DisplayOrder={-1}
 			ResetOnSpawn={false}
 			IgnoreGuiInset
 		>

@@ -1,8 +1,12 @@
 import { Players, ReplicatedStorage, RunService, StarterGui, TweenService, UserInputService, Workspace } from '@rbxts/services';
-import { atom } from '@rbxts/charm';
+import { peek, subscribe } from '@rbxts/charm';
 
 import TimeSpan from 'shared/timeSpan';
 import { isControllerInput, isNotDeadzone } from 'shared/controller';
+import { calculateCameraRotation } from 'shared/calculateShake';
+import { debugDisableRagdollAtom } from 'client/debugPanel';
+import { IsDebugPanelEnabled } from 'shared/constants';
+import { cameraZOffsetAtom, characterAtom, disableCameraAtom, shakeStrengthAtom } from './atoms';
 
 export interface CharacterParts {
 	model: Model;
@@ -23,19 +27,16 @@ const client = Players.LocalPlayer;
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
 const baseStunParticles = assetsFolder.WaitForChild('StunParticles') as Part;
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
+const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 const RNG = new Random();
 let ragdollTimeEnd: number | undefined = undefined;
 let previousCameraCFrame: CFrame | undefined = undefined;
-let cameraShakeMagnitude = 0;
 let hasTimeStarted = false;
 
 export const camera = Workspace.WaitForChild('Camera') as Camera;
-export const characterAtom = atom<CharacterParts>();
-
-const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 
 export function quickReset(): void {
-	const character = characterAtom();
+	const character = peek(characterAtom);
 	if (character === undefined) {
 		return;
 	}
@@ -44,12 +45,13 @@ export function quickReset(): void {
 	
 	hasTimeStarted = false;
 	endRagdoll();
+	shakeStrengthAtom(0);
 	character.model.SetAttribute('justReset', true);
 	character.model.SetAttribute('startTime', undefined);
 	
 	const target = new CFrame(0, 3, 0);
 	character.model.PivotTo(target);
-	previousCameraCFrame = CFrame.lookAlong(target.Position.add(new Vector3(0, 0, -10)), Vector3.yAxis.mul(-1), Vector3.zAxis);
+	previousCameraCFrame = CFrame.lookAlong(target.Position.add(new Vector3(0, 0, peek(cameraZOffsetAtom) / 3)), Vector3.yAxis.mul(-1), Vector3.zAxis);
 	
 	character.targetAttachment.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
 	character.hammer.model.PivotTo(target);
@@ -62,7 +64,7 @@ export function quickReset(): void {
 }
 
 export function ragdoll(seconds: number): void {
-	const character = characterAtom();
+	const character = peek(characterAtom);
 	if (character === undefined) {
 		return;
 	}
@@ -70,16 +72,7 @@ export function ragdoll(seconds: number): void {
 	if (ragdollTimeEnd === undefined) {
 		ragdollTimeEnd = os.clock() + seconds;
 		
-		const minAngle = 10;
-		const maxAngle = 20;
-		
-		character.body.AssemblyAngularVelocity = new Vector3(
-			RNG.NextNumber(minAngle, maxAngle),
-			RNG.NextNumber(minAngle, maxAngle),
-			RNG.NextNumber(minAngle, maxAngle),
-		);
-		
-		const centerAttachment = character.body.FindFirstChild('Center.0') as Attachment;
+		const centerAttachment = character.centerAttachment;
 		
 		const stunParticles = baseStunParticles.Clone();
 		for (const particleEmitter of stunParticles.GetDescendants()) {
@@ -100,6 +93,19 @@ export function ragdoll(seconds: number): void {
 		
 		stunParticles.Parent = character.model;
 		
+		if (IsDebugPanelEnabled && peek(debugDisableRagdollAtom)) {
+			return;
+		}
+		
+		const minAngle = 10;
+		const maxAngle = 20;
+		
+		character.body.AssemblyAngularVelocity = new Vector3(
+			RNG.NextNumber(minAngle, maxAngle),
+			RNG.NextNumber(minAngle, maxAngle),
+			RNG.NextNumber(minAngle, maxAngle),
+		);
+		
 		character.rotationLock.Enabled = false;
 		character.hammer.handle.CanCollide = true;
 		character.hammer.alignPosition.Enabled = false;
@@ -109,14 +115,10 @@ export function ragdoll(seconds: number): void {
 	}
 }
 
-export function cameraShake(magnitude: number): void {
-	cameraShakeMagnitude = math.max(magnitude, cameraShakeMagnitude * 1.2);
-}
-
 function endRagdoll(): void {
 	ragdollTimeEnd = undefined;
 	
-	const character = characterAtom();
+	const character = peek(characterAtom);
 	if (character !== undefined) {
 		character.model.FindFirstChild('StunParticles')?.Destroy();
 		character.rotationLock.Enabled = true;
@@ -130,7 +132,7 @@ function endRagdoll(): void {
 		params.FilterDescendantsInstances = [mapFolder, character.body];
 		
 		const result = Workspace.Raycast(origin, direction, params);
-		if (result?.Instance === character.body) {
+		if (result?.Instance !== character.body) {
 			character.hammer.model.PivotTo(CFrame.lookAlong(character.body.Position, Vector3.yAxis.mul(-1), Vector3.zAxis));
 		}
 		
@@ -140,12 +142,16 @@ function endRagdoll(): void {
 	}
 }
 
+export function shake(magnitude: number): void {
+	shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength * 1.2));
+}
+
 function processInput(input: InputObject): void {
 	if (input.UserInputState === Enum.UserInputState.Begin && input.UserInputType !== Enum.UserInputType.Touch) {
 		return;
 	}
 	
-	const character = characterAtom();
+	const character = peek(characterAtom);
 	if (character === undefined) {
 		return;
 	}
@@ -191,55 +197,18 @@ function onResetButton(): void {
 	quickReset();
 }
 
-function onRenderStepped(dt: number): void {
-	const currentTime = os.clock();
-	const character = characterAtom();
-	if (character === undefined) {
-		return;
-	}
-	
-	camera.CameraType = Enum.CameraType.Scriptable;
-	
-	const targetPosition = new Vector3(character.body.Position.X, character.body.Position.Y, -30);
-	const cameraCFrame = CFrame.lookAlong(targetPosition, Vector3.zAxis, Vector3.yAxis);
-	const finalCameraCFrame = previousCameraCFrame ? previousCameraCFrame.Lerp(cameraCFrame, math.min(dt * 15, 1)) : cameraCFrame;
-	
-	camera.CFrame = finalCameraCFrame;
-	previousCameraCFrame = finalCameraCFrame;
-	
-	if (cameraShakeMagnitude > 0) {
-		const angle = math.rad(cameraShakeMagnitude * 5);
-		const noiseValue = currentTime * 2;
-		const shakeCFrame = CFrame.fromOrientation(
-			math.noise(noiseValue, 0) * angle,
-			math.noise(0, noiseValue) * angle,
-			math.noise(noiseValue, noiseValue) * angle,
-		);
-		
-		camera.CFrame = camera.CFrame.mul(shakeCFrame);
-		cameraShakeMagnitude = math.max(cameraShakeMagnitude - dt * 1.5, 0);
-	}
-	
-	if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
-		endRagdoll();
-	}
-	
-	const velocity = character.body.AssemblyLinearVelocity.Magnitude;
-	const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
-	camera.FieldOfView = fieldOfView;
-}
-
 function onCharacterAdded(newCharacter: Model): void {
 	print('[client::character] character added');
 	
 	hasTimeStarted = false;
 	ragdollTimeEnd = undefined;
+	shakeStrengthAtom(0);
 	newCharacter.SetAttribute('startTime', undefined);
 	
 	const body = newCharacter.WaitForChild('Body') as Part;
 	const hammer = newCharacter.WaitForChild('Hammer') as Model;
 	const head = hammer.WaitForChild('Head') as Part;
-	previousCameraCFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, -10)), Vector3.yAxis.mul(-1), Vector3.zAxis);
+	previousCameraCFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, peek(cameraZOffsetAtom) / 3)), Vector3.yAxis.mul(-1), Vector3.zAxis);
 	
 	characterAtom({
 		model: newCharacter,
@@ -276,6 +245,47 @@ function onCharacterRemoving(): void {
 	characterAtom(undefined);
 }
 
+function onRenderStepped(dt: number): void {
+	const currentTime = os.clock();
+	const character = peek(characterAtom);
+	if (character === undefined) {
+		return;
+	}
+	
+	camera.CameraType = Enum.CameraType.Scriptable;
+	
+	const disableCamera = peek(disableCameraAtom);
+	if (!disableCamera) {
+		const targetPosition = new Vector3(character.body.Position.X, character.body.Position.Y, peek(cameraZOffsetAtom));
+		const cameraCFrame = CFrame.lookAlong(targetPosition, Vector3.zAxis, Vector3.yAxis);
+		const finalCameraCFrame = previousCameraCFrame !== undefined ? previousCameraCFrame.Lerp(cameraCFrame, math.min(dt * 15, 1)) : cameraCFrame;
+		
+		camera.CFrame = finalCameraCFrame;
+		previousCameraCFrame = finalCameraCFrame;
+		
+		const shakeStrength = peek(shakeStrengthAtom);
+		if (shakeStrength > 0) {
+			const shakeCFrame = calculateCameraRotation(shakeStrength, currentTime);
+			camera.CFrame = camera.CFrame.mul(shakeCFrame);
+			
+			shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
+		}
+		
+		if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
+			endRagdoll();
+		}
+		
+		const velocity = character.body.AssemblyLinearVelocity.Magnitude;
+		const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
+		camera.FieldOfView = fieldOfView;
+		
+		if (velocity > 300) {
+			const windCFrame = calculateCameraRotation(math.min((velocity - 250) / 50, 6), currentTime, 2);
+			camera.CFrame = camera.CFrame.mul(windCFrame);
+		}
+	}
+}
+
 task.spawn(() => {
 	const resetEvent = new Instance('BindableEvent');
 	resetEvent.Event.Connect(onResetButton);
@@ -290,12 +300,18 @@ task.spawn(() => {
 	}
 });
 
+subscribe(disableCameraAtom, (disableCamera) => {
+	if (disableCamera) {
+		camera.FieldOfView = 70;
+	}
+});
+
 if (client.Character !== undefined) {
 	onCharacterAdded(client.Character);
 }
 
-RunService.RenderStepped.Connect(onRenderStepped);
-client.CharacterAdded.Connect(onCharacterAdded);
-client.CharacterRemoving.Connect(onCharacterRemoving);
 UserInputService.InputBegan.Connect(processInput);
 UserInputService.InputChanged.Connect(processInput);
+client.CharacterAdded.Connect(onCharacterAdded);
+client.CharacterRemoving.Connect(onCharacterRemoving);
+RunService.RenderStepped.Connect(onRenderStepped);

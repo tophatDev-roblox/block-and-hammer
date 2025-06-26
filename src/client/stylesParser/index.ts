@@ -146,3 +146,17 @@ export function parseGradientColor(gradient: GradientStyleData): LuaTuple<[Color
 	
 	return $tuple(colorSequence, numberSequence);
 }
+
+export function parseFontWeight(weight: FontStyleData['weight']): Enum.FontWeight {
+	for (const fontWeight of Enum.FontWeight.GetEnumItems()) {
+		if (fontWeight.Value === weight) {
+			return fontWeight;
+		}
+	}
+	
+	return Enum.FontWeight.Regular;
+}
+
+export function parseFontStyle(font: FontStyleData): Font {
+	return new Font(font.fontId, parseFontWeight(font.weight), font.italics ? Enum.FontStyle.Italic : Enum.FontStyle.Normal);
+}

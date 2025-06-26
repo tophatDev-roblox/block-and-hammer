@@ -7,6 +7,7 @@ import MoveHint from './MoveHint';
 const HUD: React.FC = () => {
 	return (
 		<screengui
+			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>
 			<frame
@@ -16,12 +17,13 @@ const HUD: React.FC = () => {
 				Size={new UDim2(1, 0, 0, 0)}
 				AutomaticSize={Enum.AutomaticSize.Y}
 			>
-				<uipadding
-					PaddingBottom={new UDim(0, 8)}
-				/>
 				<uilistlayout
 					FillDirection={Enum.FillDirection.Vertical}
+					HorizontalAlignment={Enum.HorizontalAlignment.Center}
 					Padding={new UDim(0, 0)}
+				/>
+				<uipadding
+					PaddingBottom={new UDim(0, 8)}
 				/>
 				<MoveHint />
 				<Speedometer />

@@ -18,6 +18,7 @@ const Version: React.FC = () => {
 	
 	return (
 		<screengui
+			DisplayOrder={1}
 			ResetOnSpawn={false}
 			IgnoreGuiInset
 		>

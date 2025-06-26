@@ -1,43 +1,46 @@
 import React, { forwardRef, useMemo } from '@rbxts/react';
 
-import { TextStyleData } from 'client/stylesParser';
+import { parseFontStyle, TextStyleData } from 'client/stylesParser';
 import { usePx } from '../hooks/usePx';
 import Gradient from './Gradient';
 import Outline from './Outline';
+import { getAutomaticSize } from 'shared/getAutomaticSize';
 
 interface TextProps extends React.PropsWithChildren {
 	styles: TextStyleData;
 	text: string;
-	automaticHeight?: boolean;
-	automaticWidth?: boolean;
 	width?: UDim;
 	height?: UDim;
+	automaticHeight?: boolean;
+	automaticWidth?: boolean;
 	order?: number;
 	alignX?: Enum.TextXAlignment;
 	alignY?: Enum.TextYAlignment;
 	richText?: boolean;
 }
 
-const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, outline, autoScale }, text, automaticHeight, automaticWidth, width, height, order, alignX, alignY, richText, children }, ref) => {
+const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
+	const {
+		styles: { font, color, size, outline, autoScale },
+		text,
+		width,
+		height,
+		automaticHeight = false,
+		automaticWidth = false,
+		order = 1,
+		alignX = Enum.TextXAlignment.Center,
+		alignY = Enum.TextYAlignment.Center,
+		richText = false,
+		children,
+	} = props;
+	
 	const px = usePx();
 	
-	const fontWeight = useMemo<Enum.FontWeight>(() => {
-		for (const weight of Enum.FontWeight.GetEnumItems()) {
-			if (weight.Value === font.weight) {
-				return weight;
-			}
-		}
-		
-		return Enum.FontWeight.Regular;
-	}, [font.weight]);
+	const fontFace = useMemo<Font>(() => parseFontStyle(font), [font]);
 	
 	const isRGBA = 'red' in color;
 	
-	const automaticSize =
-		automaticHeight && automaticWidth ? Enum.AutomaticSize.XY
-		: automaticHeight ? Enum.AutomaticSize.Y
-		: automaticWidth ? Enum.AutomaticSize.X
-		: Enum.AutomaticSize.None;
+	const automaticSize = getAutomaticSize(automaticWidth, automaticHeight);
 	
 	let labelSize =
 		automaticHeight && automaticWidth ? new UDim2(0, 0, 0, 0)
@@ -55,7 +58,7 @@ const Text = forwardRef<TextLabel, TextProps>(({ styles: { font, color, size, ou
 			BackgroundTransparency={1}
 			Size={labelSize}
 			AutomaticSize={automaticSize}
-			FontFace={new Font(font.fontId, fontWeight, font.italics ? Enum.FontStyle.Italic : Enum.FontStyle.Normal)}
+			FontFace={fontFace}
 			TextColor3={isRGBA ? Color3.fromRGB(color.red, color.green, color.blue) : Color3.fromRGB(255, 255, 255)}
 			TextTransparency={isRGBA ? 1 - color.alpha : 0}
 			TextSize={autoScale === false ? size : px(size)}

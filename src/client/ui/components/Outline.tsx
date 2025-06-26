@@ -9,7 +9,7 @@ interface OutlineProps {
 	applyStrokeMode: Enum.ApplyStrokeMode;
 }
 
-const Outline: React.FC<OutlineProps> = ({ styles: { color, thickness, joinMode, autoScale }, applyStrokeMode }) => {
+const Outline: React.FC<OutlineProps> = ({ styles: { color, thickness, joinMode, autoScale = true }, applyStrokeMode }) => {
 	const px = usePx();
 	
 	const isRGBA = 'red' in color;
@@ -19,7 +19,7 @@ const Outline: React.FC<OutlineProps> = ({ styles: { color, thickness, joinMode,
 			ApplyStrokeMode={applyStrokeMode}
 			Color={isRGBA ? parseColor(color) : Color3.fromRGB(255, 255, 255)}
 			Transparency={isRGBA ? 1 - color.alpha : 0}
-			Thickness={autoScale === false ? thickness : px(thickness, false)}
+			Thickness={autoScale ? px(thickness, false) : thickness}
 			LineJoinMode={parseOutlineJoinMode(joinMode)}
 		>
 			{!isRGBA && (

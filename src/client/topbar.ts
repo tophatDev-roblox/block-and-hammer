@@ -1,14 +1,14 @@
-import { Players, RunService } from '@rbxts/services';
-import { effect } from '@rbxts/charm';
+import { Players } from '@rbxts/services';
+import { subscribe } from '@rbxts/charm';
 
 import Icon from 'shared/Icon';
 import NumberSpinner from 'shared/NumberSpinner';
-import { MaxDollars, MinDollars, TestingPlaceId } from 'shared/constants';
+import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
 import { StylesData } from './stylesParser';
 import defaultStyles from './stylesParser/default';
-import { InputType, inputType } from './inputType';
-import { isMenuOpen } from './ui/providers/game';
-import { isDebugPanelOpen } from './debugPanel';
+import { InputType, inputTypeAtom } from './inputType';
+import { isDebugPanelOpenAtom } from './debugPanel';
+import { isMenuOpenAtom } from './ui';
 
 const client = Players.LocalPlayer;
 
@@ -55,24 +55,23 @@ const dollarsIcon = new Icon()
 	]);
 
 menuIcon.toggled.Connect((toggled) => {
-	isMenuOpen(toggled);
+	isMenuOpenAtom(toggled);
 });
 
 dollarsIcon.selected.Connect(() => {
 	menuIcon.select();
 });
 
-effect(() => {
-	if (isMenuOpen()) {
+subscribe(isMenuOpenAtom, (isMenuOpen) => {
+	if (isMenuOpen) {
 		menuIcon.select();
 	} else {
 		menuIcon.deselect();
 	}
 });
 
-effect(() => {
-	const currentInputType = inputType();
-	switch (currentInputType) {
+subscribe(inputTypeAtom, (inputType) => {
+	switch (inputType) {
 		case InputType.Desktop: {
 			menuIcon.setCaptionHint(Enum.KeyCode.B);
 			break;
@@ -89,7 +88,7 @@ effect(() => {
 	}
 });
 
-if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
+if (IsDebugPanelEnabled) {
 	const debugIcon = new Icon()
 		.setImage(6953984446)
 		.setCaption('Open debug panel')
@@ -99,8 +98,8 @@ if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
 		.modifyTheme(theme)
 		.modifyTheme(['IconImageScale', 'Value', 0.7]);
 	
-	effect(() => {
-		if (isDebugPanelOpen()) {
+	subscribe(isDebugPanelOpenAtom, (isDebugPanelOpen) => {
+		if (isDebugPanelOpen) {
 			debugIcon.select();
 		} else {
 			debugIcon.deselect();
@@ -108,11 +107,11 @@ if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
 	});
 	
 	debugIcon.selected.Connect(() => {
-		isDebugPanelOpen(true);
+		isDebugPanelOpenAtom(true);
 	});
 	
 	debugIcon.deselected.Connect(() => {
-		isDebugPanelOpen(false);
+		isDebugPanelOpenAtom(false);
 	});
 }
 

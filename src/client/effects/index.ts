@@ -1,7 +1,8 @@
 import { RunService, SoundService, TweenService, Workspace } from '@rbxts/services';
 import { effect } from '@rbxts/charm';
 
-import { cameraShake, characterAtom, ragdoll } from 'client/character';
+import { shake, ragdoll } from 'client/character';
+import { characterAtom } from 'client/character/atoms';
 import { materialConfiguration } from './materials';
 import TimeSpan from 'shared/timeSpan';
 
@@ -25,7 +26,7 @@ effect(() => {
 		return;
 	}
 	
-	let previousBodyVelocity = character.body.AssemblyLinearVelocity.Magnitude;
+	let previousBodyVelocity = character.body.AssemblyLinearVelocity;
 	let hammerVelocity = Vector3.zero;
 	let lastEffectTime = -1;
 	
@@ -173,16 +174,15 @@ effect(() => {
 		// i just copied the hit detection from the original block and hammer,
 		// not sure why this works so much better than getting AssemblyLinearVelocity directly
 		
-		const bodyVelocity = character.body.AssemblyLinearVelocity.Magnitude;
+		const bodyVelocity = character.body.AssemblyLinearVelocity;
 		if (character.model.GetAttribute('justReset')) {
 			previousBodyVelocity = bodyVelocity;
 			character.model.SetAttribute('justReset', undefined);
 		}
 		
-		const impactMagnitude = math.abs(bodyVelocity - previousBodyVelocity);
+		const impactMagnitude = math.abs(bodyVelocity.Magnitude - previousBodyVelocity.Magnitude);
 		if (impactMagnitude > 130) {
-			ragdoll(math.clamp(1 + (impactMagnitude - 160) / 10, 1, 3));
-			cameraShake(2);
+			let effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 3);
 			
 			const sound = explosionSound.Clone() as Sound;
 			sound.PlaybackSpeed = RNG.NextNumber(0.97, 1.03);
@@ -194,7 +194,70 @@ effect(() => {
 			explosion.BlastPressure = 0;
 			explosion.BlastRadius = 0;
 			explosion.ExplosionType = Enum.ExplosionType.NoCraters;
-			explosion.Parent = Workspace;
+			explosion.Parent = effectsFolder;
+			
+			if (impactMagnitude > 450) {
+				const rayDistance = 50;
+				
+				effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 5);
+				
+				const params = new RaycastParams();
+				params.FilterType = Enum.RaycastFilterType.Include;
+				params.FilterDescendantsInstances = [mapFolder];
+				
+				const direction = previousBodyVelocity.sub(bodyVelocity).Unit.mul(rayDistance);
+				const origin = character.body.Position.sub(direction.Unit.mul(5));
+				
+				const result = Workspace.Raycast(origin, direction, params);
+				if (result !== undefined) {
+					const tweenInfo = new TweenInfo(20, Enum.EasingStyle.Linear);
+					
+					const radius = 10 * math.log((impactMagnitude - 300) / 10, 2);
+					const totalParts = math.floor(radius / 2);
+					const randomAngleOffset = math.rad(5);
+					
+					const blocks = new Set<BasePart>();
+					for (const i of $range(1, totalParts)) {
+						const theta = i / totalParts * 2 * math.pi + RNG.NextNumber(-randomAngleOffset, randomAngleOffset);
+						const point = getPointOn3dCircle(result.Position, result.Normal, radius, theta);
+						
+						const origin = point.add(result.Normal.mul(5));
+						const direction = result.Normal.mul(-rayDistance);
+						
+						const subResult = Workspace.Raycast(origin, direction, params);
+						if (subResult === undefined) {
+							continue;
+						}
+						
+						const block = Instance.fromExisting(subResult.Instance);
+						block.Anchored = true;
+						block.Massless = true;
+						block.CanCollide = true;
+						block.CollisionGroup = 'Particles';
+						block.CFrame = CFrame.lookAlong(subResult.Position, RNG.NextUnitVector());
+						block.Size = Vector3.one.mul(RNG.NextNumber(12, 15));
+						block.Parent = effectsFolder;
+						
+						const tween = TweenService.Create(block, tweenInfo, {
+							Position: block.Position.add(subResult.Normal.mul(-block.Size.Y)),
+							LocalTransparencyModifier: 1,
+						});
+						
+						tween.Play();
+						
+						blocks.add(block);
+					}
+					
+					task.delay(tweenInfo.Time, () => {
+						for (const block of blocks) {
+							block.Destroy();
+						}
+					});
+				}
+			}
+			
+			ragdoll(effectIntensity);
+			shake(effectIntensity);
 		}
 		
 		previousBodyVelocity = bodyVelocity;
