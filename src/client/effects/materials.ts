@@ -116,7 +116,7 @@ materialConfiguration.set(Enum.Material.WoodPlanks, {
 	},
 });
 
-materialConfiguration.set(Enum.Material.Cardboard, {
+materialConfiguration.set(Enum.Material.Fabric, {
 	sound: {
 		instance: SoundService.WaitForChild('FabricHit') as Sound,
 		startTime: 0,

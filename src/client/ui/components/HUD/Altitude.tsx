@@ -8,7 +8,7 @@ import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const Altitude: React.FC = () => {
-	const { body } = useGameContext();
+	const { character: characterParts } = useGameContext();
 	
 	const labelRef = useRef<TextLabel>();
 	
@@ -17,12 +17,12 @@ const Altitude: React.FC = () => {
 	useEffect(() => {
 		const labelFormat = `%.${styles.text.hudPrimary.display.decimals}fm`;
 		const label = labelRef.current;
-		if (label === undefined || body === undefined) {
+		if (label === undefined || characterParts === undefined) {
 			return;
 		}
 		
 		const disconnectSteppedEvent = useStepped(() => {
-			const altitude = Units.studsToMeters(math.max(body.Position.Y - body.Size.Y / 2, 0));
+			const altitude = Units.studsToMeters(math.max(characterParts.body.Position.Y - characterParts.body.Size.Y / 2, 0));
 			label.Text = labelFormat.format(altitude);
 		});
 		
@@ -30,7 +30,7 @@ const Altitude: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [body, styles.text.hudPrimary.display.decimals]);
+	}, [characterParts, styles.text.hudPrimary.display.decimals]);
 	
 	return (
 		<Text

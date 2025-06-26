@@ -7,14 +7,14 @@ import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const MoveHint: React.FC = () => {
-	const { cube, inputType } = useGameContext();
+	const { character: characterParts, inputType } = useGameContext();
 	
 	const [isVisible, setVisible] = useState<boolean>(true);
 	
 	const styles = useAtom(stylesAtom);
 	
 	useEffect(() => {
-		if (cube === undefined) {
+		if (characterParts === undefined) {
 			setVisible(false);
 			return;
 		}
@@ -26,7 +26,7 @@ const MoveHint: React.FC = () => {
 				return;
 			}
 			
-			if (cube.GetAttribute('startTime') !== undefined) {
+			if (characterParts.model.GetAttribute('startTime') !== undefined) {
 				setVisible(false);
 			} else {
 				setVisible(true);
@@ -34,12 +34,12 @@ const MoveHint: React.FC = () => {
 		};
 		
 		onAttributeChanged('startTime');
-		const attributeChangedEvent = cube.AttributeChanged.Connect(onAttributeChanged);
+		const attributeChangedEvent = characterParts.model.AttributeChanged.Connect(onAttributeChanged);
 		
 		return () => {
 			attributeChangedEvent.Disconnect();
 		};
-	}, [cube]);
+	}, [characterParts]);
 	
 	if (!isVisible) {
 		return undefined;

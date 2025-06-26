@@ -9,7 +9,7 @@ import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const Timer: React.FC = () => {
-	const { cube } = useGameContext();
+	const { character: characterParts } = useGameContext();
 	
 	const labelRef = useRef<TextLabel>();
 	
@@ -18,13 +18,13 @@ const Timer: React.FC = () => {
 	
 	useEffect(() => {
 		const label = labelRef.current;
-		if (label === undefined || cube === undefined) {
+		if (label === undefined || characterParts === undefined) {
 			return;
 		}
 		
 		const disconnectSteppedEvent = useStepped(() => {
 			const currentTime = TimeSpan.now();
-			const startTime = tonumber(cube.GetAttribute('startTime')) ?? currentTime;
+			const startTime = tonumber(characterParts.model.GetAttribute('startTime')) ?? currentTime;
 			const elapsedTime = currentTime - startTime;
 			
 			const seconds = math.floor(elapsedTime) % 60;
@@ -46,7 +46,7 @@ const Timer: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [cube, px]);
+	}, [characterParts, px]);
 	
 	return (
 		<screengui

@@ -8,7 +8,7 @@ import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const Speedometer: React.FC = () => {
-	const { body } = useGameContext();
+	const { character: characterParts } = useGameContext();
 	
 	const labelRef = useRef<TextLabel>();
 	
@@ -17,12 +17,12 @@ const Speedometer: React.FC = () => {
 	useEffect(() => {
 		const labelFormat = `%.${styles.text.hudSecondary.display.decimals}fm/s`;
 		const label = labelRef.current;
-		if (label === undefined || body === undefined) {
+		if (label === undefined || characterParts === undefined) {
 			return;
 		}
 		
 		const disconnectSteppedEvent = useStepped(() => {
-			const speed = Units.studsToMeters(body.AssemblyLinearVelocity.Magnitude);
+			const speed = Units.studsToMeters(characterParts.body.AssemblyLinearVelocity.Magnitude);
 			label.Text = labelFormat.format(speed);
 		});
 		
@@ -30,7 +30,7 @@ const Speedometer: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [body, styles.text.hudSecondary.display.decimals]);
+	}, [characterParts, styles.text.hudSecondary.display.decimals]);
 	
 	return (
 		<Text

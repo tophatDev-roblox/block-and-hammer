@@ -12,13 +12,13 @@ const imageIds = [
 ];
 
 const SpeedEffect: React.FC = () => {
-	const { body } = useGameContext();
+	const { character: characterParts } = useGameContext();
 	
 	const imageLabelRef = useRef<ImageLabel>();
 	
 	useEffect(() => {
 		const imageLabel = imageLabelRef.current;
-		if (imageLabel === undefined || body === undefined) {
+		if (imageLabel === undefined || characterParts === undefined) {
 			return;
 		}
 		
@@ -31,7 +31,7 @@ const SpeedEffect: React.FC = () => {
 				currentIndex = newIndex;
 			}
 			
-			const velocity = body.AssemblyLinearVelocity.Magnitude;
+			const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
 			const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
 			const size = math.clamp((110 - fieldOfView) / 10, 1.4, 6);
 			imageLabel.ImageTransparency = 1 - (6 - size) / 4.6;
@@ -41,7 +41,7 @@ const SpeedEffect: React.FC = () => {
 		return () => {
 			disconnectStepped();
 		};
-	}, [body]);
+	}, [characterParts]);
 	
 	return (
 		<screengui

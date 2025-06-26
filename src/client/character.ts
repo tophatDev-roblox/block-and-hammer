@@ -4,14 +4,12 @@ import { atom } from '@rbxts/charm';
 import TimeSpan from 'shared/timeSpan';
 import { isControllerInput, isNotDeadzone } from 'shared/controller';
 
-interface CharacterParts {
+export interface CharacterParts {
 	model: Model;
-	body: {
-		part: Part;
-		center: Attachment;
-		target: Attachment;
-		alignOrientation: AlignOrientation;
-	};
+	body: Part;
+	centerAttachment: Attachment;
+	targetAttachment: Attachment;
+	rotationLock: AlignOrientation;
 	hammer: {
 		model: Model;
 		head: Part;
@@ -24,46 +22,48 @@ interface CharacterParts {
 const client = Players.LocalPlayer;
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
 const baseStunParticles = assetsFolder.WaitForChild('StunParticles') as Part;
+const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const RNG = new Random();
-let characterParts: CharacterParts | undefined = undefined;
 let ragdollTimeEnd: number | undefined = undefined;
+let previousCameraCFrame: CFrame | undefined = undefined;
+let cameraShakeMagnitude = 0;
 let hasTimeStarted = false;
 
 export const camera = Workspace.WaitForChild('Camera') as Camera;
-export const characterAtom = atom<Model>();
+export const characterAtom = atom<CharacterParts>();
 
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 
 export function quickReset(): void {
 	const character = characterAtom();
-	if (character === undefined || characterParts === undefined) {
+	if (character === undefined) {
 		return;
 	}
 	
 	print('[client::character] running quick reset');
 	
 	hasTimeStarted = false;
-	ragdollTimeEnd = undefined;
-	character.SetAttribute('justReset', true);
-	character.SetAttribute('startTime', undefined);
+	endRagdoll();
+	character.model.SetAttribute('justReset', true);
+	character.model.SetAttribute('startTime', undefined);
 	
 	const target = new CFrame(0, 3, 0);
-	character.PivotTo(target);
-	camera.CFrame = CFrame.lookAlong(target.Position.add(new Vector3(0, 0, -10)), Vector3.yAxis.mul(-1), Vector3.zAxis);
+	character.model.PivotTo(target);
+	previousCameraCFrame = CFrame.lookAlong(target.Position.add(new Vector3(0, 0, -10)), Vector3.yAxis.mul(-1), Vector3.zAxis);
 	
-	characterParts.body.target.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
-	characterParts.hammer.model.PivotTo(target);
-	characterParts.body.part.AssemblyLinearVelocity = Vector3.zero;
-	characterParts.body.part.AssemblyAngularVelocity = Vector3.zero;
-	characterParts.hammer.head.AssemblyLinearVelocity = Vector3.zero;
-	characterParts.hammer.head.AssemblyAngularVelocity = Vector3.zero;
-	characterParts.hammer.handle.AssemblyLinearVelocity = Vector3.zero;
-	characterParts.hammer.handle.AssemblyAngularVelocity = Vector3.zero;
+	character.targetAttachment.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
+	character.hammer.model.PivotTo(target);
+	character.body.AssemblyLinearVelocity = Vector3.zero;
+	character.body.AssemblyAngularVelocity = Vector3.zero;
+	character.hammer.head.AssemblyLinearVelocity = Vector3.zero;
+	character.hammer.head.AssemblyAngularVelocity = Vector3.zero;
+	character.hammer.handle.AssemblyLinearVelocity = Vector3.zero;
+	character.hammer.handle.AssemblyAngularVelocity = Vector3.zero;
 }
 
 export function ragdoll(seconds: number): void {
 	const character = characterAtom();
-	if (character === undefined || characterParts === undefined) {
+	if (character === undefined) {
 		return;
 	}
 	
@@ -73,14 +73,13 @@ export function ragdoll(seconds: number): void {
 		const minAngle = 10;
 		const maxAngle = 20;
 		
-		const body = characterParts.body.part;
-		body.AssemblyAngularVelocity = new Vector3(
+		character.body.AssemblyAngularVelocity = new Vector3(
 			RNG.NextNumber(minAngle, maxAngle),
 			RNG.NextNumber(minAngle, maxAngle),
 			RNG.NextNumber(minAngle, maxAngle),
 		);
 		
-		const centerAttachment = characterParts.body.part.FindFirstChild('Center.0') as Attachment;
+		const centerAttachment = character.body.FindFirstChild('Center.0') as Attachment;
 		
 		const stunParticles = baseStunParticles.Clone();
 		for (const particleEmitter of stunParticles.GetDescendants()) {
@@ -99,14 +98,45 @@ export function ragdoll(seconds: number): void {
 			CFrame: rigidAttachment.CFrame.mul(CFrame.fromOrientation(0, math.pi, 0)),
 		}).Play();
 		
-		stunParticles.Parent = character;
+		stunParticles.Parent = character.model;
 		
-		characterParts.body.alignOrientation.Enabled = false;
-		characterParts.hammer.handle.CanCollide = true;
-		characterParts.hammer.alignPosition.Enabled = false;
-		characterParts.hammer.alignOrientation.Enabled = false;
+		character.rotationLock.Enabled = false;
+		character.hammer.handle.CanCollide = true;
+		character.hammer.alignPosition.Enabled = false;
+		character.hammer.alignOrientation.Enabled = false;
 	} else {
 		ragdollTimeEnd += seconds * 0.75;
+	}
+}
+
+export function cameraShake(magnitude: number): void {
+	cameraShakeMagnitude = math.max(magnitude, cameraShakeMagnitude * 1.2);
+}
+
+function endRagdoll(): void {
+	ragdollTimeEnd = undefined;
+	
+	const character = characterAtom();
+	if (character !== undefined) {
+		character.model.FindFirstChild('StunParticles')?.Destroy();
+		character.rotationLock.Enabled = true;
+		character.targetAttachment.CFrame = CFrame.lookAlong(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
+		
+		const origin = character.hammer.head.Position;
+		const direction = character.body.Position.sub(origin);
+		
+		const params = new RaycastParams();
+		params.FilterType = Enum.RaycastFilterType.Include;
+		params.FilterDescendantsInstances = [mapFolder, character.body];
+		
+		const result = Workspace.Raycast(origin, direction, params);
+		if (result?.Instance === character.body) {
+			character.hammer.model.PivotTo(CFrame.lookAlong(character.body.Position, Vector3.yAxis.mul(-1), Vector3.zAxis));
+		}
+		
+		character.hammer.handle.CanCollide = false;
+		character.hammer.alignPosition.Enabled = true;
+		character.hammer.alignOrientation.Enabled = true;
 	}
 }
 
@@ -116,11 +146,11 @@ function processInput(input: InputObject): void {
 	}
 	
 	const character = characterAtom();
-	if (character === undefined || characterParts === undefined) {
+	if (character === undefined) {
 		return;
 	}
 	
-	const body = characterParts.body.part;
+	const body = character.body;
 	const maxHammerDistance = 13;
 	let targetPosition: Vector3 | undefined = undefined;
 	if (positionalInputTypes.has(input.UserInputType)) {
@@ -149,11 +179,11 @@ function processInput(input: InputObject): void {
 	
 	if (targetPosition !== undefined) {
 		if (!hasTimeStarted) {
-			character.SetAttribute('startTime', TimeSpan.now());
+			character.model.SetAttribute('startTime', TimeSpan.now());
 			hasTimeStarted = true;
 		}
 		
-		characterParts.body.target.WorldCFrame = CFrame.lookAt(targetPosition.mul(new Vector3(1, 1, 0)), body.Position, Vector3.zAxis);
+		character.targetAttachment.WorldCFrame = CFrame.lookAt(targetPosition.mul(new Vector3(1, 1, 0)), body.Position, Vector3.zAxis);
 	}
 }
 
@@ -163,36 +193,38 @@ function onResetButton(): void {
 
 function onRenderStepped(dt: number): void {
 	const currentTime = os.clock();
-	if (characterParts === undefined) {
+	const character = characterAtom();
+	if (character === undefined) {
 		return;
 	}
 	
 	camera.CameraType = Enum.CameraType.Scriptable;
 	
-	const targetPosition = new Vector3(characterParts.body.part.Position.X, characterParts.body.part.Position.Y, -30);
+	const targetPosition = new Vector3(character.body.Position.X, character.body.Position.Y, -30);
 	const cameraCFrame = CFrame.lookAlong(targetPosition, Vector3.zAxis, Vector3.yAxis);
-	if (camera.CFrame.Position.sub(cameraCFrame.Position).Magnitude > 30) {
-		camera.CFrame = camera.CFrame.Lerp(cameraCFrame, 0.4);
-	} else {
-		camera.CFrame = camera.CFrame.Lerp(cameraCFrame, math.min(dt * 15, 1));
+	const finalCameraCFrame = previousCameraCFrame ? previousCameraCFrame.Lerp(cameraCFrame, math.min(dt * 15, 1)) : cameraCFrame;
+	
+	camera.CFrame = finalCameraCFrame;
+	previousCameraCFrame = finalCameraCFrame;
+	
+	if (cameraShakeMagnitude > 0) {
+		const angle = math.rad(cameraShakeMagnitude * 5);
+		const noiseValue = currentTime * 2;
+		const shakeCFrame = CFrame.fromOrientation(
+			math.noise(noiseValue, 0) * angle,
+			math.noise(0, noiseValue) * angle,
+			math.noise(noiseValue, noiseValue) * angle,
+		);
+		
+		camera.CFrame = camera.CFrame.mul(shakeCFrame);
+		cameraShakeMagnitude = math.max(cameraShakeMagnitude - dt * 1.5, 0);
 	}
 	
 	if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
-		ragdollTimeEnd = undefined;
-		
-		if (characterParts !== undefined) {
-			characterParts.model.FindFirstChild('StunParticles')?.Destroy();
-			
-			characterParts.body.alignOrientation.Enabled = true;
-			characterParts.body.target.CFrame = CFrame.lookAlong(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
-			characterParts.hammer.model.PivotTo(CFrame.lookAlong(characterParts.body.part.Position, Vector3.yAxis.mul(-1), Vector3.zAxis));
-			characterParts.hammer.handle.CanCollide = false;
-			characterParts.hammer.alignPosition.Enabled = true;
-			characterParts.hammer.alignOrientation.Enabled = true;
-		}
+		endRagdoll();
 	}
 	
-	const velocity = characterParts.body.part.AssemblyLinearVelocity.Magnitude;
+	const velocity = character.body.AssemblyLinearVelocity.Magnitude;
 	const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
 	camera.FieldOfView = fieldOfView;
 }
@@ -204,21 +236,17 @@ function onCharacterAdded(newCharacter: Model): void {
 	ragdollTimeEnd = undefined;
 	newCharacter.SetAttribute('startTime', undefined);
 	
-	characterAtom(newCharacter);
-	
 	const body = newCharacter.WaitForChild('Body') as Part;
 	const hammer = newCharacter.WaitForChild('Hammer') as Model;
 	const head = hammer.WaitForChild('Head') as Part;
-	camera.CFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, -10)), Vector3.yAxis.mul(-1), Vector3.zAxis);
+	previousCameraCFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, -10)), Vector3.yAxis.mul(-1), Vector3.zAxis);
 	
-	characterParts = {
+	characterAtom({
 		model: newCharacter,
-		body: {
-			part: body,
-			center: body.WaitForChild('Center.0') as Attachment,
-			target: body.WaitForChild('Target.1') as Attachment,
-			alignOrientation: body.WaitForChild('AlignOrientation') as AlignOrientation,
-		},
+		body: body,
+		centerAttachment: body.WaitForChild('Center.0') as Attachment,
+		targetAttachment: body.WaitForChild('Target.1') as Attachment,
+		rotationLock: body.WaitForChild('AlignOrientation') as AlignOrientation,
 		hammer: {
 			model: hammer,
 			handle: hammer.WaitForChild('Handle') as Part,
@@ -226,7 +254,7 @@ function onCharacterAdded(newCharacter: Model): void {
 			alignPosition: head.WaitForChild('AlignPosition') as AlignPosition,
 			alignOrientation: head.WaitForChild('AlignOrientation') as AlignOrientation,
 		},
-	};
+	});
 	
 	const bubbleChatOrigin = newCharacter.WaitForChild('BubbleChatOrigin') as Part;
 	const bubbleChatAttachment = bubbleChatOrigin.WaitForChild('Rigid.0') as Attachment;
@@ -246,7 +274,6 @@ function onCharacterRemoving(): void {
 	print('[client::character] character removing');
 	
 	characterAtom(undefined);
-	characterParts = undefined;
 }
 
 task.spawn(() => {

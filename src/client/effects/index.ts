@@ -1,7 +1,7 @@
 import { RunService, SoundService, TweenService, Workspace } from '@rbxts/services';
 import { effect } from '@rbxts/charm';
 
-import { characterAtom, ragdoll } from 'client/character';
+import { cameraShake, characterAtom, ragdoll } from 'client/character';
 import { materialConfiguration } from './materials';
 import TimeSpan from 'shared/timeSpan';
 
@@ -12,18 +12,11 @@ const explosionSound = SoundService.WaitForChild('Explosion') as Sound;
 
 const RNG = new Random();
 
-// https://github.com/EgoMoose/Articles/blob/master/Rodrigues'%20rotation/Rodrigues'%20rotation.md
-function rodriguesRotation(v: Vector3, k: Vector3, t: number): Vector3 {
-	const cosTheta = math.cos(t);
-	const sinTheta = math.sin(t);
-	
-	return v.mul(cosTheta).add(k.mul((1 - cosTheta) * v.Dot(k)).add(k.Cross(v).mul(sinTheta)));
-}
-
-function getRandomSpreadDirection(theta: number, radius: number, axisOfRotation: Vector3): Vector3 {
-	const rotationVector = axisOfRotation.add(axisOfRotation.Cross(Vector3.zAxis).mul(radius));
-	const velocity = rodriguesRotation(rotationVector, axisOfRotation, theta);
-	return velocity;
+function getPointOn3dCircle(center: Vector3, normal: Vector3, radius: number, theta: number): Vector3 {
+	const A = math.abs(normal.X) < 0.1 ? Vector3.xAxis : Vector3.yAxis;
+	const U = normal.Cross(A).Unit;
+	const V = normal.Cross(U);
+	return center.add(U.mul(math.cos(theta)).add(V.mul(math.sin(theta))).mul(radius));
 }
 
 effect(() => {
@@ -32,20 +25,16 @@ effect(() => {
 		return;
 	}
 	
-	const body = character.WaitForChild('Body') as Part;
-	const hammer = character.WaitForChild('Hammer') as Model;
-	const head = hammer.WaitForChild('Head') as Part;
-	
-	let previousBodyVelocity = body.AssemblyLinearVelocity.Magnitude;
+	let previousBodyVelocity = character.body.AssemblyLinearVelocity.Magnitude;
 	let hammerVelocity = Vector3.zero;
 	let lastEffectTime = -1;
 	
-	const touchedEvent = head.Touched.Connect((otherPart) => {
+	const touchedEvent = character.hammer.head.Touched.Connect((otherPart) => {
 		if (TimeSpan.timeSince(lastEffectTime) < 0.1) {
 			return;
 		}
 		
-		let magnitude = hammerVelocity.sub(otherPart.AssemblyLinearVelocity).sub(body.AssemblyLinearVelocity.div(4)).Magnitude;
+		let magnitude = hammerVelocity.sub(otherPart.AssemblyLinearVelocity).sub(character.body.AssemblyLinearVelocity.div(4)).Magnitude;
 		magnitude *= 1.5;
 		if (magnitude < 50) {
 			return;
@@ -55,15 +44,15 @@ effect(() => {
 		params.FilterType = Enum.RaycastFilterType.Include;
 		params.FilterDescendantsInstances = [mapFolder];
 		
-		const otherPoint = otherPart.GetClosestPointOnSurface(head.Position);
-		const direction = otherPoint.sub(head.Position);
-		const result = Workspace.Raycast(head.Position.sub(direction), direction.mul(3), params);
+		const otherPoint = otherPart.GetClosestPointOnSurface(character.hammer.head.Position);
+		const direction = otherPoint.sub(character.hammer.head.Position);
+		const result = Workspace.Raycast(character.hammer.head.Position.sub(direction), direction.mul(3), params);
 		if (result === undefined) {
 			return;
 		}
 		
 		const targetPart = result.Instance;
-		const point = targetPart.GetClosestPointOnSurface(head.Position);
+		const point = targetPart.GetClosestPointOnSurface(character.hammer.head.Position);
 		const inheritedVelocity = hammerVelocity.mul(-0.2);
 		
 		const tweenProperties: Partial<ExtractMembers<BasePart, Tweenable>> = {
@@ -78,7 +67,7 @@ effect(() => {
 		baseParticle.CastShadow = false;
 		baseParticle.CollisionGroup = 'Particles';
 		
-		const axisOfRotation = result.Normal.Unit;
+		const normalVector = result.Normal.Unit;
 		if (magnitude > 165) {
 			const tweenInfo = new TweenInfo(5, Enum.EasingStyle.Linear);
 			
@@ -88,7 +77,7 @@ effect(() => {
 			const particles = new Set<BasePart>();
 			for (const i of $range(1, totalParticles)) {
 				const theta = (i - 1) / (totalParticles - 1) * 2 * math.pi;
-				const spreadDirection = getRandomSpreadDirection(theta, RNG.NextNumber(0.1, 1), axisOfRotation);
+				const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.1, 1), theta);
 				
 				const particle = Instance.fromExisting(baseParticle);
 				particle.Size = Vector3.one.mul(RNG.NextNumber(0.6, 1.2));
@@ -133,7 +122,7 @@ effect(() => {
 			const particles = new Set<BasePart>();
 			for (const i of $range(1, totalParticles)) {
 				const theta = (i - 1) / (totalParticles - 1) * 2 * math.pi;
-				const spreadDirection = getRandomSpreadDirection(theta, RNG.NextNumber(0.2, 0.7), axisOfRotation);
+				const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.1, 1), theta);
 				
 				const particle = Instance.fromExisting(baseParticle);
 				material.style(particle);
@@ -180,20 +169,20 @@ effect(() => {
 	});
 	
 	const steppedEvent = RunService.Stepped.Connect(() => {
-		hammerVelocity = head.AssemblyLinearVelocity;
+		hammerVelocity = character.hammer.head.AssemblyLinearVelocity;
 		// i just copied the hit detection from the original block and hammer,
 		// not sure why this works so much better than getting AssemblyLinearVelocity directly
 		
-		const bodyVelocity = body.AssemblyLinearVelocity.Magnitude;
-		if (character.GetAttribute('justReset')) {
+		const bodyVelocity = character.body.AssemblyLinearVelocity.Magnitude;
+		if (character.model.GetAttribute('justReset')) {
 			previousBodyVelocity = bodyVelocity;
-			
-			character.SetAttribute('justReset', undefined);
+			character.model.SetAttribute('justReset', undefined);
 		}
 		
 		const impactMagnitude = math.abs(bodyVelocity - previousBodyVelocity);
 		if (impactMagnitude > 130) {
 			ragdoll(math.clamp(1 + (impactMagnitude - 160) / 10, 1, 3));
+			cameraShake(2);
 			
 			const sound = explosionSound.Clone() as Sound;
 			sound.PlaybackSpeed = RNG.NextNumber(0.97, 1.03);
@@ -201,7 +190,7 @@ effect(() => {
 			sound.Destroy();
 			
 			const explosion = new Instance('Explosion');
-			explosion.Position = body.Position;
+			explosion.Position = character.body.Position;
 			explosion.BlastPressure = 0;
 			explosion.BlastRadius = 0;
 			explosion.ExplosionType = Enum.ExplosionType.NoCraters;

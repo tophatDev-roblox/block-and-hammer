@@ -1,17 +1,16 @@
-import React, { createContext, useContext, useEffect, useState } from '@rbxts/react';
+import React, { createContext, useContext } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { atom } from '@rbxts/charm';
 
 import { InputType, inputType } from 'client/inputType';
-import { characterAtom } from 'client/character';
+import { characterAtom, CharacterParts } from 'client/character';
 
 export const isMenuOpen = atom<boolean>(false);
 
 interface GameContextValue {
 	menuOpen: boolean;
 	inputType: InputType;
-	cube?: Model;
-	body?: Part;
+	character?: CharacterParts;
 }
 
 export const GameContext = createContext<GameContextValue | undefined>(undefined);
@@ -30,27 +29,16 @@ interface GameProviderProps {
 }
 
 const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
-	const [body, setBody] = useState<Part | undefined>(undefined);
-	
 	const inputTypeValue = useAtom(inputType);
 	const menuOpen = useAtom(isMenuOpen);
-	const cube = useAtom(characterAtom);
-	
-	useEffect(() => {
-		if (cube !== undefined) {
-			setBody(cube.WaitForChild('Body') as Part);
-		} else {
-			setBody(undefined);
-		}
-	}, [cube]);
+	const characterParts = useAtom(characterAtom);
 	
 	return (
 		<GameContext.Provider
 			value={{
 				menuOpen,
 				inputType: inputTypeValue,
-				cube,
-				body,
+				character: characterParts,
 			}}
 		>
 			{children}
