@@ -2,6 +2,7 @@ import { Players, ReplicatedStorage, RunService, StarterGui, TweenService, UserI
 import { peek, subscribe } from '@rbxts/charm';
 
 import TimeSpan from 'shared/timeSpan';
+import Raycast from 'shared/raycast';
 import { isControllerInput, isNotDeadzone } from 'shared/controller';
 import { calculateCameraRotation } from 'shared/calculateShake';
 import { debugDisableRagdollAtom } from 'client/debugPanel';
@@ -124,14 +125,12 @@ function endRagdoll(): void {
 		character.rotationLock.Enabled = true;
 		character.targetAttachment.CFrame = CFrame.lookAlong(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
 		
+		const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder, character.body]);
 		const origin = character.hammer.head.Position;
 		const direction = character.body.Position.sub(origin);
 		
-		const params = new RaycastParams();
-		params.FilterType = Enum.RaycastFilterType.Include;
-		params.FilterDescendantsInstances = [mapFolder, character.body];
-		
 		const result = Workspace.Raycast(origin, direction, params);
+		
 		if (result?.Instance !== character.body) {
 			character.hammer.model.PivotTo(CFrame.lookAlong(character.body.Position, Vector3.yAxis.mul(-1), Vector3.zAxis));
 		}

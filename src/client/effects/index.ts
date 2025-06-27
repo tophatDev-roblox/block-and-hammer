@@ -1,10 +1,11 @@
 import { RunService, SoundService, TweenService, Workspace } from '@rbxts/services';
 import { effect } from '@rbxts/charm';
 
+import TimeSpan from 'shared/timeSpan';
+import Raycast from 'shared/raycast';
 import { shake, ragdoll } from 'client/character';
 import { characterAtom } from 'client/character/atoms';
 import { materialConfiguration } from './materials';
-import TimeSpan from 'shared/timeSpan';
 
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
@@ -41,13 +42,15 @@ effect(() => {
 			return;
 		}
 		
-		const params = new RaycastParams();
-		params.FilterType = Enum.RaycastFilterType.Include;
-		params.FilterDescendantsInstances = [mapFolder];
-		
 		const otherPoint = otherPart.GetClosestPointOnSurface(character.hammer.head.Position);
-		const direction = otherPoint.sub(character.hammer.head.Position);
-		const result = Workspace.Raycast(character.hammer.head.Position.sub(direction), direction.mul(3), params);
+		const directionToPart = otherPoint.sub(character.hammer.head.Position);
+		
+		const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder]);
+		const origin = character.hammer.head.Position.sub(directionToPart);
+		const direction = directionToPart.mul(3);
+		
+		const result = Workspace.Raycast(origin, direction, params);
+		
 		if (result === undefined) {
 			return;
 		}
@@ -201,14 +204,12 @@ effect(() => {
 				
 				effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 5);
 				
-				const params = new RaycastParams();
-				params.FilterType = Enum.RaycastFilterType.Include;
-				params.FilterDescendantsInstances = [mapFolder];
-				
+				const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder]);
 				const direction = previousBodyVelocity.sub(bodyVelocity).Unit.mul(rayDistance);
 				const origin = character.body.Position.sub(direction.Unit.mul(5));
 				
 				const result = Workspace.Raycast(origin, direction, params);
+				
 				if (result !== undefined) {
 					const tweenInfo = new TweenInfo(20, Enum.EasingStyle.Linear);
 					
@@ -225,6 +226,7 @@ effect(() => {
 						const direction = result.Normal.mul(-rayDistance);
 						
 						const subResult = Workspace.Raycast(origin, direction, params);
+						
 						if (subResult === undefined) {
 							continue;
 						}
