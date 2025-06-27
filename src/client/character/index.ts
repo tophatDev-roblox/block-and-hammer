@@ -10,6 +10,7 @@ import { IsDebugPanelEnabled } from 'shared/constants';
 import { cameraZOffsetAtom, characterAtom, disableCameraAtom, shakeStrengthAtom } from './atoms';
 import { userSettingsAtom } from 'client/settings';
 import { InputType, inputTypeAtom } from 'client/inputType';
+import { sideMenuOpenedAtom } from 'client/sideMenu';
 
 export interface CharacterParts {
 	model: Model;
@@ -155,7 +156,8 @@ function processInput(input: InputObject): void {
 	const inputType = peek(inputTypeAtom);
 	const userSettings = peek(userSettingsAtom);
 	const character = peek(characterAtom);
-	if (character === undefined) {
+	const sideMenuOpened = peek(sideMenuOpenedAtom);
+	if (character === undefined || sideMenuOpened) {
 		return;
 	}
 	
