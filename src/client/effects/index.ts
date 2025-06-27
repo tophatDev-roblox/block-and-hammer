@@ -1,11 +1,12 @@
 import { RunService, SoundService, TweenService, Workspace } from '@rbxts/services';
-import { effect } from '@rbxts/charm';
+import { effect, peek } from '@rbxts/charm';
 
 import TimeSpan from 'shared/timeSpan';
 import Raycast from 'shared/raycast';
 import { shake, ragdoll } from 'client/character';
 import { characterAtom } from 'client/character/atoms';
 import { materialConfiguration } from './materials';
+import { userSettingsAtom } from 'client/settings';
 
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
@@ -193,10 +194,13 @@ effect(() => {
 		if (impactMagnitude > 130) {
 			let effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 3);
 			
-			explosionHaptics.Play();
-			task.delay(1, () => {
-				explosionHaptics.Stop();
-			});
+			const userSettings = peek(userSettingsAtom);
+			if (!userSettings.disableHaptics) {
+				explosionHaptics.Play();
+				task.delay(1, () => {
+					explosionHaptics.Stop();
+				});
+			}
 			
 			const sound = explosionSound.Clone() as Sound;
 			sound.PlaybackSpeed = RNG.NextNumber(0.97, 1.03);

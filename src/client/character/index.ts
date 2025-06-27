@@ -3,11 +3,13 @@ import { peek, subscribe } from '@rbxts/charm';
 
 import TimeSpan from 'shared/timeSpan';
 import Raycast from 'shared/raycast';
-import { isControllerInput, isNotDeadzone } from 'shared/controller';
+import { isControllerInput } from 'shared/controller';
 import { calculateCameraRotation } from 'shared/calculateShake';
 import { debugDisableRagdollAtom } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { cameraZOffsetAtom, characterAtom, disableCameraAtom, shakeStrengthAtom } from './atoms';
+import { userSettingsAtom } from 'client/settings';
+import { InputType, inputTypeAtom } from 'client/inputType';
 
 export interface CharacterParts {
 	model: Model;
@@ -150,6 +152,8 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
+	const inputType = peek(inputTypeAtom);
+	const userSettings = peek(userSettingsAtom);
 	const character = peek(characterAtom);
 	if (character === undefined) {
 		return;
@@ -171,11 +175,13 @@ function processInput(input: InputObject): void {
 			const newPosition = new Vector3(body.Position.X + directionToTarget.X * scale, body.Position.Y + directionToTarget.Y * scale, 0);
 			targetPosition = newPosition;
 		}
-	} else if (isControllerInput(input.UserInputType) && isNotDeadzone(input)) {
+	} else if (isControllerInput(input.UserInputType) && inputType === InputType.Controller) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
 			let direction = input.Position;
 			if (direction.Magnitude > 1) {
 				direction = direction.Unit;
+			} else if (input.Position.Magnitude < userSettings.controllerDeadzone) {
+				direction = new Vector3(0, 0.001, 0);
 			}
 			
 			targetPosition = body.Position.add(direction.mul(maxHammerDistance).mul(new Vector3(-1, 1, 0)));
