@@ -7,7 +7,7 @@ import Shake from 'shared/shake';
 import Controller from 'shared/controller';
 import { debugDisableRagdollAtom } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
-import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, shakeStrengthAtom } from './atoms';
+import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, hammerDistanceAtom, shakeStrengthAtom } from './atoms';
 import { userSettingsAtom } from 'client/settings';
 import { InputType, inputTypeAtom } from 'client/inputType';
 import { sideMenuOpenedAtom } from 'client/sideMenu';
@@ -165,12 +165,12 @@ function processInput(input: InputObject): void {
 	const userSettings = peek(userSettingsAtom);
 	const character = peek(characterAtom);
 	const sideMenuOpened = peek(sideMenuOpenedAtom);
+	const hammerDistance = peek(hammerDistanceAtom);
 	if (character === undefined || sideMenuOpened) {
 		return;
 	}
 	
 	const body = character.body;
-	const maxHammerDistance = 13;
 	let targetPosition: Vector3 | undefined = undefined;
 	if (positionalInputTypes.has(input.UserInputType)) {
 		const ray = camera.ScreenPointToRay(input.Position.X, input.Position.Y);
@@ -180,8 +180,8 @@ function processInput(input: InputObject): void {
 		
 		const directionToTarget = position.sub(body.Position);
 		const distanceToTarget = directionToTarget.Magnitude;
-		if (distanceToTarget > maxHammerDistance) {
-			const scale = maxHammerDistance / distanceToTarget;
+		if (distanceToTarget > hammerDistance) {
+			const scale = hammerDistance / distanceToTarget;
 			const newPosition = new Vector3(body.Position.X + directionToTarget.X * scale, body.Position.Y + directionToTarget.Y * scale, 0);
 			targetPosition = newPosition;
 		}
@@ -194,7 +194,7 @@ function processInput(input: InputObject): void {
 				direction = new Vector3(0, 0.001, 0);
 			}
 			
-			targetPosition = body.Position.add(direction.mul(maxHammerDistance).mul(new Vector3(-1, 1, 0)));
+			targetPosition = body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
 		}
 	}
 	
