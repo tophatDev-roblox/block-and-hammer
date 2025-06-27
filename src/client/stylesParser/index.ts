@@ -51,6 +51,15 @@ export interface FloatStyleData {
 
 export interface ButtonStyleData {
 	text: TextStyleData;
+	icon: {
+		color: ColorStyleDataWithAlpha | GradientStyleData;
+		background: ColorStyleDataWithAlpha | GradientStyleData;
+	};
+	background: ColorStyleDataWithAlpha | GradientStyleData;
+	outline: OutlineStyleData | false;
+}
+
+export interface ContainerStyleData {
 	background: ColorStyleDataWithAlpha | GradientStyleData;
 	outline: OutlineStyleData | false;
 }
@@ -76,13 +85,11 @@ export interface StylesData {
 			username: TextStyleData;
 		};
 	};
-	container: {
-		background: ColorStyleDataWithAlpha | GradientStyleData;
-		outline: OutlineStyleData | false;
+	containers: {
+		sideMenu: ContainerStyleData;
 	};
-	button: {
-		primary: ButtonStyleData;
-		secondary: ButtonStyleData;
+	buttons: {
+		sideMenu: ButtonStyleData;
 	};
 	layout: {}; // TODO: ui layout
 }

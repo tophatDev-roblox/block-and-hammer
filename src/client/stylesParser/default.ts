@@ -85,54 +85,36 @@ const data: StylesData = {
 			},
 		},
 	},
-	container: {
-		background: {
-			colors: [
-				{ position: 0, color: { red: 34, green: 34, blue: 34 } },
-				{ position: 0.6, color: { red: 0, green: 0, blue: 0 } },
-				{ position: 1, color: { red: 0, green: 0, blue: 0 } },
-			],
-			transparency: [
-				{ position: 0, transparency: 0 },
-				{ position: 1, transparency: 0 },
-			],
-			rotation: 60,
-		},
-		outline: {
-			color: {
+	containers: {
+		sideMenu: {
+			background: {
 				colors: [
-					{ position: 0, color: { red: 255, green: 255, blue: 255 } },
-					{ position: 1, color: { red: 255, green: 255, blue: 255 } },
+					{ position: 0, color: { red: 34, green: 34, blue: 34 } },
+					{ position: 0.6, color: { red: 0, green: 0, blue: 0 } },
+					{ position: 1, color: { red: 0, green: 0, blue: 0 } },
 				],
 				transparency: [
-					{ position: 0, transparency: 0.2 },
-					{ position: 1, transparency: 0.7 },
+					{ position: 0, transparency: 0.4 },
+					{ position: 1, transparency: 0.4 },
 				],
-				rotation: -90,
+				rotation: 60,
 			},
-			thickness: 3,
-			joinMode: 'miter',
-		},
-	},
-	button: {
-		primary: {
-			text: {
-				font: { fontId, weight: 700, italics: false },
-				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 50,
-				outline: false,
-			},
-			background: { red: 0, green: 0, blue: 0, alpha: 0.5 },
 			outline: false,
 		},
-		secondary: {
+	},
+	buttons: {
+		sideMenu: {
 			text: {
 				font: { fontId, weight: 700, italics: false },
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 50,
+				size: 70,
 				outline: false,
 			},
-			background: { red: 0, green: 0, blue: 0, alpha: 0.5 },
+			icon: {
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				background: { red: 255, green: 255, blue: 255, alpha: 0.06 },
+			},
+			background: { red: 0, green: 0, blue: 0, alpha: 0.3 },
 			outline: false,
 		},
 	},
