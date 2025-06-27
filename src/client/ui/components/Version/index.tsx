@@ -11,7 +11,7 @@ const Version: React.FC = () => {
 	
 	let versionString = `block and hammer v${game.PlaceVersion}`;
 	if (RunService.IsStudio()) {
-		versionString = 'block and hammer [dev]';
+		versionString += ' [dev]';
 	} else if (game.PlaceId === TestingPlaceId) {
 		versionString += ' [test]';
 	}

@@ -1,4 +1,6 @@
-print('[server::index] initializing');
+import { TestingPlaceId } from 'shared/constants';
+
+print(`[server::index] initializing as ${game.PlaceId === TestingPlaceId ? 'test' : 'live'} place`);
 
 import './players';
 import './centurion';
