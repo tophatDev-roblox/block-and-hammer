@@ -4,7 +4,7 @@ import { peek, subscribe } from '@rbxts/charm';
 import TimeSpan from 'shared/timeSpan';
 import Raycast from 'shared/raycast';
 import Shake from 'shared/shake';
-import { isControllerInput } from 'shared/controller';
+import Controller from 'shared/controller';
 import { debugDisableRagdollAtom } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, shakeStrengthAtom } from './atoms';
@@ -185,7 +185,7 @@ function processInput(input: InputObject): void {
 			const newPosition = new Vector3(body.Position.X + directionToTarget.X * scale, body.Position.Y + directionToTarget.Y * scale, 0);
 			targetPosition = newPosition;
 		}
-	} else if (isControllerInput(input.UserInputType) && inputType === InputType.Controller) {
+	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Controller) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
 			let direction = input.Position;
 			if (direction.Magnitude > 1) {

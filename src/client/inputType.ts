@@ -1,6 +1,7 @@
 import { UserInputService } from '@rbxts/services';
 import { atom, peek } from '@rbxts/charm';
-import { isControllerInput } from 'shared/controller';
+
+import Controller from 'shared/controller';
 import { ControllerDetectionType, userSettingsAtom } from './settings';
 
 export enum InputType {
@@ -32,7 +33,7 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
-	if (isControllerInput(input.UserInputType)) {
+	if (Controller.isGamepadInput(input.UserInputType)) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick1 || input.KeyCode === Enum.KeyCode.Thumbstick2) {
 			if (input.Position.Magnitude < userSettings.controllerDeadzone) {
 				return;
@@ -48,7 +49,7 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 	let newInputType: InputType | undefined = undefined;
 	if (userInputType === Enum.UserInputType.Touch) {
 		newInputType = InputType.Touch;
-	} else if (isControllerInput(userInputType)) {
+	} else if (Controller.isGamepadInput(userInputType)) {
 		const userSettings = peek(userSettingsAtom);
 		if (userSettings.controllerDetectionType === ControllerDetectionType.LastInput) {
 			newInputType = InputType.Controller;
@@ -57,7 +58,7 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 		newInputType = InputType.Desktop;
 	}
 	
-	if (newInputType !== undefined && newInputType !== inputTypeAtom()) {
+	if (newInputType !== undefined && newInputType !== peek(inputTypeAtom)) {
 		inputTypeAtom(newInputType);
 		print('[client::inputType] set to', InputType[newInputType]);
 	}
