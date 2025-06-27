@@ -9,3 +9,33 @@ made with [![](https://img.shields.io/badge/roblox--ts-e2241a?logo=Roblox&labelC
 [![Centurion](https://img.shields.io/badge/paradoxuum-Centurion-010409?logo=RobloxStudio&labelColor=33f)](https://centurion.paradoxum.dev)
 [![TopbarPlus v3](https://img.shields.io/badge/ForeverHD-TopbarPlus_v3-010409?logo=RobloxStudio&labelColor=33f)](https://github.com/1ForeverHD/TopbarPlus)
 [![NumberSpinner](https://img.shields.io/badge/boatbomber-NumberSpinner-010409?logo=RobloxStudio&labelColor=33f)](https://github.com/boatbomber/NumberSpinner)
+
+## building from source
+
+### prerequisites
+* [git](https://git-scm.com/downloads)
+* [pnpm](https://pnpm.io/installation)
+* [Rojo](https://rojo.space)
+
+---
+
+1. clone this repository
+```bash
+git clone https://github.com/tophatDev-roblox/block-and-hammer
+cd block-and-hammer
+```
+2. install dependencies
+```bash
+pnpm i
+```
+3. watch/build with roblox-ts and serve with Rojo
+```bash
+pnpm watch
+```
+```bash
+rojo serve
+```
+4. download the place file from the [latest release](https://github.com/tophatDev-roblox/block-and-hammer/releases/latest) then open it in Roblox Studio
+5. once in the place, connect the Rojo plugin and you should be able to play the game
+
+**note:** not all files are included, which means that you cannot access some in-game features (e.g. replays)
