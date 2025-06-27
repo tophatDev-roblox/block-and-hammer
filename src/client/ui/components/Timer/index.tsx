@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { calculateUIRotation } from 'shared/calculateShake';
+import Shake from 'shared/shake';
 import TimeSpan from 'shared/timeSpan';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { usePx } from 'client/ui/hooks/usePx';
@@ -46,7 +46,7 @@ const Timer: React.FC = () => {
 			
 			const millisecondsString = string.format('%02d', math.floor(elapsedTime % 1 * 100));
 			label.Text = `${timeString}.<font size="${px(styles.text.timer.display.millisecondsFontSize)}">${millisecondsString}</font>`;
-			label.Rotation = calculateUIRotation(peek(shakeStrengthAtom), time, 1);
+			label.Rotation = Shake.ui(peek(shakeStrengthAtom), time, 1);
 		});
 		
 		return () => {

@@ -3,8 +3,8 @@ import { peek, subscribe } from '@rbxts/charm';
 
 import TimeSpan from 'shared/timeSpan';
 import Raycast from 'shared/raycast';
+import Shake from 'shared/shake';
 import { isControllerInput } from 'shared/controller';
-import { calculateCameraRotation } from 'shared/calculateShake';
 import { debugDisableRagdollAtom } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, shakeStrengthAtom } from './atoms';
@@ -280,7 +280,7 @@ function onRenderStepped(dt: number): void {
 		
 		const shakeStrength = peek(shakeStrengthAtom);
 		if (shakeStrength > 0) {
-			const shakeCFrame = calculateCameraRotation(shakeStrength, currentTime);
+			const shakeCFrame = Shake.camera(shakeStrength, currentTime);
 			camera.CFrame = camera.CFrame.mul(shakeCFrame);
 			
 			shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
@@ -295,7 +295,7 @@ function onRenderStepped(dt: number): void {
 		camera.FieldOfView = fieldOfView;
 		
 		if (velocity > 300) {
-			const windCFrame = calculateCameraRotation(math.min((velocity - 250) / 50, 6), currentTime, 2);
+			const windCFrame = Shake.camera(math.min((velocity - 250) / 50, 6), currentTime, 2);
 			camera.CFrame = camera.CFrame.mul(windCFrame);
 		}
 	}

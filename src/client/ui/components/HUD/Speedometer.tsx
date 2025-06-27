@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { peek } from '@rbxts/charm';
 
-import { calculateUIRotation } from 'shared/calculateShake';
+import Shake from 'shared/shake';
 import Units from 'shared/units';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { stylesAtom } from 'client/ui/styles';
@@ -25,7 +25,7 @@ const Speedometer: React.FC = () => {
 		const disconnectSteppedEvent = useStepped((_, time) => {
 			const speed = Units.studsToMeters(character.body.AssemblyLinearVelocity.Magnitude);
 			label.Text = labelFormat.format(speed);
-			label.Rotation = calculateUIRotation(peek(shakeStrengthAtom), time, 3);
+			label.Rotation = Shake.ui(peek(shakeStrengthAtom), time, 3);
 		});
 		
 		return () => {
