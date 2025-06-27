@@ -1,8 +1,9 @@
-import { atom, subscribe } from '@rbxts/charm';
+import { RunService, Workspace } from '@rbxts/services';
+import { atom, peek, subscribe } from '@rbxts/charm';
 import Iris from '@rbxts/iris';
 
 import { IsDebugPanelEnabled } from 'shared/constants';
-import { cameraZOffsetAtom } from 'client/character/atoms';
+import { cameraZOffsetAtom, characterAtom } from 'client/character/atoms';
 
 export const isDebugPanelOpenAtom = atom<boolean>(false);
 export const debugDisableRagdollAtom = atom<boolean>(false);
@@ -17,14 +18,45 @@ cameraZOffsetState.onChange((cameraZOffset) => cameraZOffsetAtom(-cameraZOffset)
 const disableRagdollState = Iris.State<boolean>(false);
 disableRagdollState.onChange((disableRagdoll) => debugDisableRagdollAtom(disableRagdoll));
 
+const mapBoundariesState = Iris.State<boolean>(false);
+mapBoundariesState.onChange((mapBoundaries) => {
+	if (mapBoundaries) {
+		const boundariesPart = new Instance('Part');
+		boundariesPart.Name = 'MapBoundaries';
+		boundariesPart.Anchored = true;
+		boundariesPart.CanCollide = false;
+		boundariesPart.CastShadow = false;
+		boundariesPart.Size = new Vector3(512, 512, 4);
+		boundariesPart.Color = Color3.fromRGB(255, 255, 255);
+		boundariesPart.Material = Enum.Material.ForceField;
+		boundariesPart.Parent = Workspace;
+		
+		const renderSteppedEvent = RunService.RenderStepped.Connect(() => {
+			if (!mapBoundariesState.value) {
+				boundariesPart.Destroy();
+				renderSteppedEvent.Disconnect();
+				return;
+			}
+			
+			const character = peek(characterAtom);
+			if (character === undefined) {
+				return;
+			}
+			
+			boundariesPart.Position = character.body.Position;
+		});
+	}
+});
+
 export function render(): void {
 	Iris.Window(['Debug Panel', false, false, false, true], { position: windowPositionState, size: windowSizeState, isOpened: windowOpenedState }); {
 		Iris.SliderNum(['Camera Z-Offset', 1, 0, 100], { number: cameraZOffsetState });
 		Iris.Checkbox(['Disable Ragdoll'], { isChecked: disableRagdollState });
+		Iris.Checkbox(['Map Boundaries'], { isChecked: mapBoundariesState });
 	} Iris.End();
 }
 
-if (IsDebugPanelEnabled) {
+if (IsDebugPanelEnabled && RunService.IsRunning()) {
 	Iris.Init();
 	Iris.Connect(render);
 	
