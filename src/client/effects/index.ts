@@ -225,7 +225,7 @@ effect(() => {
 				const tweenInfo = new TweenInfo(5, Enum.EasingStyle.Linear);
 				const tweenProperties: Partial<ExtractMembers<BasePart, Tweenable>> = {
 					Size: Vector3.one.mul(2),
-					LocalTransparencyModifier: 0.5,
+					LocalTransparencyModifier: 1,
 				};
 				
 				const totalParticles = RNG.NextInteger(20, 25);
