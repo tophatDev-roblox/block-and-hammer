@@ -280,7 +280,7 @@ function onRenderStepped(dt: number): void {
 		
 		const shakeStrength = peek(shakeStrengthAtom);
 		if (shakeStrength > 0) {
-			const shakeCFrame = Shake.camera(shakeStrength, currentTime);
+			const shakeCFrame = Shake.camera(shakeStrength, currentTime, false);
 			camera.CFrame = camera.CFrame.mul(shakeCFrame);
 			
 			shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
@@ -295,7 +295,7 @@ function onRenderStepped(dt: number): void {
 		camera.FieldOfView = fieldOfView;
 		
 		if (velocity > 300) {
-			const windCFrame = Shake.camera(math.min((velocity - 250) / 50, 6), currentTime, 2);
+			const windCFrame = Shake.camera(math.min((velocity - 250) / 50, 6), currentTime, true, 2);
 			camera.CFrame = camera.CFrame.mul(windCFrame);
 		}
 	}
