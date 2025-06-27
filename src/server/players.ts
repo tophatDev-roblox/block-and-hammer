@@ -1,9 +1,9 @@
 import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/services';
 
-import { applyLeaderstats } from './leaderstats';
-import computeNameColor from 'shared/nameColor';
-import { loadPlayer, unloadPlayer } from './profileStore';
+import computeNameColor from 'shared/NameColor';
 import { remotes } from 'shared/events';
+import { applyLeaderstats } from './leaderstats';
+import { loadPlayer, unloadPlayer } from './profileStore';
 
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
 const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
