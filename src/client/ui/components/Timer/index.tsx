@@ -55,36 +55,31 @@ const Timer: React.FC = () => {
 			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>
+			<uipadding
+				PaddingTop={new UDim(0, 8)}
+				PaddingRight={new UDim(0, 12)}
+				PaddingBottom={new UDim(0, 8)}
+				PaddingLeft={new UDim(0, 12)}
+			/>
+			<uilistlayout
+				FillDirection={Enum.FillDirection.Horizontal}
+				HorizontalAlignment={Enum.HorizontalAlignment.Left}
+				VerticalAlignment={Enum.VerticalAlignment.Bottom}
+			/>
 			<frame
 				BackgroundTransparency={1}
-				AnchorPoint={new Vector2(0, 1)}
-				Position={new UDim2(0, 0, 1, 0)}
-				Size={new UDim2(1, 0, 0, 0)}
-				AutomaticSize={Enum.AutomaticSize.Y}
+				Size={new UDim2(0, 0, 0, 0)}
+				AutomaticSize={Enum.AutomaticSize.XY}
 			>
-				<uipadding
-					PaddingBottom={new UDim(0, 8)}
-					PaddingLeft={new UDim(0, 12)}
+				<Text
+					ref={labelRef}
+					styles={styles.text.timer}
+					text={'--'}
+					alignX={Enum.TextXAlignment.Left}
+					automaticHeight
+					automaticWidth
+					richText
 				/>
-				<uilistlayout
-					FillDirection={Enum.FillDirection.Horizontal}
-					HorizontalAlignment={Enum.HorizontalAlignment.Left}
-				/>
-				<frame
-					BackgroundTransparency={1}
-					Size={new UDim2(0, 0, 1, 0)}
-					AutomaticSize={Enum.AutomaticSize.X}
-				>
-					<Text
-						ref={labelRef}
-						styles={styles.text.timer}
-						text={'--'}
-						alignX={Enum.TextXAlignment.Left}
-						automaticHeight
-						automaticWidth
-						richText
-					/>
-				</frame>
 			</frame>
 		</screengui>
 	);

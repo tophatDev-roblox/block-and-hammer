@@ -10,25 +10,21 @@ const HUD: React.FC = () => {
 			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>
-			<frame
-				BackgroundTransparency={1}
-				AnchorPoint={new Vector2(0, 1)}
-				Position={new UDim2(0, 0, 1, 0)}
-				Size={new UDim2(1, 0, 0, 0)}
-				AutomaticSize={Enum.AutomaticSize.Y}
-			>
-				<uilistlayout
-					FillDirection={Enum.FillDirection.Vertical}
-					HorizontalAlignment={Enum.HorizontalAlignment.Center}
-					Padding={new UDim(0, 0)}
-				/>
-				<uipadding
-					PaddingBottom={new UDim(0, 8)}
-				/>
-				<MoveHint />
-				<Speedometer />
-				<Altitude />
-			</frame>
+			<uilistlayout
+				FillDirection={Enum.FillDirection.Vertical}
+				HorizontalAlignment={Enum.HorizontalAlignment.Center}
+				VerticalAlignment={Enum.VerticalAlignment.Bottom}
+				Padding={new UDim(0, 0)}
+			/>
+			<uipadding
+				PaddingTop={new UDim(0, 8)}
+				PaddingRight={new UDim(0, 8)}
+				PaddingBottom={new UDim(0, 8)}
+				PaddingLeft={new UDim(0, 8)}
+			/>
+			<MoveHint />
+			<Speedometer />
+			<Altitude />
 		</screengui>
 	);
 };
