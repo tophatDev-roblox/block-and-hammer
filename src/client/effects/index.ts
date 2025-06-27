@@ -9,10 +9,16 @@ import { materialConfiguration } from './materials';
 
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
+const hapticsFolder = Workspace.WaitForChild('Haptics') as Folder;
 const hammerHitSound = SoundService.WaitForChild('HammerHit') as Sound;
 const explosionSound = SoundService.WaitForChild('Explosion') as Sound;
 
 const RNG = new Random();
+
+const explosionHaptics = new Instance('HapticEffect');
+explosionHaptics.Type = Enum.HapticEffectType.GameplayExplosion;
+explosionHaptics.Name = 'CharacterExplosion';
+explosionHaptics.Parent = hapticsFolder;
 
 function getPointOn3dCircle(center: Vector3, normal: Vector3, radius: number, theta: number): Vector3 {
 	const A = math.abs(normal.X) < 0.1 ? Vector3.xAxis : Vector3.yAxis;
@@ -59,17 +65,17 @@ effect(() => {
 		const point = targetPart.GetClosestPointOnSurface(character.hammer.head.Position);
 		const inheritedVelocity = hammerVelocity.mul(-0.2);
 		
-		const tweenProperties: Partial<ExtractMembers<BasePart, Tweenable>> = {
-			Size: Vector3.zero,
-			LocalTransparencyModifier: 1,
-		};
-		
 		const baseParticle = Instance.fromExisting(targetPart);
 		baseParticle.Anchored = false;
 		baseParticle.Massless = true;
 		baseParticle.CanCollide = true;
 		baseParticle.CastShadow = false;
 		baseParticle.CollisionGroup = 'Particles';
+		
+		const tweenProperties: Partial<ExtractMembers<BasePart, Tweenable>> = {
+			Size: Vector3.zero,
+			LocalTransparencyModifier: 1,
+		};
 		
 		const normalVector = result.Normal.Unit;
 		if (magnitude > 165) {
@@ -80,7 +86,7 @@ effect(() => {
 			
 			const particles = new Set<BasePart>();
 			for (const i of $range(1, totalParticles)) {
-				const theta = (i - 1) / (totalParticles - 1) * 2 * math.pi;
+				const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi);
 				const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.1, 1), theta);
 				
 				const particle = Instance.fromExisting(baseParticle);
@@ -125,7 +131,7 @@ effect(() => {
 			
 			const particles = new Set<BasePart>();
 			for (const i of $range(1, totalParticles)) {
-				const theta = (i - 1) / (totalParticles - 1) * 2 * math.pi;
+				const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi);
 				const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.1, 1), theta);
 				
 				const particle = Instance.fromExisting(baseParticle);
@@ -187,6 +193,11 @@ effect(() => {
 		if (impactMagnitude > 130) {
 			let effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 3);
 			
+			explosionHaptics.Play();
+			task.delay(1, () => {
+				explosionHaptics.Stop();
+			});
+			
 			const sound = explosionSound.Clone() as Sound;
 			sound.PlaybackSpeed = RNG.NextNumber(0.97, 1.03);
 			sound.Parent = Workspace;
@@ -199,18 +210,58 @@ effect(() => {
 			explosion.ExplosionType = Enum.ExplosionType.NoCraters;
 			explosion.Parent = effectsFolder;
 			
-			if (impactMagnitude > 450) {
-				const rayDistance = 50;
+			const rayDistance = 50;
+			
+			const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder]);
+			const direction = previousBodyVelocity.sub(bodyVelocity).Unit.mul(rayDistance);
+			const origin = character.body.Position.sub(direction.Unit.mul(5));
+			
+			const result = Workspace.Raycast(origin, direction, params);
+			if (result !== undefined) {
+				const tweenInfo = new TweenInfo(5, Enum.EasingStyle.Linear);
+				const tweenProperties: Partial<ExtractMembers<BasePart, Tweenable>> = {
+					Size: Vector3.one.mul(2),
+					LocalTransparencyModifier: 0.5,
+				};
 				
-				effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 5);
+				const totalParticles = RNG.NextInteger(20, 25);
+				const normalVector = result.Normal;
 				
-				const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder]);
-				const direction = previousBodyVelocity.sub(bodyVelocity).Unit.mul(rayDistance);
-				const origin = character.body.Position.sub(direction.Unit.mul(5));
+				const baseParticle = Instance.fromExisting(result.Instance);
+				baseParticle.Anchored = false;
+				baseParticle.Massless = true;
+				baseParticle.CanCollide = true;
+				baseParticle.CastShadow = false;
+				baseParticle.CollisionGroup = 'Particles';
 				
-				const result = Workspace.Raycast(origin, direction, params);
+				const particles = new Set<BasePart>();
+				for (const i of $range(1, totalParticles)) {
+					const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi);
+					const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.3, 2), theta);
+					
+					const particle = Instance.fromExisting(baseParticle);
+					particle.Size = Vector3.one.mul(RNG.NextNumber(1.5, 3));
+					particle.CFrame = CFrame.lookAlong(result.Position, RNG.NextUnitVector());
+					particle.AssemblyLinearVelocity = spreadDirection.Unit.mul(RNG.NextNumber(60, 80));
+					particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
+					particle.Parent = effectsFolder;
+					
+					const tween = TweenService.Create(particle, tweenInfo, tweenProperties);
+					tween.Play();
+					
+					particles.add(particle);
+				}
 				
-				if (result !== undefined) {
+				baseParticle.Destroy();
+				
+				task.delay(tweenInfo.Time, () => {
+					for (const particle of particles) {
+						particle.Destroy();
+					}
+				});
+				
+				if (impactMagnitude > 450) {
+					effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 5);
 					const tweenInfo = new TweenInfo(20, Enum.EasingStyle.Linear);
 					
 					const radius = 10 * math.log((impactMagnitude - 300) / 10, 2);
@@ -219,7 +270,7 @@ effect(() => {
 					
 					const blocks = new Set<BasePart>();
 					for (const i of $range(1, totalParts)) {
-						const theta = i / totalParts * 2 * math.pi + RNG.NextNumber(-randomAngleOffset, randomAngleOffset);
+						const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi) + RNG.NextNumber(-randomAngleOffset, randomAngleOffset);
 						const point = getPointOn3dCircle(result.Position, result.Normal, radius, theta);
 						
 						const origin = point.add(result.Normal.mul(5));
@@ -256,10 +307,10 @@ effect(() => {
 						}
 					});
 				}
+				
+				ragdoll(effectIntensity);
+				shake(effectIntensity);
 			}
-			
-			ragdoll(effectIntensity);
-			shake(effectIntensity);
 		}
 		
 		previousBodyVelocity = bodyVelocity;
