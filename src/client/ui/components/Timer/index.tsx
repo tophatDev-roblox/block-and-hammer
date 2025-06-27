@@ -25,7 +25,12 @@ const Timer: React.FC = () => {
 		
 		const disconnectSteppedEvent = useStepped((_, time) => {
 			const currentTime = TimeSpan.now();
-			const startTime = tonumber(character.model.GetAttribute('startTime')) ?? currentTime;
+			const startTime = character.model.GetAttribute('startTime') ?? currentTime;
+			if (!typeIs(startTime, 'number')) {
+				warn('[client::ui/Timer] character attribute "startTime" is not a number');
+				return;
+			}
+			
 			const elapsedTime = currentTime - startTime;
 			
 			const seconds = math.floor(elapsedTime) % 60;

@@ -7,7 +7,7 @@ import { isControllerInput } from 'shared/controller';
 import { calculateCameraRotation } from 'shared/calculateShake';
 import { debugDisableRagdollAtom } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
-import { cameraZOffsetAtom, characterAtom, disableCameraAtom, shakeStrengthAtom } from './atoms';
+import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, shakeStrengthAtom } from './atoms';
 import { userSettingsAtom } from 'client/settings';
 import { InputType, inputTypeAtom } from 'client/inputType';
 import { sideMenuOpenedAtom } from 'client/sideMenu';
@@ -41,7 +41,7 @@ export const camera = Workspace.WaitForChild('Camera') as Camera;
 
 export function quickReset(): void {
 	const character = peek(characterAtom);
-	if (character === undefined) {
+	if (character === undefined || peek(forcePauseGameplayAtom)) {
 		return;
 	}
 	
@@ -69,7 +69,7 @@ export function quickReset(): void {
 
 export function ragdoll(seconds: number): void {
 	const character = peek(characterAtom);
-	if (character === undefined) {
+	if (character === undefined || peek(forcePauseGameplayAtom)) {
 		return;
 	}
 	
@@ -120,6 +120,10 @@ export function ragdoll(seconds: number): void {
 }
 
 function endRagdoll(): void {
+	if (peek(forcePauseGameplayAtom)) {
+		return;
+	}
+	
 	ragdollTimeEnd = undefined;
 	
 	const character = peek(characterAtom);
@@ -145,11 +149,15 @@ function endRagdoll(): void {
 }
 
 export function shake(magnitude: number): void {
+	if (peek(forcePauseGameplayAtom)) {
+		return;
+	}
+	
 	shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength * 1.2));
 }
 
 function processInput(input: InputObject): void {
-	if (input.UserInputState === Enum.UserInputState.Begin && input.UserInputType !== Enum.UserInputType.Touch) {
+	if (input.UserInputState === Enum.UserInputState.Begin && input.UserInputType !== Enum.UserInputType.Touch || peek(forcePauseGameplayAtom)) {
 		return;
 	}
 	
@@ -310,6 +318,36 @@ task.spawn(() => {
 subscribe(disableCameraAtom, (disableCamera) => {
 	if (disableCamera) {
 		camera.FieldOfView = 70;
+	}
+});
+
+subscribe(() => {
+	characterAtom();
+	return forcePauseGameplayAtom();
+}, (forcePauseGameplay, previousForcePauseGameplay) => {
+	const character = characterAtom();
+	if (character === undefined || forcePauseGameplay === previousForcePauseGameplay) {
+		return;
+	}
+	
+	print('[client::character] forcePauseGameplay =', forcePauseGameplay);
+	
+	if (forcePauseGameplay) {
+		character.body.Anchored = true;
+		character.hammer.head.Anchored = true;
+		
+		const startTime = character.model.GetAttribute('startTime');
+		if (typeIs(startTime, 'number')) {
+			forcePauseTimeAtom(os.clock() - startTime);
+		}
+	} else {
+		character.body.Anchored = false;
+		character.hammer.head.Anchored = false;
+		
+		const forcePauseTime = peek(forcePauseTimeAtom);
+		if (forcePauseTime !== undefined) {
+			character.model.SetAttribute('startTime', os.clock() - forcePauseTime);
+		}
 	}
 });
 

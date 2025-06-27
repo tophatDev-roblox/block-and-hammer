@@ -1,3 +1,5 @@
-import { createRemotes } from '@rbxts/remo';
+import { createRemotes, remote, Server } from '@rbxts/remo';
 
-export const remotes = createRemotes({});
+export const remotes = createRemotes({
+	fullReset: remote<Server>(),
+});
