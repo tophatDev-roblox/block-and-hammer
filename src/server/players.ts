@@ -1,7 +1,7 @@
 import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/services';
 
 import computeNameColor from 'shared/NameColor';
-import { remotes } from 'shared/events';
+import { Remotes } from 'shared/events';
 import { applyLeaderstats } from './leaderstats';
 import { loadPlayer, unloadPlayer } from './profileStore';
 
@@ -88,4 +88,4 @@ for (const player of Players.GetPlayers()) {
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);
 RunService.Stepped.Connect(onStepped);
-remotes.fullReset.connect(onFullReset);
+Remotes.fullReset.connect(onFullReset);

@@ -4,7 +4,7 @@ import { useAtom } from '@rbxts/react-charm';
 import { usePx } from '../hooks/usePx';
 import { forcePauseGameplayAtom } from 'client/character/atoms';
 import { refreshCallbackAtom } from './ErrorBoundary';
-import { remotes } from 'shared/events';
+import { Remotes } from 'shared/events';
 
 interface FallbackProps {
 	err: Error;
@@ -101,7 +101,7 @@ const Fallback: React.FC<FallbackProps> = ({ err }) => {
 							TextWrapped={false}
 							Event={{
 								MouseButton1Click: () => {
-									remotes.fullReset.fire();
+									Remotes.fullReset.fire();
 									task.wait(0.5);
 									refreshCallback.refresh();
 								},
