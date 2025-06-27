@@ -26,8 +26,10 @@ client.registry.registerGroup(
 	{ name: 'teleport', description: 'subcommands for teleporting yourself' },
 );
 
-const commandsContainer = script.FindFirstChild('commands')!;
-client.registry.load(commandsContainer);
+const commandsContainer = script.FindFirstChild('commands');
+if (commandsContainer !== undefined) {
+	client.registry.load(commandsContainer);
+}
 
 client.start()
 	.then(() => {

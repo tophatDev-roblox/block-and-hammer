@@ -2,11 +2,9 @@ import { Centurion } from '@rbxts/centurion';
 
 const server = Centurion.server();
 
-server.registry.registerGroup(
-	{ name: 'dollars', description: 'subcommands for changing your dollars amount' },
-);
-
-const commandsContainer = script.FindFirstChild('commands')!;
-server.registry.load(commandsContainer);
+const commandsContainer = script.FindFirstChild('commands');
+if (commandsContainer !== undefined) {
+	server.registry.load(commandsContainer);
+}
 
 server.start();
