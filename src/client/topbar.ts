@@ -4,11 +4,11 @@ import { subscribe } from '@rbxts/charm';
 import Icon from 'shared/Icon';
 import NumberSpinner from 'shared/NumberSpinner';
 import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
-import { StylesData } from './stylesParser';
-import defaultStyles from './stylesParser/default';
-import { InputType, inputTypeAtom } from './inputType';
-import { isDebugPanelOpenAtom } from './debugPanel';
-import { isMenuOpenAtom } from './ui';
+import { StylesData } from 'client/stylesParser';
+import defaultStyles from 'client/stylesParser/default';
+import { InputType, inputTypeAtom } from 'client/inputType';
+import { isDebugPanelOpenAtom } from 'client/debugPanel';
+import { sideMenuOpenedAtom } from 'client/sideMenu';
 
 const client = Players.LocalPlayer;
 
@@ -55,15 +55,15 @@ const dollarsIcon = new Icon()
 	]);
 
 menuIcon.toggled.Connect((toggled) => {
-	isMenuOpenAtom(toggled);
+	sideMenuOpenedAtom(toggled);
 });
 
 dollarsIcon.selected.Connect(() => {
 	menuIcon.select();
 });
 
-subscribe(isMenuOpenAtom, (isMenuOpen) => {
-	if (isMenuOpen) {
+subscribe(sideMenuOpenedAtom, (sideMenuOpened) => {
+	if (sideMenuOpened) {
 		menuIcon.select();
 	} else {
 		menuIcon.deselect();
