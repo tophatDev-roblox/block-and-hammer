@@ -153,7 +153,7 @@ export function shake(magnitude: number): void {
 		return;
 	}
 	
-	shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength * 1.2));
+	shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength));
 }
 
 function processInput(input: InputObject): void {
