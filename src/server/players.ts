@@ -12,7 +12,7 @@ const createdCharacters = new Set<Model>();
 
 function respawn(player: Player): void {
 	const existingCharacter = Workspace.FindFirstChild(player.Name) ?? player.Character;
-	if (existingCharacter?.IsA('Model')) {
+	if (existingCharacter?.IsA('Model') && existingCharacter.Parent !== undefined) {
 		existingCharacter.Destroy();
 		createdCharacters.delete(existingCharacter);
 		player.Character = undefined;
