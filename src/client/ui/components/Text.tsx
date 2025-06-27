@@ -1,18 +1,18 @@
 import React, { forwardRef, useMemo } from '@rbxts/react';
 
+import { getAutomaticSize } from 'shared/getAutomaticSize';
 import { parseFontStyle, TextStyleData } from 'client/stylesParser';
 import { usePx } from '../hooks/usePx';
 import Gradient from './Gradient';
 import Outline from './Outline';
-import { getAutomaticSize } from 'shared/getAutomaticSize';
 
 interface TextProps extends React.PropsWithChildren {
 	styles: TextStyleData;
 	text: string;
 	width?: UDim;
 	height?: UDim;
-	automaticHeight?: boolean;
 	automaticWidth?: boolean;
+	automaticHeight?: boolean;
 	order?: number;
 	alignX?: Enum.TextXAlignment;
 	alignY?: Enum.TextYAlignment;
@@ -25,8 +25,8 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 		text,
 		width,
 		height,
-		automaticHeight = false,
 		automaticWidth = false,
+		automaticHeight = false,
 		order = 1,
 		alignX = Enum.TextXAlignment.Center,
 		alignY = Enum.TextYAlignment.Center,
@@ -34,13 +34,12 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 		children,
 	} = props;
 	
-	const px = usePx();
-	
 	const fontFace = useMemo<Font>(() => parseFontStyle(font), [font]);
 	
-	const isRGBA = 'red' in color;
+	const px = usePx();
 	
 	const automaticSize = getAutomaticSize(automaticWidth, automaticHeight);
+	const isRGBA = 'red' in color;
 	
 	let labelSize =
 		automaticHeight && automaticWidth ? new UDim2(0, 0, 0, 0)
@@ -73,7 +72,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 					styles={color}
 				/>
 			)}
-			{outline && (
+			{outline !== false && (
 				<Outline
 					styles={outline}
 					applyStrokeMode={Enum.ApplyStrokeMode.Contextual}
