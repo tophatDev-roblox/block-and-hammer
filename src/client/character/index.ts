@@ -7,10 +7,10 @@ import Shake from 'shared/shake';
 import Controller from 'shared/controller';
 import { debugDisableRagdollAtom } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
-import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, hammerDistanceAtom, shakeStrengthAtom } from './atoms';
 import { userSettingsAtom } from 'client/settings';
 import { InputType, inputTypeAtom } from 'client/inputType';
 import { sideMenuOpenedAtom } from 'client/sideMenu';
+import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, hammerDistanceAtom, mousePositionAtom, shakeStrengthAtom } from './atoms';
 
 export interface CharacterParts {
 	model: Model;
@@ -30,6 +30,7 @@ export interface CharacterParts {
 const client = Players.LocalPlayer;
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
 const baseStunParticles = assetsFolder.WaitForChild('StunParticles') as Part;
+const mouseCursorPart = Workspace.WaitForChild('MouseCursor') as Part;
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 const RNG = new Random();
@@ -119,6 +120,14 @@ export function ragdoll(seconds: number): void {
 	}
 }
 
+export function shake(magnitude: number): void {
+	if (peek(forcePauseGameplayAtom)) {
+		return;
+	}
+	
+	shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength));
+}
+
 function endRagdoll(): void {
 	if (peek(forcePauseGameplayAtom)) {
 		return;
@@ -148,12 +157,20 @@ function endRagdoll(): void {
 	}
 }
 
-export function shake(magnitude: number): void {
-	if (peek(forcePauseGameplayAtom)) {
-		return;
+function rayIntersectXYPlane(ray: Ray): Vector3 {
+	const distanceToPlane = (ray.Origin.Z / ray.Direction.Z) * -1;
+	const position = ray.Origin.add(ray.Direction.mul(distanceToPlane));
+	return position;
+}
+
+function clampPositionToCircle(position: Vector3, center: Vector3, radius: number): Vector3 {
+	const direction = position.sub(center);
+	const distance = direction.Magnitude;
+	if (distance <= radius) {
+		return position;
 	}
 	
-	shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength));
+	return center.add(direction.Unit.mul(radius));
 }
 
 function processInput(input: InputObject): void {
@@ -170,21 +187,13 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
-	const body = character.body;
 	let targetPosition: Vector3 | undefined = undefined;
 	if (positionalInputTypes.has(input.UserInputType)) {
-		const ray = camera.ScreenPointToRay(input.Position.X, input.Position.Y);
-		const distanceToPlane = (ray.Origin.Z / ray.Direction.Z) * -1;
-		const position = ray.Origin.add(ray.Direction.mul(distanceToPlane));
-		targetPosition = position;
+		mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
 		
-		const directionToTarget = position.sub(body.Position);
-		const distanceToTarget = directionToTarget.Magnitude;
-		if (distanceToTarget > hammerDistance) {
-			const scale = hammerDistance / distanceToTarget;
-			const newPosition = new Vector3(body.Position.X + directionToTarget.X * scale, body.Position.Y + directionToTarget.Y * scale, 0);
-			targetPosition = newPosition;
-		}
+		const ray = camera.ScreenPointToRay(input.Position.X, input.Position.Y);
+		const position = rayIntersectXYPlane(ray);
+		targetPosition = position;
 	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Controller) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
 			let direction = input.Position;
@@ -194,7 +203,10 @@ function processInput(input: InputObject): void {
 				direction = new Vector3(0, 0.001, 0);
 			}
 			
-			targetPosition = body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
+			const position = character.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)))
+			targetPosition = position;
+			
+			mousePositionAtom(undefined);
 		}
 	}
 	
@@ -204,7 +216,23 @@ function processInput(input: InputObject): void {
 			hasTimeStarted = true;
 		}
 		
-		character.targetAttachment.WorldCFrame = CFrame.lookAt(targetPosition.mul(new Vector3(1, 1, 0)), body.Position, Vector3.zAxis);
+		character.targetAttachment.WorldCFrame = CFrame.lookAt(
+			clampPositionToCircle(targetPosition.mul(new Vector3(1, 1, 0)), character.body.Position, hammerDistance),
+			character.body.Position,
+			Vector3.zAxis,
+		);
+	}
+}
+
+function onInputEnded(input: InputObject): void {
+	const character = peek(characterAtom);
+	const inputType = peek(inputTypeAtom);
+	if (character === undefined || inputType !== InputType.Controller) {
+		return;
+	}
+	
+	if (Controller.isGamepadInput(input.UserInputType) && input.KeyCode === Enum.KeyCode.Thumbstick2) {
+		character.targetAttachment.CFrame = CFrame.fromOrientation(math.pi / -2, 0, 0);
 	}
 }
 
@@ -268,6 +296,17 @@ function onRenderStepped(dt: number): void {
 	}
 	
 	camera.CameraType = Enum.CameraType.Scriptable;
+	
+	const mousePosition = peek(mousePositionAtom);
+	if (mousePosition !== undefined) {
+		const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
+		const position = rayIntersectXYPlane(ray);
+		mouseCursorPart.Position = position;
+		
+		
+	} else {
+		mouseCursorPart.Position = new Vector3(0, -500, 0);
+	}
 	
 	const disableCamera = peek(disableCameraAtom);
 	if (!disableCamera) {
@@ -357,6 +396,7 @@ if (client.Character !== undefined) {
 
 UserInputService.InputBegan.Connect(processInput);
 UserInputService.InputChanged.Connect(processInput);
+UserInputService.InputEnded.Connect(onInputEnded);
 client.CharacterAdded.Connect(onCharacterAdded);
 client.CharacterRemoving.Connect(onCharacterRemoving);
 RunService.RenderStepped.Connect(onRenderStepped);
