@@ -201,13 +201,14 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
+	
 	if (input.UserInputState === Enum.UserInputState.Begin && input.UserInputType !== Enum.UserInputType.Touch || peek(forcePauseGameplayAtom)) {
 		return;
 	}
 	
+	const character = peek(characterAtom);
 	const inputType = peek(inputTypeAtom);
 	const userSettings = peek(userSettingsAtom);
-	const character = peek(characterAtom);
 	const sideMenuOpened = peek(sideMenuOpenedAtom);
 	const hammerDistance = peek(hammerDistanceAtom);
 	if (character === undefined || sideMenuOpened) {
@@ -226,9 +227,8 @@ function processInput(input: InputObject): void {
 			}
 			
 			const position = character.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
-			mouseCursorPart.Position = position;
-			moveTargetAttachment(position);
-			mousePositionAtom(undefined);
+			const [screenPosition] = camera.WorldToScreenPoint(position);
+			mousePositionAtom(new Vector2(screenPosition.X, screenPosition.Y));
 		}
 	}
 }
@@ -242,7 +242,7 @@ function onInputEnded(input: InputObject): void {
 	
 	if (Controller.isGamepadInput(input.UserInputType) && input.KeyCode === Enum.KeyCode.Thumbstick2) {
 		character.targetAttachment.CFrame = CFrame.fromOrientation(math.pi / -2, 0, 0);
-		mouseCursorPart.Position = new Vector3(0, -500, 0);
+		mousePositionAtom(undefined);
 	}
 }
 
@@ -260,28 +260,28 @@ function onCharacterAdded(newCharacter: Model): void {
 	newCharacter.SetAttribute('startTime', undefined);
 	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
-	const body = newCharacter.WaitForChild('Body') as Part;
-	const hammer = newCharacter.WaitForChild('Hammer') as Model;
-	const head = hammer.WaitForChild('Head') as Part;
+	const body = newCharacter.FindFirstChild('Body') as Part;
+	const hammer = newCharacter.FindFirstChild('Hammer') as Model;
+	const head = hammer.FindFirstChild('Head') as Part;
 	previousCameraCFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, peek(cameraZOffsetAtom) / 3)), Vector3.yAxis.mul(-1), Vector3.zAxis);
 	
 	characterAtom({
 		model: newCharacter,
 		body: body,
-		centerAttachment: body.WaitForChild('Center.0') as Attachment,
-		targetAttachment: body.WaitForChild('Target.1') as Attachment,
-		rotationLock: body.WaitForChild('AlignOrientation') as AlignOrientation,
+		centerAttachment: body.FindFirstChild('Center.0') as Attachment,
+		targetAttachment: body.FindFirstChild('Target.1') as Attachment,
+		rotationLock: body.FindFirstChild('AlignOrientation') as AlignOrientation,
 		hammer: {
 			model: hammer,
-			handle: hammer.WaitForChild('Handle') as Part,
+			handle: hammer.FindFirstChild('Handle') as Part,
 			head: head,
-			alignPosition: head.WaitForChild('AlignPosition') as AlignPosition,
-			alignOrientation: head.WaitForChild('AlignOrientation') as AlignOrientation,
+			alignPosition: head.FindFirstChild('AlignPosition') as AlignPosition,
+			alignOrientation: head.FindFirstChild('AlignOrientation') as AlignOrientation,
 		},
 	});
 	
-	const bubbleChatOrigin = newCharacter.WaitForChild('BubbleChatOrigin') as Part;
-	const bubbleChatAttachment = bubbleChatOrigin.WaitForChild('Rigid.0') as Attachment;
+	const bubbleChatOrigin = newCharacter.FindFirstChild('BubbleChatOrigin') as Part;
+	const bubbleChatAttachment = bubbleChatOrigin.FindFirstChild('Rigid.0') as Attachment;
 	bubbleChatAttachment.Position = new Vector3(0, -1.5, 2.5);
 	
 	// TODO: fix voicechat (idk how tho i havent found any guide for voicechat + new audio api)
@@ -309,13 +309,22 @@ function onRenderStepped(dt: number): void {
 	
 	camera.CameraType = Enum.CameraType.Scriptable;
 	
+	const userSettings = peek(userSettingsAtom);
+	const inputType = peek(inputTypeAtom);
 	const mousePosition = peek(mousePositionAtom);
 	if (mousePosition !== undefined) {
 		const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
 		const position = rayIntersectXYPlane(ray);
 		
-		moveTargetAttachment(position);
-		mouseCursorPart.Position = position;
+		if (inputType === InputType.Controller && userSettings.controllerSmoothingEnabled) {
+			mouseCursorPart.Position = mouseCursorPart.Position.Lerp(position, dt * userSettings.controllerSmoothingFactor);
+		} else {
+			mouseCursorPart.Position = position;
+		}
+		
+		moveTargetAttachment(mouseCursorPart.Position);
+	} else if (inputType === InputType.Controller) {
+		mouseCursorPart.Position = character.body.Position;
 	}
 	
 	const disableCamera = peek(disableCameraAtom);
