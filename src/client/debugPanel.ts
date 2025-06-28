@@ -5,8 +5,18 @@ import Iris from '@rbxts/iris';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { cameraZOffsetAtom, characterAtom } from 'client/character/atoms';
 
-export const isDebugPanelOpenAtom = atom<boolean>(false);
-export const debugDisableRagdollAtom = atom<boolean>(false);
+export namespace DebugPanel {
+	export const isOpenAtom = atom<boolean>(false);
+	export const disableRagdollAtom = atom<boolean>(false);
+	
+	export function render(): void {
+		Iris.Window(['Debug Panel', false, false, false, true], { position: windowPositionState, size: windowSizeState, isOpened: windowOpenedState }); {
+			Iris.SliderNum(['Camera Z-Offset', 1, 0, 100], { number: cameraZOffsetState });
+			Iris.Checkbox(['Disable Ragdoll'], { isChecked: disableRagdollState });
+			Iris.Checkbox(['Map Boundaries'], { isChecked: mapBoundariesState });
+		} Iris.End();
+	}
+}
 
 const windowPositionState = Iris.State<Vector2>(Vector2.zero);
 const windowSizeState = Iris.State<Vector2>(new Vector2(400, 250));
@@ -16,7 +26,7 @@ const cameraZOffsetState = Iris.State<number>(30);
 cameraZOffsetState.onChange((cameraZOffset) => cameraZOffsetAtom(-cameraZOffset));
 
 const disableRagdollState = Iris.State<boolean>(false);
-disableRagdollState.onChange((disableRagdoll) => debugDisableRagdollAtom(disableRagdoll));
+disableRagdollState.onChange((disableRagdoll) => DebugPanel.disableRagdollAtom(disableRagdoll));
 
 const mapBoundariesState = Iris.State<boolean>(false);
 mapBoundariesState.onChange((mapBoundaries) => {
@@ -48,20 +58,12 @@ mapBoundariesState.onChange((mapBoundaries) => {
 	}
 });
 
-export function render(): void {
-	Iris.Window(['Debug Panel', false, false, false, true], { position: windowPositionState, size: windowSizeState, isOpened: windowOpenedState }); {
-		Iris.SliderNum(['Camera Z-Offset', 1, 0, 100], { number: cameraZOffsetState });
-		Iris.Checkbox(['Disable Ragdoll'], { isChecked: disableRagdollState });
-		Iris.Checkbox(['Map Boundaries'], { isChecked: mapBoundariesState });
-	} Iris.End();
-}
-
 if (IsDebugPanelEnabled && RunService.IsRunning()) {
 	Iris.Init();
-	Iris.Connect(render);
+	Iris.Connect(DebugPanel.render);
 	
-	subscribe(isDebugPanelOpenAtom, (isDebugPanelOpen) => {
-		windowOpenedState.set(isDebugPanelOpen);
+	subscribe(DebugPanel.isOpenAtom, (isOpen) => {
+		windowOpenedState.set(isOpen);
 	});
 	
 	subscribe(cameraZOffsetAtom, (cameraZOffset) => {

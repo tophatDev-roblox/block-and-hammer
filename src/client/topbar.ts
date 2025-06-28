@@ -7,7 +7,7 @@ import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
 import { Styles } from 'client/stylesParser';
 import defaultStyles from 'client/stylesParser/default';
 import { InputType, inputTypeAtom } from 'client/inputType';
-import { isDebugPanelOpenAtom } from 'client/debugPanel';
+import { DebugPanel } from 'client/debugPanel';
 import { sideMenuOpenedAtom } from 'client/sideMenu';
 
 const client = Players.LocalPlayer;
@@ -98,8 +98,8 @@ if (IsDebugPanelEnabled) {
 		.modifyTheme(theme)
 		.modifyTheme(['IconImageScale', 'Value', 0.7]);
 	
-	subscribe(isDebugPanelOpenAtom, (isDebugPanelOpen) => {
-		if (isDebugPanelOpen) {
+	subscribe(DebugPanel.isOpenAtom, (isOpen) => {
+		if (isOpen) {
 			debugIcon.select();
 		} else {
 			debugIcon.deselect();
@@ -107,11 +107,11 @@ if (IsDebugPanelEnabled) {
 	});
 	
 	debugIcon.selected.Connect(() => {
-		isDebugPanelOpenAtom(true);
+		DebugPanel.isOpenAtom(true);
 	});
 	
 	debugIcon.deselected.Connect(() => {
-		isDebugPanelOpenAtom(false);
+		DebugPanel.isOpenAtom(false);
 	});
 }
 

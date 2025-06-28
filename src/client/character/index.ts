@@ -5,7 +5,7 @@ import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
 import { Shake } from 'shared/shake';
 import { Controller } from 'shared/controller';
-import { debugDisableRagdollAtom } from 'client/debugPanel';
+import { DebugPanel } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { userSettingsAtom } from 'client/settings';
 import { InputType, inputTypeAtom } from 'client/inputType';
@@ -100,7 +100,7 @@ export function ragdoll(seconds: number): void {
 		
 		stunParticles.Parent = character.model;
 		
-		if (IsDebugPanelEnabled && peek(debugDisableRagdollAtom)) {
+		if (IsDebugPanelEnabled && peek(DebugPanel.disableRagdollAtom)) {
 			return;
 		}
 		
