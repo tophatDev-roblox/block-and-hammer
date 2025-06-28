@@ -1,15 +1,15 @@
 import React, { useEffect, useRef } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
+import { peek } from '@rbxts/charm';
 
 import { Shake } from 'shared/shake';
 import { TimeSpan } from 'shared/timeSpan';
+import { RichText } from 'shared/richText';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { usePx } from 'client/ui/hooks/usePx';
 import { Styles } from 'client/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
-import { peek } from '@rbxts/charm';
-import { RichText } from 'shared/richText';
 
 const Timer: React.FC = () => {
 	const labelRef = useRef<TextLabel>();
@@ -56,7 +56,7 @@ const Timer: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [character, styles, px]);
+	}, [character, styles.text.timer.display.millisecondsFontSize, px]);
 	
 	return (
 		<screengui
