@@ -1,8 +1,8 @@
 import { RunService, SoundService, TweenService, Workspace } from '@rbxts/services';
 import { effect, peek } from '@rbxts/charm';
 
-import TimeSpan from 'shared/timeSpan';
-import Raycast from 'shared/raycast';
+import { TimeSpan } from 'shared/timeSpan';
+import { Raycast } from 'shared/raycast';
 import { shake, ragdoll } from 'client/character';
 import { characterAtom } from 'client/character/atoms';
 import { materialConfiguration } from './materials';

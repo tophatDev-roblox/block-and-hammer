@@ -1,9 +1,9 @@
 import { atom } from '@rbxts/charm';
 
 export enum ControllerDetectionType {
-	None = -1,
-	OnInput = 0,
-	LastInput = 1,
+	None,
+	OnInput,
+	LastInput,
 }
 
 interface UserSettings {

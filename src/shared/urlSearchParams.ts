@@ -1,5 +1,5 @@
 import encodeURIComponent from './encodeURIComponent';
-import String from './string';
+import { String } from './string';
 
 type ParamEntry = [string, string];
 

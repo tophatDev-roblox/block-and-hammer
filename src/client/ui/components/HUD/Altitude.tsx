@@ -2,8 +2,8 @@ import React, { useEffect, useRef } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { peek } from '@rbxts/charm';
 
-import Shake from 'shared/shake';
-import Units from 'shared/units';
+import { Shake } from 'shared/shake';
+import { Units } from 'shared/units';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { stylesAtom } from 'client/ui/styles';
 import { shakeStrengthAtom, characterAtom } from 'client/character/atoms';

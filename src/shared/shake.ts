@@ -1,5 +1,5 @@
-export default class Shake {
-	static ui(this: void, shakeStrength: number, time: number, parameterId: number, angle: number = 15): number {
+export namespace Shake {
+	export function ui(shakeStrength: number, time: number, parameterId: number, angle: number = 15): number {
 		const noiseValue = time * 2;
 		const multiplier = math.noise(
 			math.sign(parameterId & 0b100) * noiseValue,
@@ -10,7 +10,7 @@ export default class Shake {
 		return multiplier * shakeStrength * angle;
 	}
 	
-	static camera(this: void, shakeStrength: number, time: number, altParameters: boolean, maxAngle: number = 5): CFrame {
+	export function camera(shakeStrength: number, time: number, altParameters: boolean, maxAngle: number = 5): CFrame {
 		const angle = math.rad(shakeStrength * maxAngle);
 		const noiseValue = time * 2;
 		

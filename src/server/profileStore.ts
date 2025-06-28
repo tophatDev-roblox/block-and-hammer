@@ -2,7 +2,7 @@ import { Players, RunService } from '@rbxts/services';
 
 import ProfileStore, { Profile } from 'shared/ProfileStore';
 import { MaxDollars, MinDollars, TestingPlaceId } from 'shared/constants';
-import Number from 'shared/number';
+import { Number } from 'shared/number';
 
 interface DataTemplate {
 	dollars: number

@@ -1,7 +1,7 @@
-export default class Number {
-	static NaN = tonumber('nan')!;
+export namespace Number {
+	export const NaN = tonumber('nan')!;
 	
-	static isNaN(this: void, num: number): boolean {
+	export function isNaN(num: number): boolean {
 		return num !== num;
 	}
 }

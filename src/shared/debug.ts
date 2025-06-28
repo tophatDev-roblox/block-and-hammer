@@ -15,14 +15,14 @@ baseSphere.Shape = Enum.PartType.Ball;
 
 const highlightModels = new Map<string, Model>();
 
-export default class Debug {
-	static visualizeRaycast(origin: Vector3, direction: Vector3, raycast?: RaycastResult, alternateColors?: boolean): Part {
+export namespace Debug {
+	export function visualizeRaycast(origin: Vector3, direction: Vector3, raycast?: RaycastResult, alternateColors?: boolean): Part {
 		const originPart = Instance.fromExisting(baseSphere);
 		originPart.Color = Color3.fromRGB(0, 0, 0);
 		originPart.Size = Vector3.one;
 		originPart.Position = origin;
 		originPart.Name = 'Origin';
-		this.highlight(originPart);
+		Debug.highlight(originPart);
 		
 		const line = Instance.fromExisting(baseBlock);
 		line.BackSurface = Enum.SurfaceType.Inlet;
@@ -40,7 +40,7 @@ export default class Debug {
 			line.CFrame = CFrame.lookAlong(origin.add(direction.mul(0.5)), direction.Unit);
 		}
 		
-		this.highlight(line);
+		Debug.highlight(line);
 		
 		line.Destroying.Connect(() => {
 			originPart.Destroy();
@@ -49,7 +49,7 @@ export default class Debug {
 		return line;
 	}
 	
-	static highlight(part: BasePart): void {
+	export function highlight(part: BasePart): void {
 		const color = part.Color;
 		const hex = color.ToHex();
 		if (!highlightModels.has(hex)) {

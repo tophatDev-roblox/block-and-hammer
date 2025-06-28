@@ -1,10 +1,10 @@
 import { Players, ReplicatedStorage, RunService, StarterGui, TweenService, UserInputService, Workspace } from '@rbxts/services';
 import { peek, subscribe } from '@rbxts/charm';
 
-import TimeSpan from 'shared/timeSpan';
-import Raycast from 'shared/raycast';
-import Shake from 'shared/shake';
-import Controller from 'shared/controller';
+import { TimeSpan } from 'shared/timeSpan';
+import { Raycast } from 'shared/raycast';
+import { Shake } from 'shared/shake';
+import { Controller } from 'shared/controller';
 import { debugDisableRagdollAtom } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { userSettingsAtom } from 'client/settings';

@@ -1,14 +1,14 @@
 import { UserInputService } from '@rbxts/services';
 import { atom, peek } from '@rbxts/charm';
 
-import Controller from 'shared/controller';
+import { Controller } from 'shared/controller';
 import { ControllerDetectionType, userSettingsAtom } from './settings';
 
-export enum InputType {
-	Unknown,
-	Desktop,
-	Touch,
-	Controller,
+export const enum InputType {
+	Unknown = 'Unknown',
+	Desktop = 'Desktop',
+	Touch = 'Touch',
+	Controller = 'Controller',
 }
 
 export const inputTypeAtom = atom<InputType>(InputType.Unknown);
@@ -60,7 +60,7 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 	
 	if (newInputType !== undefined && newInputType !== peek(inputTypeAtom)) {
 		inputTypeAtom(newInputType);
-		print('[client::inputType] set to', InputType[newInputType]);
+		print('[client::inputType] set to', newInputType);
 	}
 }
 
