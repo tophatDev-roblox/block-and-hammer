@@ -11,12 +11,13 @@ interface ButtonProps {
 	styles: Styles.Button;
 	text: string;
 	iconId: string;
+	widthOffset?: number;
 	iconScale?: number;
 	padding?: number;
 	onClick?: () => void;
 }
 
-const Button: React.FC<ButtonProps> = ({ styles, text, iconId, iconScale = 0.8, padding = 12, onClick = () => {} }) => {
+const Button: React.FC<ButtonProps> = ({ styles, text, iconId, widthOffset = 0, iconScale = 0.8, padding = 12, onClick = () => {} }) => {
 	const {
 		text: textStyles,
 		icon: {
@@ -58,7 +59,7 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, iconScale = 0.8, 
 			<imagebutton
 				ref={buttonRef}
 				BackgroundTransparency={1}
-				Size={new UDim2(1, -px(30), 1, 0)}
+				Size={new UDim2(1, -px(30) + widthOffset, 1, 0)}
 				Position={new UDim2(1, 0, 0, 0)}
 				AnchorPoint={new Vector2(1, 0)}
 				Image={'rbxassetid://116917521691205'}
@@ -70,23 +71,23 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, iconScale = 0.8, 
 				AutoButtonColor={false}
 				Event={{
 					MouseEnter: () => {
-						tweenButton(new TweenInfo(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
-							Size: new UDim2(1, 0, 1, 0),
+						tweenButton(new TweenInfo(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
+							Size: new UDim2(1, widthOffset, 1, 0),
 						});
 					},
 					MouseLeave: () => {
 						tweenButton(new TweenInfo(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-							Size: new UDim2(1, -px(30), 1, 0),
+							Size: new UDim2(1, -px(30) + widthOffset, 1, 0),
 						});
 					},
 					MouseButton1Down: () => {
 						tweenButton(new TweenInfo(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-							Size: new UDim2(1, -px(15), 1, 0),
+							Size: new UDim2(1, -px(15) + widthOffset, 1, 0),
 						});
 					},
 					MouseButton1Up: () => {
-						tweenButton(new TweenInfo(0.6, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
-							Size: new UDim2(1, 0, 1, 0),
+						tweenButton(new TweenInfo(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
+							Size: new UDim2(1, widthOffset, 1, 0),
 						});
 					},
 					MouseButton1Click: () => {

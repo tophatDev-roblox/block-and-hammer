@@ -8,7 +8,7 @@ export namespace SideMenu {
 effect(() => {
 	const sideMenuOpen = SideMenu.isOpenAtom();
 	
-	const thread = task.delay(sideMenuOpen ? 0 : 0.3, () => {
+	const thread = task.delay(sideMenuOpen ? 0 : 0.6, () => {
 		while (true) {
 			try {
 				StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, !sideMenuOpen);
