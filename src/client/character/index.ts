@@ -289,8 +289,8 @@ function onCharacterRemoving(): void {
 
 function onRenderStepped(dt: number): void {
 	const currentTime = os.clock();
-	const parts = peek(CharacterState.partsAtom);
-	if (parts === undefined) {
+	const characterParts = peek(CharacterState.partsAtom);
+	if (characterParts === undefined) {
 		return;
 	}
 	
@@ -311,12 +311,12 @@ function onRenderStepped(dt: number): void {
 		
 		moveTargetAttachment(mouseCursorPart.Position);
 	} else if (inputType === InputType.Value.Controller) {
-		mouseCursorPart.Position = parts.body.Position;
+		mouseCursorPart.Position = characterParts.body.Position;
 	}
 	
 	const disableCamera = peek(CharacterState.disableCameraAtom);
 	if (!disableCamera) {
-		const targetPosition = new Vector3(parts.body.Position.X, parts.body.Position.Y, peek(CharacterState.cameraZOffsetAtom));
+		const targetPosition = new Vector3(characterParts.body.Position.X, characterParts.body.Position.Y, peek(CharacterState.cameraZOffsetAtom));
 		const cameraCFrame = CFrame.lookAlong(targetPosition, Vector3.zAxis, Vector3.yAxis);
 		const finalCameraCFrame = previousCameraCFrame !== undefined ? previousCameraCFrame.Lerp(cameraCFrame, math.min(dt * 15, 1)) : cameraCFrame;
 		
@@ -335,7 +335,7 @@ function onRenderStepped(dt: number): void {
 			endRagdoll();
 		}
 		
-		const velocity = parts.body.AssemblyLinearVelocity.Magnitude;
+		const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
 		const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
 		camera.FieldOfView = fieldOfView;
 		
