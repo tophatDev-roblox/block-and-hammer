@@ -1,23 +1,28 @@
 import { TweenService } from '@rbxts/services';
-import React, { useCallback, useRef } from '@rbxts/react';
+import React, { useCallback, useEffect, useRef } from '@rbxts/react';
+import { useAtom } from '@rbxts/react-charm';
 
 import { Styles, StyleParse } from 'client/styles';
-import { usePx } from '../hooks/usePx';
-import Text from './Text';
-import Gradient from './Gradient';
-import Outline from './Outline';
+import { SideMenu } from 'client/sideMenu';
+import { usePx } from '../../hooks/usePx';
+import Text from '../Text';
+import Gradient from '../Gradient';
+import Outline from '../Outline';
 
 interface ButtonProps {
 	styles: Styles.Button;
 	text: string;
 	iconId: string;
+	index: number;
+	totalButtons: number;
+	widthScale?: number;
 	widthOffset?: number;
 	iconScale?: number;
 	padding?: number;
 	onClick?: () => void;
 }
 
-const Button: React.FC<ButtonProps> = ({ styles, text, iconId, widthOffset = 0, iconScale = 0.8, padding = 12, onClick = () => {} }) => {
+const Button: React.FC<ButtonProps> = ({ styles, text, iconId, index, totalButtons, widthScale = 0, widthOffset = 0, iconScale = 0.8, padding = 12, onClick = () => {} }) => {
 	const {
 		text: textStyles,
 		icon: {
@@ -31,6 +36,8 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, widthOffset = 0, 
 	const buttonRef = useRef<ImageButton>();
 	const tweenRef = useRef<Tween>();
 	
+	const sideMenuOpened = useAtom(SideMenu.isOpenAtom);
+	
 	const px = usePx();
 	
 	const isBackgroundRGBA = 'red' in background;
@@ -38,9 +45,9 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, widthOffset = 0, 
 	const isIconColorRGBA = 'red' in iconColor;
 	const iconSize = textStyles.autoScale === false ? textStyles.size : px(textStyles.size);
 	
-	const tweenButton = useCallback((tweenInfo: TweenInfo, properties: Partial<ExtractMembers<ImageButton, Tweenable>>) => {
+	const tweenButton = useCallback((tweenInfo: TweenInfo, properties: Partial<ExtractMembers<ImageButton, Tweenable>>, disableOnClose: boolean = true) => {
 		const button = buttonRef.current;
-		if (button === undefined) {
+		if (button === undefined || (disableOnClose && !sideMenuOpened)) {
 			return;
 		}
 		
@@ -49,7 +56,31 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, widthOffset = 0, 
 		const tween = TweenService.Create(button, tweenInfo, properties);
 		tween.Play();
 		tweenRef.current = tween;
-	}, []);
+	}, [sideMenuOpened]);
+	
+	useEffect(() => {
+		if (sideMenuOpened) {
+			const thread = task.delay((totalButtons - index - 1) / 30, () => {
+				tweenButton(new TweenInfo(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+					Size: new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0),
+				}, false);
+			});
+			
+			return () => {
+				task.cancel(thread);
+			};
+		} else {
+			const thread = task.delay(index / 20, () => {
+				tweenButton(new TweenInfo(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+					Size: new UDim2(widthScale, widthOffset, 1, 0),
+				}, false);
+			});
+			
+			return () => {
+				task.cancel(thread);
+			};
+		}
+	}, [sideMenuOpened]);
 	
 	return (
 		<frame
@@ -59,7 +90,7 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, widthOffset = 0, 
 			<imagebutton
 				ref={buttonRef}
 				BackgroundTransparency={1}
-				Size={new UDim2(1, -px(30) + widthOffset, 1, 0)}
+				Size={new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0)}
 				Position={new UDim2(1, 0, 0, 0)}
 				AnchorPoint={new Vector2(1, 0)}
 				Image={'rbxassetid://116917521691205'}
@@ -72,22 +103,22 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, widthOffset = 0, 
 				Event={{
 					MouseEnter: () => {
 						tweenButton(new TweenInfo(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
-							Size: new UDim2(1, widthOffset, 1, 0),
+							Size: new UDim2(1 + widthScale, widthOffset, 1, 0),
 						});
 					},
 					MouseLeave: () => {
 						tweenButton(new TweenInfo(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-							Size: new UDim2(1, -px(30) + widthOffset, 1, 0),
+							Size: new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0),
 						});
 					},
 					MouseButton1Down: () => {
 						tweenButton(new TweenInfo(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-							Size: new UDim2(1, -px(15) + widthOffset, 1, 0),
+							Size: new UDim2(1 + widthScale, px(-15) + widthOffset, 1, 0),
 						});
 					},
 					MouseButton1Up: () => {
 						tweenButton(new TweenInfo(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
-							Size: new UDim2(1, widthOffset, 1, 0),
+							Size: new UDim2(1 + widthScale, widthOffset, 1, 0),
 						});
 					},
 					MouseButton1Click: () => {

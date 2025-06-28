@@ -6,7 +6,7 @@ import { Styles } from 'client/styles';
 import { SideMenu as ClientSideMenu } from 'client/sideMenu';
 import { usePx } from 'client/ui/hooks/usePx';
 import Container from '../Container';
-import Button from '../Button';
+import Button from './Button';
 
 const SideMenu: React.FC = () => {
 	const frameRef = useRef<Frame>();
@@ -16,6 +16,10 @@ const SideMenu: React.FC = () => {
 	const sideMenuOpened = useAtom(ClientSideMenu.isOpenAtom);
 	
 	const px = usePx();
+	
+	const containerWidth = 680;
+	const buttonGapOffset = -13 / containerWidth;
+	const totalButtons = 6;
 	
 	useEffect(() => {
 		const frame = frameRef.current;
@@ -45,6 +49,7 @@ const SideMenu: React.FC = () => {
 	return (
 		<screengui
 			DisplayOrder={3}
+			ScreenInsets={Enum.ScreenInsets.None}
 			ResetOnSpawn={false}
 			IgnoreGuiInset
 		>
@@ -56,7 +61,7 @@ const SideMenu: React.FC = () => {
 				AnchorPoint={new Vector2(1, 0)}
 			>
 				<uiaspectratioconstraint
-					AspectRatio={650 / 1080}
+					AspectRatio={containerWidth / 1080}
 				/>
 				<Container
 					styles={styles.containers.sideMenu}
@@ -95,36 +100,48 @@ const SideMenu: React.FC = () => {
 								styles={styles.buttons.sideMenu}
 								text={'Inventory'}
 								iconId={''}
+								index={0}
+								totalButtons={totalButtons}
 							/>
 							<Button
 								styles={styles.buttons.sideMenu}
 								text={'Badges'}
 								iconId={''}
-								widthOffset={px(-10)}
+								widthScale={buttonGapOffset}
+								index={1}
+								totalButtons={totalButtons}
 							/>
 							<Button
 								styles={styles.buttons.sideMenu}
 								text={'Settings'}
 								iconId={''}
-								widthOffset={px(-20)}
+								widthScale={buttonGapOffset * 2}
+								index={2}
+								totalButtons={totalButtons}
 							/>
 							<Button
 								styles={styles.buttons.sideMenu}
 								text={'Spectate'}
 								iconId={''}
-								widthOffset={px(-30)}
+								widthScale={buttonGapOffset * 3}
+								index={3}
+								totalButtons={totalButtons}
 							/>
 							<Button
 								styles={styles.buttons.sideMenu}
 								text={'Reset'}
 								iconId={'79494611958305'}
-								widthOffset={px(-40)}
+								widthScale={buttonGapOffset * 4}
+								index={4}
+								totalButtons={totalButtons}
 							/>
 							<Button
 								styles={styles.buttons.sideMenu}
 								text={'Start Menu'}
 								iconId={'79239443855874'}
-								widthOffset={px(-50)}
+								widthScale={buttonGapOffset * 5}
+								index={5}
+								totalButtons={totalButtons}
 							/>
 						</frame>
 					</>
