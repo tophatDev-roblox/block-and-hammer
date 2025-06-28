@@ -5,12 +5,14 @@ import { MaxDollars, MinDollars, TestingPlaceId } from 'shared/constants';
 import { Number } from 'shared/number';
 
 interface DataTemplate {
-	dollars: number
+	color: Color3 | undefined;
+	dollars: number;
 }
 
 type LoadedProfile = Profile<DataTemplate>;
 
 let PlayerStore = ProfileStore.New<DataTemplate>('PlayerStore', {
+	color: undefined,
 	dollars: 100,
 });
 

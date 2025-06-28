@@ -54,14 +54,15 @@ function onPlayerAdded(player: Player): void {
 		return;
 	}
 	
+	profile.Data.color = profile.Data.color ?? computeNameColor(player.Name);
 	player.SetAttribute('dollars', profile.Data.dollars);
-	player.SetAttribute('color', computeNameColor(player.Name));
+	player.SetAttribute('color', profile.Data.color);
 	
 	Badge.award(Badge.Id.Welcome, player);
 	Leaderstats.apply(player);
 	respawn(player);
 	
-	const playerRichText = new RichText({ font: { color: computeNameColor(player.Name) } });
+	const playerRichText = new RichText({ font: { color: player.GetAttribute('color') as Color3 } });
 	Remotes.sendSystemMessage.fireAll(joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} joined the server`)));
 }
 
@@ -69,7 +70,7 @@ function onPlayerRemoving(player: Player): void {
 	player.Character?.Destroy();
 	PlayerData.unload(player);
 	
-	const playerRichText = new RichText({ font: { color: computeNameColor(player.Name) } });
+	const playerRichText = new RichText({ font: { color: player.GetAttribute('color') as Color3 } });
 	Remotes.sendSystemMessage.fireAll(joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} left the server`)));
 }
 
