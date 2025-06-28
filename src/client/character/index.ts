@@ -1,5 +1,5 @@
 import { Players, ReplicatedStorage, RunService, StarterGui, TweenService, UserInputService, Workspace } from '@rbxts/services';
-import { peek, subscribe } from '@rbxts/charm';
+import { effect, peek, subscribe } from '@rbxts/charm';
 
 import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
@@ -10,7 +10,7 @@ import { IsDebugPanelEnabled } from 'shared/constants';
 import { userSettingsAtom } from 'client/settings';
 import { InputType, inputTypeAtom } from 'client/inputType';
 import { sideMenuOpenedAtom } from 'client/sideMenu';
-import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, hammerDistanceAtom, mousePositionAtom, shakeStrengthAtom } from './atoms';
+import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, hammerDistanceAtom, mousePositionAtom, shakeStrengthAtom, useLegacyPhysicsAtom } from './atoms';
 
 export interface CharacterParts {
 	model: Model;
@@ -195,6 +195,12 @@ function moveTargetAttachment(position: Vector3): void {
 }
 
 function processInput(input: InputObject): void {
+	if (input.KeyCode === Enum.KeyCode.M && input.UserInputState === Enum.UserInputState.Begin) {
+		useLegacyPhysicsAtom((useLegacyPhysics) => !useLegacyPhysics);
+		
+		return;
+	}
+	
 	if (input.UserInputState === Enum.UserInputState.Begin && input.UserInputType !== Enum.UserInputType.Touch || peek(forcePauseGameplayAtom)) {
 		return;
 	}
@@ -391,6 +397,39 @@ subscribe(() => {
 		if (forcePauseTime !== undefined) {
 			character.model.SetAttribute('startTime', os.clock() - forcePauseTime);
 		}
+	}
+});
+
+effect(() => {
+	const character = characterAtom();
+	const useLegacyPhysics = useLegacyPhysicsAtom();
+	if (character === undefined) {
+		return;
+	}
+	
+	print('[client::character] useLegacyPhysics =', useLegacyPhysics);
+	if (useLegacyPhysics) {
+		character.hammer.alignPosition.Responsiveness = 70;
+		character.hammer.alignPosition.MaxForce = 12_500;
+		character.hammer.alignOrientation.Responsiveness = 200;
+		character.hammer.alignOrientation.MaxTorque = math.huge;
+		character.hammer.handle.Massless = true;
+		character.hammer.handle.CustomPhysicalProperties = new PhysicalProperties(0.7, 0.3, 0, 1, 1);
+		character.hammer.head.Massless = true;
+		character.hammer.head.CustomPhysicalProperties = new PhysicalProperties(0.7, 0.6, 0, 100, 1);
+		character.body.Massless = true;
+		character.body.CustomPhysicalProperties = new PhysicalProperties(0.5, 0.3, 0, 1, 1);
+	} else {
+		character.hammer.alignPosition.Responsiveness = 45;
+		character.hammer.alignPosition.MaxForce = 25_000;
+		character.hammer.alignOrientation.Responsiveness = 40;
+		character.hammer.alignOrientation.MaxTorque = 50_000;
+		character.hammer.handle.Massless = false;
+		character.hammer.handle.CustomPhysicalProperties = new PhysicalProperties(0.0001, 0.3, 0.5, 1, 1);
+		character.hammer.head.Massless = false;
+		character.hammer.head.CustomPhysicalProperties = new PhysicalProperties(1, 0.6, 0.1, 3, 4);
+		character.body.Massless = false;
+		character.body.CustomPhysicalProperties = new PhysicalProperties(0.9, 0.6, 0.2, 1.5, 2);
 	}
 });
 
