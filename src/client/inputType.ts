@@ -2,7 +2,7 @@ import { UserInputService } from '@rbxts/services';
 import { atom, peek } from '@rbxts/charm';
 
 import { Controller } from 'shared/controller';
-import { ControllerDetectionType, userSettingsAtom } from './settings';
+import { UserSettings } from './settings';
 
 export namespace InputType {
 	export const enum Value {
@@ -28,9 +28,9 @@ const mouseInputTypes = new Set<Enum.UserInputType>([
 ]);
 
 function processInput(input: InputObject): void {
-	const userSettings = peek(userSettingsAtom);
+	const userSettings = peek(UserSettings.stateAtom);
 	const inputType = peek(InputType.stateAtom);
-	if (userSettings.controllerDetectionType !== ControllerDetectionType.OnInput || inputType === InputType.Value.Controller) {
+	if (userSettings.controllerDetectionType !== UserSettings.ControllerDetection.OnInput || inputType === InputType.Value.Controller) {
 		return;
 	}
 	
@@ -51,8 +51,8 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 	if (userInputType === Enum.UserInputType.Touch) {
 		newInputType = InputType.Value.Touch;
 	} else if (Controller.isGamepadInput(userInputType)) {
-		const userSettings = peek(userSettingsAtom);
-		if (userSettings.controllerDetectionType === ControllerDetectionType.LastInput) {
+		const userSettings = peek(UserSettings.stateAtom);
+		if (userSettings.controllerDetectionType === UserSettings.ControllerDetection.LastInput) {
 			newInputType = InputType.Value.Controller;
 		}
 	} else if (mouseInputTypes.has(userInputType)) {

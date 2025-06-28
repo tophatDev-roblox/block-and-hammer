@@ -1,23 +1,25 @@
 import { atom } from '@rbxts/charm';
 
-export enum ControllerDetectionType {
-	None,
-	OnInput,
-	LastInput,
+export namespace UserSettings {
+	interface Value {
+		disableHaptics: boolean;
+		controllerDetectionType: ControllerDetection;
+		controllerDeadzone: number;
+		controllerSmoothingEnabled: boolean;
+		controllerSmoothingFactor: number;
+	}
+	
+	export enum ControllerDetection {
+		None,
+		OnInput,
+		LastInput,
+	}
+	
+	export const stateAtom = atom<Value>({
+		disableHaptics: false,
+		controllerDetectionType: ControllerDetection.OnInput,
+		controllerDeadzone: 0.1,
+		controllerSmoothingEnabled: true,
+		controllerSmoothingFactor: 15,
+	});
 }
-
-interface UserSettings {
-	disableHaptics: boolean;
-	controllerDetectionType: ControllerDetectionType;
-	controllerDeadzone: number;
-	controllerSmoothingEnabled: boolean;
-	controllerSmoothingFactor: number;
-}
-
-export const userSettingsAtom = atom<UserSettings>({
-	disableHaptics: false,
-	controllerDetectionType: ControllerDetectionType.OnInput,
-	controllerDeadzone: 0.1,
-	controllerSmoothingEnabled: true,
-	controllerSmoothingFactor: 15,
-});

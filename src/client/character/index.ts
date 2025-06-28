@@ -7,7 +7,7 @@ import { Shake } from 'shared/shake';
 import { Controller } from 'shared/controller';
 import { DebugPanel } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
-import { userSettingsAtom } from 'client/settings';
+import { UserSettings } from 'client/settings';
 import { InputType } from 'client/inputType';
 import { SideMenu } from 'client/sideMenu';
 import { CharacterState } from './state';
@@ -195,7 +195,7 @@ function processInput(input: InputObject): void {
 	
 	const characterParts = peek(CharacterState.partsAtom);
 	const inputType = peek(InputType.stateAtom);
-	const userSettings = peek(userSettingsAtom);
+	const userSettings = peek(UserSettings.stateAtom);
 	const sideMenuOpen = peek(SideMenu.isOpenAtom);
 	const hammerDistance = peek(CharacterState.hammerDistanceAtom);
 	if (characterParts === undefined || sideMenuOpen) {
@@ -295,7 +295,7 @@ function onRenderStepped(dt: number): void {
 	
 	camera.CameraType = Enum.CameraType.Scriptable;
 	
-	const userSettings = peek(userSettingsAtom);
+	const userSettings = peek(UserSettings.stateAtom);
 	const inputType = peek(InputType.stateAtom);
 	const mousePosition = peek(CharacterState.mousePositionAtom);
 	if (mousePosition !== undefined) {

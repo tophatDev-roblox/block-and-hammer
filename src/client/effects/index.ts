@@ -6,7 +6,7 @@ import { Raycast } from 'shared/raycast';
 import { shake, ragdoll } from 'client/character';
 import { CharacterState } from 'client/character/state';
 import { materialConfiguration } from './materials';
-import { userSettingsAtom } from 'client/settings';
+import { UserSettings } from 'client/settings';
 
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
@@ -194,7 +194,7 @@ effect(() => {
 		if (impactMagnitude > 130) {
 			let effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 3);
 			
-			const userSettings = peek(userSettingsAtom);
+			const userSettings = peek(UserSettings.stateAtom);
 			if (!userSettings.disableHaptics) {
 				explosionHaptics.Play();
 				task.delay(1, () => {
