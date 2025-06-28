@@ -1,3 +1,5 @@
+![Banner](images/banner.png)
+
 # block and hammer [recode]
 
 ![Weekly commit activity](https://img.shields.io/github/commit-activity/w/tophatDev-roblox/block-and-hammer)
