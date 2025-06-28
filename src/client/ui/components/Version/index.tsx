@@ -3,11 +3,11 @@ import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { TestingPlaceId } from 'shared/constants';
-import { stylesAtom } from 'client/ui/styles';
+import { Styles } from 'client/styles';
 import Text from '../Text';
 
 const Version: React.FC = () => {
-	const styles = useAtom(stylesAtom);
+	const styles = useAtom(Styles.stateAtom);
 	
 	let versionString = `block and hammer v${game.PlaceVersion}`;
 	if (RunService.IsStudio()) {

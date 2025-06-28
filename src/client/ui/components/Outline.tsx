@@ -1,6 +1,6 @@
 import React from '@rbxts/react';
 
-import { Styles, StyleParse } from 'client/stylesParser';
+import { Styles, StyleParse } from 'client/styles';
 import { usePx } from '../hooks/usePx';
 import Gradient from './Gradient';
 

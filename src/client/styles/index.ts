@@ -1,3 +1,7 @@
+import { atom } from '@rbxts/charm';
+
+import defaultStyles from './default';
+
 export namespace Styles {
 	export interface Color {
 		red: number;
@@ -96,6 +100,8 @@ export namespace Styles {
 		};
 		layout: {}; // TODO: ui layout
 	}
+	
+	export const stateAtom = atom<Styles.Data>(defaultStyles);
 }
 
 export namespace StyleParse {

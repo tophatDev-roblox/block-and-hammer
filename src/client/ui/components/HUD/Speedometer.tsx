@@ -5,7 +5,7 @@ import { peek } from '@rbxts/charm';
 import { Shake } from 'shared/shake';
 import { Units } from 'shared/units';
 import { useStepped } from 'client/ui/hooks/useStepped';
-import { stylesAtom } from 'client/ui/styles';
+import { Styles } from 'client/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 
@@ -13,7 +13,7 @@ const Speedometer: React.FC = () => {
 	const labelRef = useRef<TextLabel>();
 	
 	const characterParts = useAtom(CharacterState.partsAtom);
-	const styles = useAtom(stylesAtom);
+	const styles = useAtom(Styles.stateAtom);
 	
 	useEffect(() => {
 		const labelFormat = `%.${styles.text.hudSecondary.display.decimals}fm/s`;

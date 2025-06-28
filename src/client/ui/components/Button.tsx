@@ -1,7 +1,7 @@
 import { TweenService } from '@rbxts/services';
 import React, { useCallback, useRef } from '@rbxts/react';
 
-import { Styles, StyleParse } from 'client/stylesParser';
+import { Styles, StyleParse } from 'client/styles';
 import { usePx } from '../hooks/usePx';
 import Text from './Text';
 import Gradient from './Gradient';

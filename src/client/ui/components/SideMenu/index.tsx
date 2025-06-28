@@ -2,7 +2,7 @@ import { TweenService } from '@rbxts/services';
 import React, { useEffect, useRef } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { stylesAtom } from 'client/ui/styles';
+import { Styles } from 'client/styles';
 import { SideMenu as ClientSideMenu } from 'client/sideMenu';
 import { usePx } from 'client/ui/hooks/usePx';
 import Container from '../Container';
@@ -12,7 +12,7 @@ const SideMenu: React.FC = () => {
 	const frameRef = useRef<Frame>();
 	const tweenRef = useRef<Tween>();
 	
-	const styles = useAtom(stylesAtom);
+	const styles = useAtom(Styles.stateAtom);
 	const sideMenuOpened = useAtom(ClientSideMenu.isOpenAtom);
 	
 	const px = usePx();

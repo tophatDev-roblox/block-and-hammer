@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from '@rbxts/react';
 
-import { Styles, StyleParse } from 'client/stylesParser';
+import { Styles, StyleParse } from 'client/styles';
 
 interface GradientProps {
 	styles: Styles.Gradient;

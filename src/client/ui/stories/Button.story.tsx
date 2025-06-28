@@ -2,7 +2,7 @@ import { CreateReactStory, Slider } from '@rbxts/ui-labs';
 import React from '@rbxts/react';
 import ReactRoblox from '@rbxts/react-roblox';
 
-import defaultStyles from 'client/stylesParser/default';
+import defaultStyles from 'client/styles/default';
 import Button from '../components/Button';
 
 export = CreateReactStory({

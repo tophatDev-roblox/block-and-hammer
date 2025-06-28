@@ -4,11 +4,11 @@ import { subscribe } from '@rbxts/charm';
 import Icon from 'shared/Icon';
 import NumberSpinner from 'shared/NumberSpinner';
 import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
-import { Styles } from 'client/stylesParser';
+import { Styles } from 'client/styles';
 import { InputType } from 'client/inputType';
 import { DebugPanel } from 'client/debugPanel';
 import { SideMenu } from 'client/sideMenu';
-import defaultStyles from 'client/stylesParser/default';
+import defaultStyles from 'client/styles/default';
 
 const client = Players.LocalPlayer;
 

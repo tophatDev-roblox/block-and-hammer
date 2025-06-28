@@ -3,7 +3,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { InputType } from 'client/inputType';
 import { CharacterState } from 'client/character/state';
-import { stylesAtom } from 'client/ui/styles';
+import { Styles } from 'client/styles';
 import Text from '../Text';
 
 const MoveHint: React.FC = () => {
@@ -12,7 +12,7 @@ const MoveHint: React.FC = () => {
 	
 	const [isVisible, setVisible] = useState<boolean>(true);
 	
-	const styles = useAtom(stylesAtom);
+	const styles = useAtom(Styles.stateAtom);
 	
 	useEffect(() => {
 		if (character === undefined) {

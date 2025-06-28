@@ -1,9 +1,9 @@
 import { Centurion } from '@rbxts/centurion';
 import { CenturionUI } from '@rbxts/centurion-ui';
 
-import { StyleParse } from 'client/stylesParser';
+import { StyleParse } from 'client/styles';
 
-import defaultStyles from 'client/stylesParser/default';
+import defaultStyles from 'client/styles/default';
 
 const client = Centurion.client();
 

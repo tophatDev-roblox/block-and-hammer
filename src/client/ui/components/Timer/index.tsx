@@ -5,7 +5,7 @@ import { Shake } from 'shared/shake';
 import { TimeSpan } from 'shared/timeSpan';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { usePx } from 'client/ui/hooks/usePx';
-import { stylesAtom } from 'client/ui/styles';
+import { Styles } from 'client/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 import { peek } from '@rbxts/charm';
@@ -14,7 +14,7 @@ const Timer: React.FC = () => {
 	const labelRef = useRef<TextLabel>();
 	
 	const character = useAtom(CharacterState.partsAtom);
-	const styles = useAtom(stylesAtom);
+	const styles = useAtom(Styles.stateAtom);
 	const px = usePx();
 	
 	useEffect(() => {
