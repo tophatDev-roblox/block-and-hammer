@@ -173,6 +173,25 @@ function clampPositionToCircle(position: Vector3, center: Vector3, radius: numbe
 	return center.add(direction.Unit.mul(radius));
 }
 
+function moveTargetAttachment(position: Vector3): void {
+	const hammerDistance = peek(hammerDistanceAtom);
+	const character = peek(characterAtom);
+	if (character === undefined) {
+		return;
+	}
+	
+	if (!hasTimeStarted) {
+		character.model.SetAttribute('startTime', TimeSpan.now());
+		hasTimeStarted = true;
+	}
+	
+	character.targetAttachment.WorldCFrame = CFrame.lookAt(
+		clampPositionToCircle(position.mul(new Vector3(1, 1, 0)), character.body.Position, hammerDistance),
+		character.body.Position,
+		Vector3.zAxis,
+	);
+}
+
 function processInput(input: InputObject): void {
 	if (input.UserInputState === Enum.UserInputState.Begin && input.UserInputType !== Enum.UserInputType.Touch || peek(forcePauseGameplayAtom)) {
 		return;
@@ -187,13 +206,8 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
-	let targetPosition: Vector3 | undefined = undefined;
 	if (positionalInputTypes.has(input.UserInputType)) {
 		mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
-		
-		const ray = camera.ScreenPointToRay(input.Position.X, input.Position.Y);
-		const position = rayIntersectXYPlane(ray);
-		targetPosition = position;
 	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Controller) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
 			let direction = input.Position;
@@ -203,24 +217,11 @@ function processInput(input: InputObject): void {
 				direction = new Vector3(0, 0.001, 0);
 			}
 			
-			const position = character.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)))
-			targetPosition = position;
-			
+			const position = character.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
+			mouseCursorPart.Position = position;
+			moveTargetAttachment(position);
 			mousePositionAtom(undefined);
 		}
-	}
-	
-	if (targetPosition !== undefined) {
-		if (!hasTimeStarted) {
-			character.model.SetAttribute('startTime', TimeSpan.now());
-			hasTimeStarted = true;
-		}
-		
-		character.targetAttachment.WorldCFrame = CFrame.lookAt(
-			clampPositionToCircle(targetPosition.mul(new Vector3(1, 1, 0)), character.body.Position, hammerDistance),
-			character.body.Position,
-			Vector3.zAxis,
-		);
 	}
 }
 
@@ -233,6 +234,7 @@ function onInputEnded(input: InputObject): void {
 	
 	if (Controller.isGamepadInput(input.UserInputType) && input.KeyCode === Enum.KeyCode.Thumbstick2) {
 		character.targetAttachment.CFrame = CFrame.fromOrientation(math.pi / -2, 0, 0);
+		mouseCursorPart.Position = new Vector3(0, -500, 0);
 	}
 }
 
@@ -301,11 +303,9 @@ function onRenderStepped(dt: number): void {
 	if (mousePosition !== undefined) {
 		const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
 		const position = rayIntersectXYPlane(ray);
+		
+		moveTargetAttachment(position);
 		mouseCursorPart.Position = position;
-		
-		
-	} else {
-		mouseCursorPart.Position = new Vector3(0, -500, 0);
 	}
 	
 	const disableCamera = peek(disableCameraAtom);
