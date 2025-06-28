@@ -1,5 +1,6 @@
-import { createRemotes, remote, Server } from '@rbxts/remo';
+import { Client, createRemotes, remote, Server } from '@rbxts/remo';
 
 export const Remotes = createRemotes({
 	fullReset: remote<Server>(),
+	sendSystemMessage: remote<Client, [message: string]>(),
 });

@@ -1,4 +1,8 @@
 import { Players, TextChatService } from '@rbxts/services';
+import { Remotes } from 'shared/events';
+
+const textChannels = TextChatService.WaitForChild('TextChannels') as Folder;
+const rbxGeneral = textChannels.WaitForChild('RBXGeneral') as TextChannel;
 
 TextChatService.OnBubbleAdded = (textChatMessage): BubbleChatMessageProperties | undefined => {
 	const player = textChatMessage.TextSource ? Players.GetPlayerByUserId(textChatMessage.TextSource.UserId) : undefined;
@@ -9,3 +13,7 @@ TextChatService.OnBubbleAdded = (textChatMessage): BubbleChatMessageProperties |
 	
 	return undefined;
 };
+
+Remotes.sendSystemMessage.connect((message) => {
+	rbxGeneral.DisplaySystemMessage(message);
+});

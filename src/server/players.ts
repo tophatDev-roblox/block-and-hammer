@@ -5,11 +5,14 @@ import { Remotes } from 'shared/events';
 import { Leaderstats } from './leaderstats';
 import { PlayerData } from './playerData';
 import { Badge } from './badge';
+import { RichText } from 'shared/richText';
 
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
 const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
 
 const createdCharacters = new Set<Model>();
+
+const joinLeaveRichText = new RichText({ bold: true, italic: true, font: { size: 14 } });
 
 function respawn(player: Player): void {
 	const existingCharacter = Workspace.FindFirstChild(player.Name) ?? player.Character;
@@ -57,11 +60,17 @@ function onPlayerAdded(player: Player): void {
 	Badge.award(Badge.Id.Welcome, player);
 	Leaderstats.apply(player);
 	respawn(player);
+	
+	const playerRichText = new RichText({ font: { color: computeNameColor(player.Name) } });
+	Remotes.sendSystemMessage.fireAll(joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} joined the server`)));
 }
 
 function onPlayerRemoving(player: Player): void {
 	player.Character?.Destroy();
 	PlayerData.unload(player);
+	
+	const playerRichText = new RichText({ font: { color: computeNameColor(player.Name) } });
+	Remotes.sendSystemMessage.fireAll(joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} left the server`)));
 }
 
 function onStepped(_time: number, _dt: number): void {
