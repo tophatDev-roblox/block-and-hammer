@@ -1,11 +1,11 @@
 import React from '@rbxts/react';
 
-import { OutlineStyleData, parseColor, parseOutlineJoinMode } from 'client/stylesParser';
+import { Styles, StyleParse } from 'client/stylesParser';
 import { usePx } from '../hooks/usePx';
 import Gradient from './Gradient';
 
 interface OutlineProps {
-	styles: OutlineStyleData;
+	styles: Styles.Outline;
 	applyStrokeMode: Enum.ApplyStrokeMode;
 }
 
@@ -17,10 +17,10 @@ const Outline: React.FC<OutlineProps> = ({ styles: { color, thickness, joinMode,
 	return (
 		<uistroke
 			ApplyStrokeMode={applyStrokeMode}
-			Color={isRGBA ? parseColor(color) : Color3.fromRGB(255, 255, 255)}
+			Color={isRGBA ? StyleParse.color(color) : Color3.fromRGB(255, 255, 255)}
 			Transparency={isRGBA ? 1 - color.alpha : 0}
 			Thickness={autoScale ? px(thickness, false) : thickness}
-			LineJoinMode={parseOutlineJoinMode(joinMode)}
+			LineJoinMode={StyleParse.outlineJoinMode(joinMode)}
 		>
 			{!isRGBA && (
 				<Gradient

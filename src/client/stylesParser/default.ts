@@ -1,8 +1,8 @@
-import { GradientStyleData, StylesData } from '.';
+import { Styles } from '.';
 
 const fontId = 'rbxassetid://12187365364';
 
-const textOutlineGradient: GradientStyleData = {
+const textOutlineGradient: Styles.Gradient = {
 	colors: [
 		{ position: 0, color: { red: 0, green: 0, blue: 0 } },
 		{ position: 1, color: { red: 0, green: 0, blue: 0 } },
@@ -14,7 +14,7 @@ const textOutlineGradient: GradientStyleData = {
 	rotation: -90,
 };
 
-const data: StylesData = {
+const data: Styles.Data = {
 	version: 1,
 	text: {
 		containerTitle: {

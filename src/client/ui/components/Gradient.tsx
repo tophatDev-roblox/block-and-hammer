@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from '@rbxts/react';
 
-import { GradientStyleData, parseGradientColor } from 'client/stylesParser';
+import { Styles, StyleParse } from 'client/stylesParser';
 
 interface GradientProps {
-	styles: GradientStyleData;
+	styles: Styles.Gradient;
 }
 
 const Gradient: React.FC<GradientProps> = ({ styles: gradient }) => {
@@ -11,7 +11,7 @@ const Gradient: React.FC<GradientProps> = ({ styles: gradient }) => {
 	const [transparencySequence, setTransparencySequence] = useState<NumberSequence | undefined>(undefined);
 	
 	useEffect(() => {
-		const [colorSequence, transparencySequence] = parseGradientColor(gradient);
+		const [colorSequence, transparencySequence] = StyleParse.gradient(gradient);
 		
 		setColorSequence(colorSequence);
 		setTransparencySequence(transparencySequence);

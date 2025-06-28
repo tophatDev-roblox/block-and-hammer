@@ -1,12 +1,12 @@
 import React, { forwardRef } from '@rbxts/react';
 
 import { getAutomaticSize } from 'shared/getAutomaticSize';
-import { ContainerStyleData, parseColor } from 'client/stylesParser';
+import { Styles, StyleParse } from 'client/stylesParser';
 import Gradient from './Gradient';
 import Outline from './Outline';
 
 interface ContainerProps extends React.PropsWithChildren {
-	styles: ContainerStyleData;
+	styles: Styles.Container;
 	imageProps?: Partial<ExtractMembers<ImageLabel, any>>;
 	width?: UDim;
 	height?: UDim;
@@ -46,7 +46,7 @@ const Container = forwardRef<ImageLabel, ContainerProps>((props, ref) => {
 			Size={labelSize}
 			AutomaticSize={automaticSize}
 			ImageTransparency={isRGBA ? 1 - background.alpha : 0}
-			ImageColor3={isRGBA ? parseColor(background) : Color3.fromRGB(255, 255, 255)}
+			ImageColor3={isRGBA ? StyleParse.color(background) : Color3.fromRGB(255, 255, 255)}
 			{...imageProps}
 		>
 			{!isRGBA && (

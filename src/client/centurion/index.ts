@@ -1,24 +1,9 @@
 import { Centurion } from '@rbxts/centurion';
 import { CenturionUI } from '@rbxts/centurion-ui';
-import { FontStyleData } from 'client/stylesParser';
+
+import { StyleParse } from 'client/stylesParser';
 
 import defaultStyles from 'client/stylesParser/default';
-
-function loadStyleFont(font: FontStyleData): Font {
-	let fontWeight: Enum.FontWeight | undefined = undefined;
-	for (const weight of Enum.FontWeight.GetEnumItems()) {
-		if (weight.Value === font.weight) {
-			fontWeight = weight;
-			break;
-		}
-	}
-	
-	if (fontWeight === undefined) {
-		warn(`[client::centurion] ui style text font weight is invalid (${font.weight}), falling back to 400`);
-	}
-	
-	return new Font(font.fontId, fontWeight, font.italics ? Enum.FontStyle.Italic : Enum.FontStyle.Normal);
-}
 
 const client = Centurion.client();
 
@@ -38,9 +23,9 @@ client.start()
 			position: new UDim2(0.5, 0, 0.5, -88),
 			anchor: new Vector2(0.5, 0),
 			font: {
-				bold: loadStyleFont(defaultStyles.text.centurion.bold),
-				medium: loadStyleFont(defaultStyles.text.centurion.medium),
-				regular: loadStyleFont(defaultStyles.text.centurion.regular),
+				bold: StyleParse.font(defaultStyles.text.centurion.bold),
+				medium: StyleParse.font(defaultStyles.text.centurion.medium),
+				regular: StyleParse.font(defaultStyles.text.centurion.regular),
 			},
 		});
 		

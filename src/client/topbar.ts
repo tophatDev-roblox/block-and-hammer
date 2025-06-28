@@ -4,7 +4,7 @@ import { subscribe } from '@rbxts/charm';
 import Icon from 'shared/Icon';
 import NumberSpinner from 'shared/NumberSpinner';
 import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
-import { StylesData } from 'client/stylesParser';
+import { Styles } from 'client/stylesParser';
 import defaultStyles from 'client/stylesParser/default';
 import { InputType, inputTypeAtom } from 'client/inputType';
 import { isDebugPanelOpenAtom } from 'client/debugPanel';
@@ -115,7 +115,7 @@ if (IsDebugPanelEnabled) {
 	});
 }
 
-function applyStyles(_styles: StylesData): void {
+function applyStyles(_styles: Styles.Data): void {
 	// TODO: apply ui styles to topbar
 }
 

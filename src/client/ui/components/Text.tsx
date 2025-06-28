@@ -1,13 +1,13 @@
 import React, { forwardRef, useMemo } from '@rbxts/react';
 
 import { getAutomaticSize } from 'shared/getAutomaticSize';
-import { parseFontStyle, TextStyleData } from 'client/stylesParser';
+import { Styles, StyleParse } from 'client/stylesParser';
 import { usePx } from '../hooks/usePx';
 import Gradient from './Gradient';
 import Outline from './Outline';
 
 interface TextProps extends React.PropsWithChildren {
-	styles: TextStyleData;
+	styles: Styles.Text;
 	text: string;
 	width?: UDim;
 	height?: UDim;
@@ -34,7 +34,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 		children,
 	} = props;
 	
-	const fontFace = useMemo<Font>(() => parseFontStyle(font), [font]);
+	const fontFace = useMemo<Font>(() => StyleParse.font(font), [font]);
 	
 	const px = usePx();
 	

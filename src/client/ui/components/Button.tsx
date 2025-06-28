@@ -1,14 +1,14 @@
 import { TweenService } from '@rbxts/services';
 import React, { useCallback, useRef } from '@rbxts/react';
 
-import { ButtonStyleData, parseColor } from 'client/stylesParser';
+import { Styles, StyleParse } from 'client/stylesParser';
 import { usePx } from '../hooks/usePx';
 import Text from './Text';
 import Gradient from './Gradient';
 import Outline from './Outline';
 
 interface ButtonProps {
-	styles: ButtonStyleData;
+	styles: Styles.Button;
 	text: string;
 	iconId: string;
 	iconScale?: number;
@@ -62,7 +62,7 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, iconScale = 0.8, 
 				Position={new UDim2(1, 0, 0, 0)}
 				AnchorPoint={new Vector2(1, 0)}
 				Image={'rbxassetid://116917521691205'}
-				ImageColor3={isBackgroundRGBA ? parseColor(background) : Color3.fromRGB(255, 255, 255)}
+				ImageColor3={isBackgroundRGBA ? StyleParse.color(background) : Color3.fromRGB(255, 255, 255)}
 				ImageTransparency={isBackgroundRGBA ? 1 - background.alpha : 0}
 				ScaleType={Enum.ScaleType.Slice}
 				SliceCenter={new Rect(256, 256, 256, 256)}
@@ -105,14 +105,14 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, iconScale = 0.8, 
 					PaddingLeft={new UDim(0, px(padding))}
 				/>
 				<frame
-					BackgroundColor3={isIconBackgroundRGBA ? parseColor(iconBackground) : Color3.fromRGB(255, 255, 255)}
+					BackgroundColor3={isIconBackgroundRGBA ? StyleParse.color(iconBackground) : Color3.fromRGB(255, 255, 255)}
 					BackgroundTransparency={isIconBackgroundRGBA ? 1 - iconBackground.alpha : 0}
 					BorderSizePixel={0}
 					Size={new UDim2(0, iconSize, 0, iconSize)}
 				>
 					{!isIconBackgroundRGBA && (
 						<Gradient
-						styles={iconBackground}
+							styles={iconBackground}
 						/>
 					)}
 					<uiaspectratioconstraint
@@ -127,7 +127,7 @@ const Button: React.FC<ButtonProps> = ({ styles, text, iconId, iconScale = 0.8, 
 						Position={new UDim2(0.5, 0, 0.5, 0)}
 						AnchorPoint={new Vector2(0.5, 0.5)}
 						Image={`rbxassetid://${iconId}`}
-						ImageColor3={isIconColorRGBA ? parseColor(iconColor) : Color3.fromRGB(255, 255, 255)}
+						ImageColor3={isIconColorRGBA ? StyleParse.color(iconColor) : Color3.fromRGB(255, 255, 255)}
 						ImageTransparency={isIconColorRGBA ? 1 - iconColor.alpha : 0}
 					>
 						{!isIconColorRGBA && (

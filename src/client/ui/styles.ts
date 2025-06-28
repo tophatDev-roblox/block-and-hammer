@@ -1,5 +1,6 @@
 import { atom } from '@rbxts/charm';
-import { StylesData } from 'client/stylesParser';
+
+import { Styles } from 'client/stylesParser';
 import defaultStyles from 'client/stylesParser/default';
 
-export const stylesAtom = atom<StylesData>(defaultStyles);
+export const stylesAtom = atom<Styles.Data>(defaultStyles);
