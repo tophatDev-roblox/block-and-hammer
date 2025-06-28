@@ -8,7 +8,7 @@ import { Controller } from 'shared/controller';
 import { DebugPanel } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { userSettingsAtom } from 'client/settings';
-import { InputType, inputTypeAtom } from 'client/inputType';
+import { InputType } from 'client/inputType';
 import { sideMenuOpenedAtom } from 'client/sideMenu';
 import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, hammerDistanceAtom, mousePositionAtom, shakeStrengthAtom, useLegacyPhysicsAtom } from './atoms';
 
@@ -207,7 +207,7 @@ function processInput(input: InputObject): void {
 	}
 	
 	const character = peek(characterAtom);
-	const inputType = peek(inputTypeAtom);
+	const inputType = peek(InputType.stateAtom);
 	const userSettings = peek(userSettingsAtom);
 	const sideMenuOpened = peek(sideMenuOpenedAtom);
 	const hammerDistance = peek(hammerDistanceAtom);
@@ -217,7 +217,7 @@ function processInput(input: InputObject): void {
 	
 	if (positionalInputTypes.has(input.UserInputType)) {
 		mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
-	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Controller) {
+	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Value.Controller) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
 			let direction = input.Position;
 			if (direction.Magnitude > 1) {
@@ -235,8 +235,8 @@ function processInput(input: InputObject): void {
 
 function onInputEnded(input: InputObject): void {
 	const character = peek(characterAtom);
-	const inputType = peek(inputTypeAtom);
-	if (character === undefined || inputType !== InputType.Controller) {
+	const inputType = peek(InputType.stateAtom);
+	if (character === undefined || inputType !== InputType.Value.Controller) {
 		return;
 	}
 	
@@ -310,20 +310,20 @@ function onRenderStepped(dt: number): void {
 	camera.CameraType = Enum.CameraType.Scriptable;
 	
 	const userSettings = peek(userSettingsAtom);
-	const inputType = peek(inputTypeAtom);
+	const inputType = peek(InputType.stateAtom);
 	const mousePosition = peek(mousePositionAtom);
 	if (mousePosition !== undefined) {
 		const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
 		const position = rayIntersectXYPlane(ray);
 		
-		if (inputType === InputType.Controller && userSettings.controllerSmoothingEnabled) {
+		if (inputType === InputType.Value.Controller && userSettings.controllerSmoothingEnabled) {
 			mouseCursorPart.Position = mouseCursorPart.Position.Lerp(position, dt * userSettings.controllerSmoothingFactor);
 		} else {
 			mouseCursorPart.Position = position;
 		}
 		
 		moveTargetAttachment(mouseCursorPart.Position);
-	} else if (inputType === InputType.Controller) {
+	} else if (inputType === InputType.Value.Controller) {
 		mouseCursorPart.Position = character.body.Position;
 	}
 	

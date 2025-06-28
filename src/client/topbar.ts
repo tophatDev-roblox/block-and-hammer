@@ -5,10 +5,10 @@ import Icon from 'shared/Icon';
 import NumberSpinner from 'shared/NumberSpinner';
 import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
 import { Styles } from 'client/stylesParser';
-import defaultStyles from 'client/stylesParser/default';
-import { InputType, inputTypeAtom } from 'client/inputType';
+import { InputType } from 'client/inputType';
 import { DebugPanel } from 'client/debugPanel';
 import { sideMenuOpenedAtom } from 'client/sideMenu';
+import defaultStyles from 'client/stylesParser/default';
 
 const client = Players.LocalPlayer;
 
@@ -70,18 +70,18 @@ subscribe(sideMenuOpenedAtom, (sideMenuOpened) => {
 	}
 });
 
-subscribe(inputTypeAtom, (inputType) => {
+subscribe(InputType.stateAtom, (inputType) => {
 	switch (inputType) {
-		case InputType.Desktop: {
+		case InputType.Value.Desktop: {
 			menuIcon.setCaptionHint(Enum.KeyCode.B);
 			break;
 		}
-		case InputType.Controller: {
+		case InputType.Value.Controller: {
 			menuIcon.setCaptionHint(Enum.KeyCode.ButtonB);
 			break;
 		}
-		case InputType.Touch:
-		case InputType.Unknown: {
+		case InputType.Value.Touch:
+		case InputType.Value.Unknown: {
 			menuIcon.setCaptionHint(Enum.KeyCode.Unknown);
 			break;
 		}

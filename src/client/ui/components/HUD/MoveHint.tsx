@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { InputType, inputTypeAtom } from 'client/inputType';
+import { InputType } from 'client/inputType';
 import { characterAtom } from 'client/character/atoms';
 import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const MoveHint: React.FC = () => {
 	const character = useAtom(characterAtom);
-	const inputType = useAtom(inputTypeAtom);
+	const inputType = useAtom(InputType.stateAtom);
 	
 	const [isVisible, setVisible] = useState<boolean>(true);
 	
@@ -46,7 +46,7 @@ const MoveHint: React.FC = () => {
 		return undefined;
 	}
 	
-	if (inputType === InputType.Touch) {
+	if (inputType === InputType.Value.Touch) {
 		return (
 			<Text
 				styles={styles.text.moveHint}
@@ -56,7 +56,7 @@ const MoveHint: React.FC = () => {
 				automaticHeight
 			/>
 		);
-	} else if (inputType === InputType.Controller) {
+	} else if (inputType === InputType.Value.Controller) {
 		return (
 			<Text
 				styles={styles.text.moveHint}
