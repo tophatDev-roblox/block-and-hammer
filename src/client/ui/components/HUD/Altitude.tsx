@@ -6,33 +6,33 @@ import { Shake } from 'shared/shake';
 import { Units } from 'shared/units';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { stylesAtom } from 'client/ui/styles';
-import { shakeStrengthAtom, characterAtom } from 'client/character/atoms';
+import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 
 const Altitude: React.FC = () => {
 	const labelRef = useRef<TextLabel>();
 	
-	const character = useAtom(characterAtom);
+	const characterParts = useAtom(CharacterState.partsAtom);
 	const styles = useAtom(stylesAtom);
 	
 	useEffect(() => {
 		const labelFormat = `%.${styles.text.hudPrimary.display.decimals}fm`;
 		const label = labelRef.current;
-		if (label === undefined || character === undefined) {
+		if (label === undefined || characterParts === undefined) {
 			return;
 		}
 		
 		const disconnectSteppedEvent = useStepped((_, time) => {
-			const altitude = Units.studsToMeters(math.max(character.body.Position.Y - character.body.Size.Y / 2, 0));
+			const altitude = Units.studsToMeters(math.max(characterParts.body.Position.Y - characterParts.body.Size.Y / 2, 0));
 			label.Text = labelFormat.format(altitude);
-			label.Rotation = Shake.ui(peek(shakeStrengthAtom), time, 2);
+			label.Rotation = Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 2);
 		});
 		
 		return () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [character, styles.text.hudPrimary.display.decimals]);
+	}, [characterParts, styles.text.hudPrimary.display.decimals]);
 	
 	return (
 		<frame

@@ -6,14 +6,14 @@ import { TimeSpan } from 'shared/timeSpan';
 import { useStepped } from 'client/ui/hooks/useStepped';
 import { usePx } from 'client/ui/hooks/usePx';
 import { stylesAtom } from 'client/ui/styles';
-import { shakeStrengthAtom, characterAtom } from 'client/character/atoms';
+import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 import { peek } from '@rbxts/charm';
 
 const Timer: React.FC = () => {
 	const labelRef = useRef<TextLabel>();
 	
-	const character = useAtom(characterAtom);
+	const character = useAtom(CharacterState.partsAtom);
 	const styles = useAtom(stylesAtom);
 	const px = usePx();
 	
@@ -46,7 +46,7 @@ const Timer: React.FC = () => {
 			
 			const millisecondsString = string.format('%02d', math.floor(elapsedTime % 1 * 100));
 			label.Text = `${timeString}.<font size="${px(styles.text.timer.display.millisecondsFontSize)}">${millisecondsString}</font>`;
-			label.Rotation = Shake.ui(peek(shakeStrengthAtom), time, 1);
+			label.Rotation = Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 1);
 		});
 		
 		return () => {

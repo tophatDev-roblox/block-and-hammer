@@ -4,7 +4,7 @@ import { effect, peek } from '@rbxts/charm';
 import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
 import { shake, ragdoll } from 'client/character';
-import { characterAtom } from 'client/character/atoms';
+import { CharacterState } from 'client/character/state';
 import { materialConfiguration } from './materials';
 import { userSettingsAtom } from 'client/settings';
 
@@ -29,31 +29,31 @@ function getPointOn3dCircle(center: Vector3, normal: Vector3, radius: number, th
 }
 
 effect(() => {
-	const character = characterAtom();
-	if (character === undefined) {
+	const characterParts = CharacterState.partsAtom();
+	if (characterParts === undefined) {
 		return;
 	}
 	
-	let previousBodyVelocity = character.body.AssemblyLinearVelocity;
+	let previousBodyVelocity = characterParts.body.AssemblyLinearVelocity;
 	let hammerVelocity = Vector3.zero;
 	let lastEffectTime = -1;
 	
-	const touchedEvent = character.hammer.head.Touched.Connect((otherPart) => {
+	const touchedEvent = characterParts.hammer.head.Touched.Connect((otherPart) => {
 		if (TimeSpan.timeSince(lastEffectTime) < 0.1) {
 			return;
 		}
 		
-		let magnitude = hammerVelocity.sub(otherPart.AssemblyLinearVelocity).sub(character.body.AssemblyLinearVelocity.div(4)).Magnitude;
+		let magnitude = hammerVelocity.sub(otherPart.AssemblyLinearVelocity).sub(characterParts.body.AssemblyLinearVelocity.div(4)).Magnitude;
 		magnitude *= 1.5;
 		if (magnitude < 50) {
 			return;
 		}
 		
-		const otherPoint = otherPart.GetClosestPointOnSurface(character.hammer.head.Position);
-		const directionToPart = otherPoint.sub(character.hammer.head.Position);
+		const otherPoint = otherPart.GetClosestPointOnSurface(characterParts.hammer.head.Position);
+		const directionToPart = otherPoint.sub(characterParts.hammer.head.Position);
 		
 		const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder]);
-		const origin = character.hammer.head.Position.sub(directionToPart);
+		const origin = characterParts.hammer.head.Position.sub(directionToPart);
 		const direction = directionToPart.mul(3);
 		
 		const result = Workspace.Raycast(origin, direction, params);
@@ -63,7 +63,7 @@ effect(() => {
 		}
 		
 		const targetPart = result.Instance;
-		const point = targetPart.GetClosestPointOnSurface(character.hammer.head.Position);
+		const point = targetPart.GetClosestPointOnSurface(characterParts.hammer.head.Position);
 		const inheritedVelocity = hammerVelocity.mul(-0.2);
 		
 		const baseParticle = Instance.fromExisting(targetPart);
@@ -180,14 +180,14 @@ effect(() => {
 	});
 	
 	const steppedEvent = RunService.Stepped.Connect(() => {
-		hammerVelocity = character.hammer.head.AssemblyLinearVelocity;
+		hammerVelocity = characterParts.hammer.head.AssemblyLinearVelocity;
 		// i just copied the hit detection from the original block and hammer,
 		// not sure why this works so much better than getting AssemblyLinearVelocity directly
 		
-		const bodyVelocity = character.body.AssemblyLinearVelocity;
-		if (character.model.GetAttribute('justReset')) {
+		const bodyVelocity = characterParts.body.AssemblyLinearVelocity;
+		if (characterParts.model.GetAttribute('justReset')) {
 			previousBodyVelocity = bodyVelocity;
-			character.model.SetAttribute('justReset', undefined);
+			characterParts.model.SetAttribute('justReset', undefined);
 		}
 		
 		const impactMagnitude = math.abs(bodyVelocity.Magnitude - previousBodyVelocity.Magnitude);
@@ -208,7 +208,7 @@ effect(() => {
 			sound.Destroy();
 			
 			const explosion = new Instance('Explosion');
-			explosion.Position = character.body.Position;
+			explosion.Position = characterParts.body.Position;
 			explosion.BlastPressure = 0;
 			explosion.BlastRadius = 0;
 			explosion.ExplosionType = Enum.ExplosionType.NoCraters;
@@ -218,7 +218,7 @@ effect(() => {
 			
 			const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder]);
 			const direction = previousBodyVelocity.sub(bodyVelocity).Unit.mul(rayDistance);
-			const origin = character.body.Position.sub(direction.Unit.mul(5));
+			const origin = characterParts.body.Position.sub(direction.Unit.mul(5));
 			
 			const result = Workspace.Raycast(origin, direction, params);
 			if (result !== undefined) {

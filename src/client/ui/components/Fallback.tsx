@@ -2,7 +2,7 @@ import React, { Error, useEffect } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { usePx } from '../hooks/usePx';
-import { forcePauseGameplayAtom } from 'client/character/atoms';
+import { CharacterState } from 'client/character/state';
 import { refreshCallbackAtom } from './ErrorBoundary';
 import { Remotes } from 'shared/events';
 
@@ -22,10 +22,10 @@ const Fallback: React.FC<FallbackProps> = ({ err }) => {
 		warn(`[client::ui/App] stack:\n${err.stack || '<n/a>'}`);
 		warn(`[client::ui/App] ${'='.rep(60)}`);
 		
-		forcePauseGameplayAtom(true);
+		CharacterState.forcePauseGameplayAtom(true);
 		
 		return () => {
-			forcePauseGameplayAtom(false);
+			CharacterState.forcePauseGameplayAtom(false);
 		};
 	}, []);
 	

@@ -10,22 +10,7 @@ import { IsDebugPanelEnabled } from 'shared/constants';
 import { userSettingsAtom } from 'client/settings';
 import { InputType } from 'client/inputType';
 import { sideMenuOpenedAtom } from 'client/sideMenu';
-import { cameraZOffsetAtom, characterAtom, disableCameraAtom, forcePauseGameplayAtom, forcePauseTimeAtom, hammerDistanceAtom, mousePositionAtom, shakeStrengthAtom, useLegacyPhysicsAtom } from './atoms';
-
-export interface CharacterParts {
-	model: Model;
-	body: Part;
-	centerAttachment: Attachment;
-	targetAttachment: Attachment;
-	rotationLock: AlignOrientation;
-	hammer: {
-		model: Model;
-		head: Part;
-		handle: Part;
-		alignPosition: AlignPosition;
-		alignOrientation: AlignOrientation;
-	};
-}
+import { CharacterState } from './state';
 
 const client = Players.LocalPlayer;
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
@@ -41,8 +26,8 @@ let hasTimeStarted = false;
 export const camera = Workspace.WaitForChild('Camera') as Camera;
 
 export function quickReset(): void {
-	const character = peek(characterAtom);
-	if (character === undefined || peek(forcePauseGameplayAtom)) {
+	const characterParts = peek(CharacterState.partsAtom);
+	if (characterParts === undefined || peek(CharacterState.forcePauseGameplayAtom)) {
 		return;
 	}
 	
@@ -50,36 +35,40 @@ export function quickReset(): void {
 	
 	hasTimeStarted = false;
 	endRagdoll();
-	mousePositionAtom(undefined);
-	shakeStrengthAtom(0);
-	character.model.SetAttribute('justReset', true);
-	character.model.SetAttribute('startTime', undefined);
+	CharacterState.mousePositionAtom(undefined);
+	CharacterState.shakeStrengthAtom(0);
+	characterParts.model.SetAttribute('justReset', true);
+	characterParts.model.SetAttribute('startTime', undefined);
 	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
 	const target = new CFrame(0, 3, 0);
-	character.model.PivotTo(target);
-	previousCameraCFrame = CFrame.lookAlong(target.Position.add(new Vector3(0, 0, peek(cameraZOffsetAtom) / 3)), Vector3.yAxis.mul(-1), Vector3.zAxis);
+	characterParts.model.PivotTo(target);
+	previousCameraCFrame = CFrame.lookAlong(
+		target.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
+		Vector3.yAxis.mul(-1),
+		Vector3.zAxis,
+	);
 	
-	character.targetAttachment.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
-	character.hammer.model.PivotTo(target);
-	character.body.AssemblyLinearVelocity = Vector3.zero;
-	character.body.AssemblyAngularVelocity = Vector3.zero;
-	character.hammer.head.AssemblyLinearVelocity = Vector3.zero;
-	character.hammer.head.AssemblyAngularVelocity = Vector3.zero;
-	character.hammer.handle.AssemblyLinearVelocity = Vector3.zero;
-	character.hammer.handle.AssemblyAngularVelocity = Vector3.zero;
+	characterParts.targetAttachment.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
+	characterParts.hammer.model.PivotTo(target);
+	characterParts.body.AssemblyLinearVelocity = Vector3.zero;
+	characterParts.body.AssemblyAngularVelocity = Vector3.zero;
+	characterParts.hammer.head.AssemblyLinearVelocity = Vector3.zero;
+	characterParts.hammer.head.AssemblyAngularVelocity = Vector3.zero;
+	characterParts.hammer.handle.AssemblyLinearVelocity = Vector3.zero;
+	characterParts.hammer.handle.AssemblyAngularVelocity = Vector3.zero;
 }
 
 export function ragdoll(seconds: number): void {
-	const character = peek(characterAtom);
-	if (character === undefined || peek(forcePauseGameplayAtom)) {
+	const characterParts = peek(CharacterState.partsAtom);
+	if (characterParts === undefined || peek(CharacterState.forcePauseGameplayAtom)) {
 		return;
 	}
 	
 	if (ragdollTimeEnd === undefined) {
 		ragdollTimeEnd = os.clock() + seconds;
 		
-		const centerAttachment = character.centerAttachment;
+		const centerAttachment = characterParts.centerAttachment;
 		
 		const stunParticles = baseStunParticles.Clone();
 		for (const particleEmitter of stunParticles.GetDescendants()) {
@@ -98,7 +87,7 @@ export function ragdoll(seconds: number): void {
 			CFrame: rigidAttachment.CFrame.mul(CFrame.fromOrientation(0, math.pi, 0)),
 		}).Play();
 		
-		stunParticles.Parent = character.model;
+		stunParticles.Parent = characterParts.model;
 		
 		if (IsDebugPanelEnabled && peek(DebugPanel.disableRagdollAtom)) {
 			return;
@@ -107,55 +96,55 @@ export function ragdoll(seconds: number): void {
 		const minAngle = 10;
 		const maxAngle = 20;
 		
-		character.body.AssemblyAngularVelocity = new Vector3(
+		characterParts.body.AssemblyAngularVelocity = new Vector3(
 			RNG.NextNumber(minAngle, maxAngle),
 			RNG.NextNumber(minAngle, maxAngle),
 			RNG.NextNumber(minAngle, maxAngle),
 		);
 		
-		character.rotationLock.Enabled = false;
-		character.hammer.handle.CanCollide = true;
-		character.hammer.alignPosition.Enabled = false;
-		character.hammer.alignOrientation.Enabled = false;
+		characterParts.rotationLock.Enabled = false;
+		characterParts.hammer.handle.CanCollide = true;
+		characterParts.hammer.alignPosition.Enabled = false;
+		characterParts.hammer.alignOrientation.Enabled = false;
 	} else {
 		ragdollTimeEnd += seconds * 0.75;
 	}
 }
 
 export function shake(magnitude: number): void {
-	if (peek(forcePauseGameplayAtom)) {
+	if (peek(CharacterState.forcePauseGameplayAtom)) {
 		return;
 	}
 	
-	shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength));
+	CharacterState.shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength));
 }
 
 function endRagdoll(): void {
-	if (peek(forcePauseGameplayAtom)) {
+	if (peek(CharacterState.forcePauseGameplayAtom)) {
 		return;
 	}
 	
 	ragdollTimeEnd = undefined;
 	
-	const character = peek(characterAtom);
-	if (character !== undefined) {
-		character.model.FindFirstChild('StunParticles')?.Destroy();
-		character.rotationLock.Enabled = true;
-		character.targetAttachment.CFrame = CFrame.lookAlong(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
+	const characterParts = peek(CharacterState.partsAtom);
+	if (characterParts !== undefined) {
+		characterParts.model.FindFirstChild('StunParticles')?.Destroy();
+		characterParts.rotationLock.Enabled = true;
+		characterParts.targetAttachment.CFrame = CFrame.lookAlong(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
 		
-		const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder, character.body]);
-		const origin = character.hammer.head.Position;
-		const direction = character.body.Position.sub(origin);
+		const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder, characterParts.body]);
+		const origin = characterParts.hammer.head.Position;
+		const direction = characterParts.body.Position.sub(origin);
 		
 		const result = Workspace.Raycast(origin, direction, params);
 		
-		if (result?.Instance !== character.body) {
-			character.hammer.model.PivotTo(CFrame.lookAlong(character.body.Position, Vector3.yAxis.mul(-1), Vector3.zAxis));
+		if (result?.Instance !== characterParts.body) {
+			characterParts.hammer.model.PivotTo(CFrame.lookAlong(characterParts.body.Position, Vector3.yAxis.mul(-1), Vector3.zAxis));
 		}
 		
-		character.hammer.handle.CanCollide = false;
-		character.hammer.alignPosition.Enabled = true;
-		character.hammer.alignOrientation.Enabled = true;
+		characterParts.hammer.handle.CanCollide = false;
+		characterParts.hammer.alignPosition.Enabled = true;
+		characterParts.hammer.alignOrientation.Enabled = true;
 	}
 }
 
@@ -176,47 +165,45 @@ function clampPositionToCircle(position: Vector3, center: Vector3, radius: numbe
 }
 
 function moveTargetAttachment(position: Vector3): void {
-	const hammerDistance = peek(hammerDistanceAtom);
-	const character = peek(characterAtom);
-	if (character === undefined) {
+	const hammerDistance = peek(CharacterState.hammerDistanceAtom);
+	const characterParts = peek(CharacterState.partsAtom);
+	if (characterParts === undefined) {
 		return;
 	}
 	
 	if (!hasTimeStarted) {
-		character.model.SetAttribute('startTime', TimeSpan.now());
+		characterParts.model.SetAttribute('startTime', TimeSpan.now());
 		hasTimeStarted = true;
 	}
 	
-	character.targetAttachment.WorldCFrame = CFrame.lookAt(
-		clampPositionToCircle(position.mul(new Vector3(1, 1, 0)), character.body.Position, hammerDistance),
-		character.body.Position,
+	characterParts.targetAttachment.WorldCFrame = CFrame.lookAt(
+		clampPositionToCircle(position.mul(new Vector3(1, 1, 0)), characterParts.body.Position, hammerDistance),
+		characterParts.body.Position,
 		Vector3.zAxis,
 	);
 }
 
 function processInput(input: InputObject): void {
 	if (input.KeyCode === Enum.KeyCode.M && input.UserInputState === Enum.UserInputState.Begin) {
-		useLegacyPhysicsAtom((useLegacyPhysics) => !useLegacyPhysics);
-		
+		CharacterState.useLegacyPhysicsAtom((useLegacyPhysics) => !useLegacyPhysics);
 		return;
 	}
 	
-	
-	if (input.UserInputState === Enum.UserInputState.Begin && input.UserInputType !== Enum.UserInputType.Touch || peek(forcePauseGameplayAtom)) {
+	if (input.UserInputState === Enum.UserInputState.Begin && input.UserInputType !== Enum.UserInputType.Touch || peek(CharacterState.forcePauseGameplayAtom)) {
 		return;
 	}
 	
-	const character = peek(characterAtom);
+	const characterParts = peek(CharacterState.partsAtom);
 	const inputType = peek(InputType.stateAtom);
 	const userSettings = peek(userSettingsAtom);
 	const sideMenuOpened = peek(sideMenuOpenedAtom);
-	const hammerDistance = peek(hammerDistanceAtom);
-	if (character === undefined || sideMenuOpened) {
+	const hammerDistance = peek(CharacterState.hammerDistanceAtom);
+	if (characterParts === undefined || sideMenuOpened) {
 		return;
 	}
 	
 	if (positionalInputTypes.has(input.UserInputType)) {
-		mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
+		CharacterState.mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
 	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Value.Controller) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
 			let direction = input.Position;
@@ -226,23 +213,23 @@ function processInput(input: InputObject): void {
 				direction = new Vector3(0, 0.001, 0);
 			}
 			
-			const position = character.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
+			const position = characterParts.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
 			const [screenPosition] = camera.WorldToScreenPoint(position);
-			mousePositionAtom(new Vector2(screenPosition.X, screenPosition.Y));
+			CharacterState.mousePositionAtom(new Vector2(screenPosition.X, screenPosition.Y));
 		}
 	}
 }
 
 function onInputEnded(input: InputObject): void {
-	const character = peek(characterAtom);
+	const characterParts = peek(CharacterState.partsAtom);
 	const inputType = peek(InputType.stateAtom);
-	if (character === undefined || inputType !== InputType.Value.Controller) {
+	if (characterParts === undefined || inputType !== InputType.Value.Controller) {
 		return;
 	}
 	
 	if (Controller.isGamepadInput(input.UserInputType) && input.KeyCode === Enum.KeyCode.Thumbstick2) {
-		character.targetAttachment.CFrame = CFrame.fromOrientation(math.pi / -2, 0, 0);
-		mousePositionAtom(undefined);
+		characterParts.targetAttachment.CFrame = CFrame.fromOrientation(math.pi / -2, 0, 0);
+		CharacterState.mousePositionAtom(undefined);
 	}
 }
 
@@ -255,17 +242,17 @@ function onCharacterAdded(newCharacter: Model): void {
 	
 	hasTimeStarted = false;
 	ragdollTimeEnd = undefined;
-	mousePositionAtom(undefined);
-	shakeStrengthAtom(0);
+	CharacterState.mousePositionAtom(undefined);
+	CharacterState.shakeStrengthAtom(0);
 	newCharacter.SetAttribute('startTime', undefined);
 	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
 	const body = newCharacter.FindFirstChild('Body') as Part;
 	const hammer = newCharacter.FindFirstChild('Hammer') as Model;
 	const head = hammer.FindFirstChild('Head') as Part;
-	previousCameraCFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, peek(cameraZOffsetAtom) / 3)), Vector3.yAxis.mul(-1), Vector3.zAxis);
+	previousCameraCFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)), Vector3.yAxis.mul(-1), Vector3.zAxis);
 	
-	characterAtom({
+	CharacterState.partsAtom({
 		model: newCharacter,
 		body: body,
 		centerAttachment: body.FindFirstChild('Center.0') as Attachment,
@@ -296,14 +283,13 @@ function onCharacterAdded(newCharacter: Model): void {
 
 function onCharacterRemoving(): void {
 	print('[client::character] character removing');
-	
-	characterAtom(undefined);
+	CharacterState.partsAtom(undefined);
 }
 
 function onRenderStepped(dt: number): void {
 	const currentTime = os.clock();
-	const character = peek(characterAtom);
-	if (character === undefined) {
+	const parts = peek(CharacterState.partsAtom);
+	if (parts === undefined) {
 		return;
 	}
 	
@@ -311,7 +297,7 @@ function onRenderStepped(dt: number): void {
 	
 	const userSettings = peek(userSettingsAtom);
 	const inputType = peek(InputType.stateAtom);
-	const mousePosition = peek(mousePositionAtom);
+	const mousePosition = peek(CharacterState.mousePositionAtom);
 	if (mousePosition !== undefined) {
 		const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
 		const position = rayIntersectXYPlane(ray);
@@ -324,31 +310,31 @@ function onRenderStepped(dt: number): void {
 		
 		moveTargetAttachment(mouseCursorPart.Position);
 	} else if (inputType === InputType.Value.Controller) {
-		mouseCursorPart.Position = character.body.Position;
+		mouseCursorPart.Position = parts.body.Position;
 	}
 	
-	const disableCamera = peek(disableCameraAtom);
+	const disableCamera = peek(CharacterState.disableCameraAtom);
 	if (!disableCamera) {
-		const targetPosition = new Vector3(character.body.Position.X, character.body.Position.Y, peek(cameraZOffsetAtom));
+		const targetPosition = new Vector3(parts.body.Position.X, parts.body.Position.Y, peek(CharacterState.cameraZOffsetAtom));
 		const cameraCFrame = CFrame.lookAlong(targetPosition, Vector3.zAxis, Vector3.yAxis);
 		const finalCameraCFrame = previousCameraCFrame !== undefined ? previousCameraCFrame.Lerp(cameraCFrame, math.min(dt * 15, 1)) : cameraCFrame;
 		
 		camera.CFrame = finalCameraCFrame;
 		previousCameraCFrame = finalCameraCFrame;
 		
-		const shakeStrength = peek(shakeStrengthAtom);
+		const shakeStrength = peek(CharacterState.shakeStrengthAtom);
 		if (shakeStrength > 0) {
 			const shakeCFrame = Shake.camera(shakeStrength, currentTime, false);
 			camera.CFrame = camera.CFrame.mul(shakeCFrame);
 			
-			shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
+			CharacterState.shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
 		}
 		
 		if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
 			endRagdoll();
 		}
 		
-		const velocity = character.body.AssemblyLinearVelocity.Magnitude;
+		const velocity = parts.body.AssemblyLinearVelocity.Magnitude;
 		const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
 		camera.FieldOfView = fieldOfView;
 		
@@ -373,72 +359,72 @@ task.spawn(() => {
 	}
 });
 
-subscribe(disableCameraAtom, (disableCamera) => {
+subscribe(CharacterState.disableCameraAtom, (disableCamera) => {
 	if (disableCamera) {
 		camera.FieldOfView = 70;
 	}
 });
 
 subscribe(() => {
-	characterAtom();
-	return forcePauseGameplayAtom();
+	CharacterState.partsAtom();
+	return CharacterState.forcePauseGameplayAtom();
 }, (forcePauseGameplay, previousForcePauseGameplay) => {
-	const character = characterAtom();
-	if (character === undefined || forcePauseGameplay === previousForcePauseGameplay) {
+	const characterParts = CharacterState.partsAtom();
+	if (characterParts === undefined || forcePauseGameplay === previousForcePauseGameplay) {
 		return;
 	}
 	
 	print('[client::character] forcePauseGameplay =', forcePauseGameplay);
 	
 	if (forcePauseGameplay) {
-		character.body.Anchored = true;
-		character.hammer.head.Anchored = true;
+		characterParts.body.Anchored = true;
+		characterParts.hammer.head.Anchored = true;
 		
-		const startTime = character.model.GetAttribute('startTime');
+		const startTime = characterParts.model.GetAttribute('startTime');
 		if (typeIs(startTime, 'number')) {
-			forcePauseTimeAtom(os.clock() - startTime);
+			CharacterState.forcePauseTimeAtom(os.clock() - startTime);
 		}
 	} else {
-		character.body.Anchored = false;
-		character.hammer.head.Anchored = false;
+		characterParts.body.Anchored = false;
+		characterParts.hammer.head.Anchored = false;
 		
-		const forcePauseTime = peek(forcePauseTimeAtom);
+		const forcePauseTime = peek(CharacterState.forcePauseTimeAtom);
 		if (forcePauseTime !== undefined) {
-			character.model.SetAttribute('startTime', os.clock() - forcePauseTime);
+			characterParts.model.SetAttribute('startTime', os.clock() - forcePauseTime);
 		}
 	}
 });
 
 effect(() => {
-	const character = characterAtom();
-	const useLegacyPhysics = useLegacyPhysicsAtom();
-	if (character === undefined) {
+	const characterParts = CharacterState.partsAtom();
+	const useLegacyPhysics = CharacterState.useLegacyPhysicsAtom();
+	if (characterParts === undefined) {
 		return;
 	}
 	
 	print('[client::character] useLegacyPhysics =', useLegacyPhysics);
 	if (useLegacyPhysics) {
-		character.hammer.alignPosition.Responsiveness = 70;
-		character.hammer.alignPosition.MaxForce = 12_500;
-		character.hammer.alignOrientation.Responsiveness = 200;
-		character.hammer.alignOrientation.MaxTorque = math.huge;
-		character.hammer.handle.Massless = true;
-		character.hammer.handle.CustomPhysicalProperties = new PhysicalProperties(0.7, 0.3, 0, 1, 1);
-		character.hammer.head.Massless = true;
-		character.hammer.head.CustomPhysicalProperties = new PhysicalProperties(0.7, 0.6, 0, 100, 1);
-		character.body.Massless = true;
-		character.body.CustomPhysicalProperties = new PhysicalProperties(0.5, 0.3, 0, 1, 1);
+		characterParts.hammer.alignPosition.Responsiveness = 70;
+		characterParts.hammer.alignPosition.MaxForce = 12_500;
+		characterParts.hammer.alignOrientation.Responsiveness = 200;
+		characterParts.hammer.alignOrientation.MaxTorque = math.huge;
+		characterParts.hammer.handle.Massless = true;
+		characterParts.hammer.handle.CustomPhysicalProperties = new PhysicalProperties(0.7, 0.3, 0, 1, 1);
+		characterParts.hammer.head.Massless = true;
+		characterParts.hammer.head.CustomPhysicalProperties = new PhysicalProperties(0.7, 0.6, 0, 100, 1);
+		characterParts.body.Massless = true;
+		characterParts.body.CustomPhysicalProperties = new PhysicalProperties(0.5, 0.3, 0, 1, 1);
 	} else {
-		character.hammer.alignPosition.Responsiveness = 45;
-		character.hammer.alignPosition.MaxForce = 25_000;
-		character.hammer.alignOrientation.Responsiveness = 40;
-		character.hammer.alignOrientation.MaxTorque = 50_000;
-		character.hammer.handle.Massless = false;
-		character.hammer.handle.CustomPhysicalProperties = new PhysicalProperties(0.0001, 0.3, 0.5, 1, 1);
-		character.hammer.head.Massless = false;
-		character.hammer.head.CustomPhysicalProperties = new PhysicalProperties(1, 0.6, 0.1, 3, 4);
-		character.body.Massless = false;
-		character.body.CustomPhysicalProperties = new PhysicalProperties(0.9, 0.6, 0.2, 1.5, 2);
+		characterParts.hammer.alignPosition.Responsiveness = 45;
+		characterParts.hammer.alignPosition.MaxForce = 25_000;
+		characterParts.hammer.alignOrientation.Responsiveness = 40;
+		characterParts.hammer.alignOrientation.MaxTorque = 50_000;
+		characterParts.hammer.handle.Massless = false;
+		characterParts.hammer.handle.CustomPhysicalProperties = new PhysicalProperties(0.0001, 0.3, 0.5, 1, 1);
+		characterParts.hammer.head.Massless = false;
+		characterParts.hammer.head.CustomPhysicalProperties = new PhysicalProperties(1, 0.6, 0.1, 3, 4);
+		characterParts.body.Massless = false;
+		characterParts.body.CustomPhysicalProperties = new PhysicalProperties(0.9, 0.6, 0.2, 1.5, 2);
 	}
 });
 

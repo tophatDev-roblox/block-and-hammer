@@ -2,12 +2,12 @@ import React, { useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { InputType } from 'client/inputType';
-import { characterAtom } from 'client/character/atoms';
+import { CharacterState } from 'client/character/state';
 import { stylesAtom } from 'client/ui/styles';
 import Text from '../Text';
 
 const MoveHint: React.FC = () => {
-	const character = useAtom(characterAtom);
+	const character = useAtom(CharacterState.partsAtom);
 	const inputType = useAtom(InputType.stateAtom);
 	
 	const [isVisible, setVisible] = useState<boolean>(true);

@@ -3,7 +3,7 @@ import { atom, peek, subscribe } from '@rbxts/charm';
 import Iris from '@rbxts/iris';
 
 import { IsDebugPanelEnabled } from 'shared/constants';
-import { cameraZOffsetAtom, characterAtom } from 'client/character/atoms';
+import { CharacterState } from 'client/character/state';
 
 export namespace DebugPanel {
 	export const isOpenAtom = atom<boolean>(false);
@@ -23,7 +23,7 @@ const windowSizeState = Iris.State<Vector2>(new Vector2(400, 250));
 const windowOpenedState = Iris.State<boolean>(false);
 
 const cameraZOffsetState = Iris.State<number>(30);
-cameraZOffsetState.onChange((cameraZOffset) => cameraZOffsetAtom(-cameraZOffset));
+cameraZOffsetState.onChange((cameraZOffset) => CharacterState.cameraZOffsetAtom(-cameraZOffset));
 
 const disableRagdollState = Iris.State<boolean>(false);
 disableRagdollState.onChange((disableRagdoll) => DebugPanel.disableRagdollAtom(disableRagdoll));
@@ -48,12 +48,12 @@ mapBoundariesState.onChange((mapBoundaries) => {
 				return;
 			}
 			
-			const character = peek(characterAtom);
-			if (character === undefined) {
+			const characterParts = peek(CharacterState.partsAtom);
+			if (characterParts === undefined) {
 				return;
 			}
 			
-			boundariesPart.Position = character.body.Position;
+			boundariesPart.Position = characterParts.body.Position;
 		});
 	}
 });
@@ -66,7 +66,7 @@ if (IsDebugPanelEnabled && RunService.IsRunning()) {
 		windowOpenedState.set(isOpen);
 	});
 	
-	subscribe(cameraZOffsetAtom, (cameraZOffset) => {
+	subscribe(CharacterState.cameraZOffsetAtom, (cameraZOffset) => {
 		cameraZOffsetState.set(-cameraZOffset);
 	});
 }
