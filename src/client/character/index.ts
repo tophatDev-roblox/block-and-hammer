@@ -50,9 +50,11 @@ export function quickReset(): void {
 	
 	hasTimeStarted = false;
 	endRagdoll();
+	mousePositionAtom(undefined);
 	shakeStrengthAtom(0);
 	character.model.SetAttribute('justReset', true);
 	character.model.SetAttribute('startTime', undefined);
+	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
 	const target = new CFrame(0, 3, 0);
 	character.model.PivotTo(target);
@@ -247,8 +249,10 @@ function onCharacterAdded(newCharacter: Model): void {
 	
 	hasTimeStarted = false;
 	ragdollTimeEnd = undefined;
+	mousePositionAtom(undefined);
 	shakeStrengthAtom(0);
 	newCharacter.SetAttribute('startTime', undefined);
+	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
 	const body = newCharacter.WaitForChild('Body') as Part;
 	const hammer = newCharacter.WaitForChild('Hammer') as Model;
