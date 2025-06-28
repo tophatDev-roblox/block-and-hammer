@@ -10,6 +10,7 @@ import { IsDebugPanelEnabled } from 'shared/constants';
 import { UserSettings } from 'client/settings';
 import { InputType } from 'client/inputType';
 import { SideMenu } from 'client/sideMenu';
+import { camera } from 'client/camera';
 import { CharacterState } from './state';
 
 const client = Players.LocalPlayer;
@@ -23,100 +24,101 @@ let ragdollTimeEnd: number | undefined = undefined;
 let previousCameraCFrame: CFrame | undefined = undefined;
 let hasTimeStarted = false;
 
-export const camera = Workspace.WaitForChild('Camera') as Camera;
 
-export function quickReset(): void {
-	const characterParts = peek(CharacterState.partsAtom);
-	if (characterParts === undefined || peek(CharacterState.forcePauseGameplayAtom)) {
-		return;
-	}
-	
-	print('[client::character] running quick reset');
-	
-	hasTimeStarted = false;
-	endRagdoll();
-	CharacterState.mousePositionAtom(undefined);
-	CharacterState.shakeStrengthAtom(0);
-	characterParts.model.SetAttribute('justReset', true);
-	characterParts.model.SetAttribute('startTime', undefined);
-	mouseCursorPart.Position = new Vector3(0, -500, 0);
-	
-	const target = new CFrame(0, 3, 0);
-	characterParts.model.PivotTo(target);
-	previousCameraCFrame = CFrame.lookAlong(
-		target.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
-		Vector3.yAxis.mul(-1),
-		Vector3.zAxis,
-	);
-	
-	characterParts.targetAttachment.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
-	characterParts.hammer.model.PivotTo(target);
-	characterParts.body.AssemblyLinearVelocity = Vector3.zero;
-	characterParts.body.AssemblyAngularVelocity = Vector3.zero;
-	characterParts.hammer.head.AssemblyLinearVelocity = Vector3.zero;
-	characterParts.hammer.head.AssemblyAngularVelocity = Vector3.zero;
-	characterParts.hammer.handle.AssemblyLinearVelocity = Vector3.zero;
-	characterParts.hammer.handle.AssemblyAngularVelocity = Vector3.zero;
-}
-
-export function ragdoll(seconds: number): void {
-	const characterParts = peek(CharacterState.partsAtom);
-	if (characterParts === undefined || peek(CharacterState.forcePauseGameplayAtom)) {
-		return;
-	}
-	
-	if (ragdollTimeEnd === undefined) {
-		ragdollTimeEnd = os.clock() + seconds;
-		
-		const centerAttachment = characterParts.centerAttachment;
-		
-		const stunParticles = baseStunParticles.Clone();
-		for (const particleEmitter of stunParticles.GetDescendants()) {
-			if (!particleEmitter.IsA('ParticleEmitter')) {
-				continue;
-			}
-			
-			particleEmitter.Emit(1);
-		}
-		
-		const rigidConstraint = stunParticles.FindFirstChild('RigidConstraint') as RigidConstraint;
-		rigidConstraint.Attachment1 = centerAttachment;
-		
-		const rigidAttachment = stunParticles.FindFirstChild('Rigid.0') as Attachment;
-		TweenService.Create(rigidAttachment, new TweenInfo(0.7, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1, false, 0), {
-			CFrame: rigidAttachment.CFrame.mul(CFrame.fromOrientation(0, math.pi, 0)),
-		}).Play();
-		
-		stunParticles.Parent = characterParts.model;
-		
-		if (IsDebugPanelEnabled && peek(DebugPanel.disableRagdollAtom)) {
+export namespace Character {
+	export function quickReset(): void {
+		const characterParts = peek(CharacterState.partsAtom);
+		if (characterParts === undefined || peek(CharacterState.forcePauseGameplayAtom)) {
 			return;
 		}
 		
-		const minAngle = 10;
-		const maxAngle = 20;
+		print('[client::character] running quick reset');
 		
-		characterParts.body.AssemblyAngularVelocity = new Vector3(
-			RNG.NextNumber(minAngle, maxAngle),
-			RNG.NextNumber(minAngle, maxAngle),
-			RNG.NextNumber(minAngle, maxAngle),
+		hasTimeStarted = false;
+		endRagdoll();
+		CharacterState.mousePositionAtom(undefined);
+		CharacterState.shakeStrengthAtom(0);
+		characterParts.model.SetAttribute('justReset', true);
+		characterParts.model.SetAttribute('startTime', undefined);
+		mouseCursorPart.Position = new Vector3(0, -500, 0);
+		
+		const target = new CFrame(0, 3, 0);
+		characterParts.model.PivotTo(target);
+		previousCameraCFrame = CFrame.lookAlong(
+			target.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
+			Vector3.yAxis.mul(-1),
+			Vector3.zAxis,
 		);
 		
-		characterParts.rotationLock.Enabled = false;
-		characterParts.hammer.handle.CanCollide = true;
-		characterParts.hammer.alignPosition.Enabled = false;
-		characterParts.hammer.alignOrientation.Enabled = false;
-	} else {
-		ragdollTimeEnd += seconds * 0.75;
-	}
-}
-
-export function shake(magnitude: number): void {
-	if (peek(CharacterState.forcePauseGameplayAtom)) {
-		return;
+		characterParts.targetAttachment.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
+		characterParts.hammer.model.PivotTo(target);
+		characterParts.body.AssemblyLinearVelocity = Vector3.zero;
+		characterParts.body.AssemblyAngularVelocity = Vector3.zero;
+		characterParts.hammer.head.AssemblyLinearVelocity = Vector3.zero;
+		characterParts.hammer.head.AssemblyAngularVelocity = Vector3.zero;
+		characterParts.hammer.handle.AssemblyLinearVelocity = Vector3.zero;
+		characterParts.hammer.handle.AssemblyAngularVelocity = Vector3.zero;
 	}
 	
-	CharacterState.shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength));
+	export function ragdoll(seconds: number): void {
+		const characterParts = peek(CharacterState.partsAtom);
+		if (characterParts === undefined || peek(CharacterState.forcePauseGameplayAtom)) {
+			return;
+		}
+		
+		if (ragdollTimeEnd === undefined) {
+			ragdollTimeEnd = os.clock() + seconds;
+			
+			const centerAttachment = characterParts.centerAttachment;
+			
+			const stunParticles = baseStunParticles.Clone();
+			for (const particleEmitter of stunParticles.GetDescendants()) {
+				if (!particleEmitter.IsA('ParticleEmitter')) {
+					continue;
+				}
+				
+				particleEmitter.Emit(1);
+			}
+			
+			const rigidConstraint = stunParticles.FindFirstChild('RigidConstraint') as RigidConstraint;
+			rigidConstraint.Attachment1 = centerAttachment;
+			
+			const rigidAttachment = stunParticles.FindFirstChild('Rigid.0') as Attachment;
+			TweenService.Create(rigidAttachment, new TweenInfo(0.7, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1, false, 0), {
+				CFrame: rigidAttachment.CFrame.mul(CFrame.fromOrientation(0, math.pi, 0)),
+			}).Play();
+			
+			stunParticles.Parent = characterParts.model;
+			
+			if (IsDebugPanelEnabled && peek(DebugPanel.disableRagdollAtom)) {
+				return;
+			}
+			
+			const minAngle = 10;
+			const maxAngle = 20;
+			
+			characterParts.body.AssemblyAngularVelocity = new Vector3(
+				RNG.NextNumber(minAngle, maxAngle),
+				RNG.NextNumber(minAngle, maxAngle),
+				RNG.NextNumber(minAngle, maxAngle),
+			);
+			
+			characterParts.rotationLock.Enabled = false;
+			characterParts.hammer.handle.CanCollide = true;
+			characterParts.hammer.alignPosition.Enabled = false;
+			characterParts.hammer.alignOrientation.Enabled = false;
+		} else {
+			ragdollTimeEnd += seconds * 0.75;
+		}
+	}
+	
+	export function shake(magnitude: number): void {
+		if (peek(CharacterState.forcePauseGameplayAtom)) {
+			return;
+		}
+		
+		CharacterState.shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength));
+	}
 }
 
 function endRagdoll(): void {
@@ -234,7 +236,7 @@ function onInputEnded(input: InputObject): void {
 }
 
 function onResetButton(): void {
-	quickReset();
+	Character.quickReset();
 }
 
 function onCharacterAdded(newCharacter: Model): void {

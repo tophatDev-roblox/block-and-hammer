@@ -1,7 +1,7 @@
 import { atom } from '@rbxts/charm';
 import { useAtom } from '@rbxts/react-charm';
 
-import { camera } from 'client/character';
+import { camera } from 'client/camera';
 
 const viewportSizeAtom = atom<Vector2>(camera.ViewportSize);
 

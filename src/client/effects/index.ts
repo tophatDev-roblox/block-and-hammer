@@ -3,7 +3,7 @@ import { effect, peek } from '@rbxts/charm';
 
 import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
-import { shake, ragdoll } from 'client/character';
+import { Character } from 'client/character';
 import { CharacterState } from 'client/character/state';
 import { materialConfiguration } from './materials';
 import { UserSettings } from 'client/settings';
@@ -312,8 +312,8 @@ effect(() => {
 					});
 				}
 				
-				ragdoll(effectIntensity);
-				shake(effectIntensity);
+				Character.ragdoll(effectIntensity);
+				Character.shake(effectIntensity);
 			}
 		}
 		
