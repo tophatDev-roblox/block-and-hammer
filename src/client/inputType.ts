@@ -14,6 +14,7 @@ export namespace InputType {
 	
 	export const stateAtom = atom<InputType.Value>(InputType.Value.Unknown);
 }
+
 if (UserInputService.GetConnectedGamepads().size() > 0) {
 	print('[client::inputType] detected one or more connected gamepads, possibly using controller');
 	InputType.stateAtom(InputType.Value.Controller);
