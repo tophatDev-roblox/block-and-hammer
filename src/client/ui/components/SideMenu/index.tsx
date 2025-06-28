@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { stylesAtom } from 'client/ui/styles';
-import { sideMenuOpenedAtom } from 'client/sideMenu';
+import { SideMenu as ClientSideMenu } from 'client/sideMenu';
 import { usePx } from 'client/ui/hooks/usePx';
 import Container from '../Container';
 import Button from '../Button';
@@ -13,7 +13,7 @@ const SideMenu: React.FC = () => {
 	const tweenRef = useRef<Tween>();
 	
 	const styles = useAtom(stylesAtom);
-	const sideMenuOpened = useAtom(sideMenuOpenedAtom);
+	const sideMenuOpened = useAtom(ClientSideMenu.isOpenAtom);
 	
 	const px = usePx();
 	

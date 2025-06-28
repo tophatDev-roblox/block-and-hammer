@@ -1,15 +1,17 @@
 import { StarterGui } from '@rbxts/services';
 import { atom, effect } from '@rbxts/charm';
 
-export const sideMenuOpenedAtom = atom<boolean>(false);
+export namespace SideMenu {
+	export const isOpenAtom = atom<boolean>(false);
+}
 
 effect(() => {
-	const sideMenuOpened = sideMenuOpenedAtom();
+	const sideMenuOpen = SideMenu.isOpenAtom();
 	
-	const thread = task.delay(sideMenuOpened ? 0 : 0.3, () => {
+	const thread = task.delay(sideMenuOpen ? 0 : 0.3, () => {
 		while (true) {
 			try {
-				StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, !sideMenuOpened);
+				StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, !sideMenuOpen);
 				break;
 			} catch (err) {
 				warn(`[client::sideMenu] failed to toggle leaderboard: ${err}`);

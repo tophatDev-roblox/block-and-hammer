@@ -7,7 +7,7 @@ import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
 import { Styles } from 'client/stylesParser';
 import { InputType } from 'client/inputType';
 import { DebugPanel } from 'client/debugPanel';
-import { sideMenuOpenedAtom } from 'client/sideMenu';
+import { SideMenu } from 'client/sideMenu';
 import defaultStyles from 'client/stylesParser/default';
 
 const client = Players.LocalPlayer;
@@ -55,15 +55,15 @@ const dollarsIcon = new Icon()
 	]);
 
 menuIcon.toggled.Connect((toggled) => {
-	sideMenuOpenedAtom(toggled);
+	SideMenu.isOpenAtom(toggled);
 });
 
 dollarsIcon.selected.Connect(() => {
 	menuIcon.select();
 });
 
-subscribe(sideMenuOpenedAtom, (sideMenuOpened) => {
-	if (sideMenuOpened) {
+subscribe(SideMenu.isOpenAtom, (isOpen) => {
+	if (isOpen) {
 		menuIcon.select();
 	} else {
 		menuIcon.deselect();
