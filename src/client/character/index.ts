@@ -139,7 +139,7 @@ function endRagdoll(): void {
 		const direction = characterParts.body.Position.sub(origin);
 		
 		const result = Workspace.Raycast(origin, direction, params);
-		if (result === undefined || result.Instance !== characterParts.body) {
+		if (result !== undefined && result.Instance !== characterParts.body) {
 			characterParts.hammer.model.PivotTo(CFrame.lookAlong(characterParts.body.Position, Vector3.yAxis.mul(-1), Vector3.zAxis));
 		}
 		
