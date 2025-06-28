@@ -9,6 +9,7 @@ import { Styles } from 'client/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 import { peek } from '@rbxts/charm';
+import { RichText } from 'shared/richText';
 
 const Timer: React.FC = () => {
 	const labelRef = useRef<TextLabel>();
@@ -22,6 +23,8 @@ const Timer: React.FC = () => {
 		if (label === undefined || character === undefined) {
 			return;
 		}
+		
+		const millisecondsRichText = new RichText({ font: { size: px(styles.text.timer.display.millisecondsFontSize) } });
 		
 		const disconnectSteppedEvent = useStepped((_, time) => {
 			const currentTime = TimeSpan.now();
@@ -45,7 +48,7 @@ const Timer: React.FC = () => {
 			}
 			
 			const millisecondsString = string.format('%02d', math.floor(elapsedTime % 1 * 100));
-			label.Text = `${timeString}.<font size="${px(styles.text.timer.display.millisecondsFontSize)}">${millisecondsString}</font>`;
+			label.Text = `${timeString}.${millisecondsRichText.apply(millisecondsString)}`;
 			label.Rotation = Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 1);
 		});
 		
@@ -53,7 +56,7 @@ const Timer: React.FC = () => {
 			disconnectSteppedEvent();
 			label.Text = '--';
 		};
-	}, [character, px]);
+	}, [character, styles, px]);
 	
 	return (
 		<screengui
