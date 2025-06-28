@@ -2,8 +2,9 @@ import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/servic
 
 import computeNameColor from 'shared/NameColor';
 import { Remotes } from 'shared/events';
-import { applyLeaderstats } from './leaderstats';
-import { loadPlayer, unloadPlayer } from './profileStore';
+import { Leaderstats } from './leaderstats';
+import { PlayerData } from './playerData';
+import { Badge } from './badge';
 
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
 const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
@@ -45,7 +46,7 @@ function respawn(player: Player): void {
 }
 
 function onPlayerAdded(player: Player): void {
-	const profile = loadPlayer(player);
+	const profile = PlayerData.load(player);
 	if (profile === undefined) {
 		return;
 	}
@@ -53,14 +54,14 @@ function onPlayerAdded(player: Player): void {
 	player.SetAttribute('dollars', profile.Data.dollars);
 	player.SetAttribute('color', computeNameColor(player.Name));
 	
-	applyLeaderstats(player);
+	Badge.award(Badge.Id.Welcome, player);
+	Leaderstats.apply(player);
 	respawn(player);
 }
 
 function onPlayerRemoving(player: Player): void {
-	unloadPlayer(player);
-	
 	player.Character?.Destroy();
+	PlayerData.unload(player);
 }
 
 function onStepped(_time: number, _dt: number): void {
