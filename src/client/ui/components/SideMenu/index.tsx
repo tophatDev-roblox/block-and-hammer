@@ -1,5 +1,4 @@
-import { TweenService } from '@rbxts/services';
-import React, { useEffect, useRef } from '@rbxts/react';
+import React, { useEffect } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { Styles } from 'client/styles';
@@ -7,43 +6,45 @@ import { SideMenu as ClientSideMenu } from 'client/sideMenu';
 import { usePx } from 'client/ui/hooks/usePx';
 import Container from '../Container';
 import Button from './Button';
+import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
+import { useMotion } from '@rbxts/pretty-react-hooks';
 
 const SideMenu: React.FC = () => {
-	const frameRef = useRef<Frame>();
-	const tweenRef = useRef<Tween>();
-	
 	const styles = useAtom(Styles.stateAtom);
 	const sideMenuOpened = useAtom(ClientSideMenu.isOpenAtom);
 	
 	const px = usePx();
+	const [position, positionMotion] = useMotion<UDim2>(new UDim2(1.5, 0, 0, 0));
 	
 	const containerWidth = 680;
 	const buttonGapOffset = -13 / containerWidth;
 	const totalButtons = 6;
 	
+	const [focusIndex, setFocusIndex] = useGamepadNavigation([
+		{ position: new Vector2(0, 0) },
+		{ position: new Vector2(0, 1) },
+		{ position: new Vector2(0, 2) },
+		{ position: new Vector2(0, 3) },
+		{ position: new Vector2(0, 4) },
+		{ position: new Vector2(0, 5) },
+	]);
+	
 	useEffect(() => {
-		const frame = frameRef.current;
-		if (frame === undefined) {
-			return;
+		if (sideMenuOpened) {
+			setFocusIndex(0);
+			positionMotion.tween(new UDim2(1, 0, 0, 0), {
+				time: 0.6,
+				style: Enum.EasingStyle.Back,
+				direction: Enum.EasingDirection.Out,
+			});
+		} else {
+			setFocusIndex(-1);
+			positionMotion.tween(new UDim2(1.5, 0, 0, 0), {
+				time: 0.6,
+				style: Enum.EasingStyle.Back,
+				direction: Enum.EasingDirection.In,
+			});
 		}
-		
-		tweenRef.current?.Cancel();
-		
-		const tweenInfo = sideMenuOpened
-			? new TweenInfo(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-			: new TweenInfo(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In);
-		
-		const tween = TweenService.Create(frame, tweenInfo, {
-			Position: sideMenuOpened ? new UDim2(1, 0, 0, 0) : new UDim2(1.5, 0, 0, 0),
-		});
-		
-		tween.Play();
-		tweenRef.current = tween;
-		
-		tween.Completed.Connect(() => {
-			tween.Destroy();
-			tweenRef.current = undefined;
-		});
 	}, [sideMenuOpened]);
 	
 	return (
@@ -54,10 +55,9 @@ const SideMenu: React.FC = () => {
 			IgnoreGuiInset
 		>
 			<frame
-				ref={frameRef}
 				BackgroundTransparency={1}
 				Size={new UDim2(1, 0, 1, 0)}
-				Position={new UDim2(1.5, 0, 0, 0)}
+				Position={position}
 				AnchorPoint={new Vector2(1, 0)}
 			>
 				<uiaspectratioconstraint
@@ -102,6 +102,7 @@ const SideMenu: React.FC = () => {
 								iconId={''}
 								index={0}
 								totalButtons={totalButtons}
+								focusIndex={focusIndex}
 							/>
 							<Button
 								styles={styles.buttons.sideMenu}
@@ -109,6 +110,7 @@ const SideMenu: React.FC = () => {
 								iconId={''}
 								widthScale={buttonGapOffset}
 								index={1}
+								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 							/>
 							<Button
@@ -117,6 +119,7 @@ const SideMenu: React.FC = () => {
 								iconId={''}
 								widthScale={buttonGapOffset * 2}
 								index={2}
+								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 							/>
 							<Button
@@ -125,6 +128,7 @@ const SideMenu: React.FC = () => {
 								iconId={''}
 								widthScale={buttonGapOffset * 3}
 								index={3}
+								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 							/>
 							<Button
@@ -133,6 +137,7 @@ const SideMenu: React.FC = () => {
 								iconId={'79494611958305'}
 								widthScale={buttonGapOffset * 4}
 								index={4}
+								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 							/>
 							<Button
@@ -141,6 +146,7 @@ const SideMenu: React.FC = () => {
 								iconId={'79239443855874'}
 								widthScale={buttonGapOffset * 5}
 								index={5}
+								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 							/>
 						</frame>

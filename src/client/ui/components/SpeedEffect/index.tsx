@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from '@rbxts/react';
+import { RunService } from '@rbxts/services';
+import React, { useBinding, useRef } from '@rbxts/react';
+import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { CharacterState } from 'client/character/state';
-import { useStepped } from 'client/ui/hooks/useStepped';
 
 const imageIds = [
 	'rbxassetid://13484709347',
@@ -13,36 +14,35 @@ const imageIds = [
 ];
 
 const SpeedEffect: React.FC = () => {
+	const [imageId, setImageId] = useBinding<string>(imageIds[0]);
+	const [imageTransparency, setImageTransparency] = useBinding<number>(1);
+	const [size, setSize] = useBinding<UDim2>(new UDim2(6, 0, 6, 0));
+	
+	const currentIndexRef = useRef<number>(0);
+	
 	const characterParts = useAtom(CharacterState.partsAtom);
 	
-	const imageLabelRef = useRef<ImageLabel>();
-	
-	useEffect(() => {
-		const imageLabel = imageLabelRef.current;
-		if (imageLabel === undefined || characterParts === undefined) {
+	useEventListener(RunService.RenderStepped, () => {
+		if (characterParts === undefined) {
+			setImageTransparency(1);
+			setSize(new UDim2(6, 0, 6, 0));
 			return;
 		}
 		
-		let currentIndex = 0;
+		const currentIndex = currentIndexRef.current;
 		
-		const disconnectStepped = useStepped(() => {
-			const newIndex = math.floor(os.clock() * 10 % 4);
-			if (newIndex !== currentIndex) {
-				imageLabel.Image = imageIds[newIndex];
-				currentIndex = newIndex;
-			}
-			
-			const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
-			const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
-			const size = math.clamp((110 - fieldOfView) / 10, 1.4, 6);
-			imageLabel.ImageTransparency = 1 - (6 - size) / 4.6;
-			imageLabel.Size = new UDim2(size, 0, size, 0);
-		});
+		const newIndex = math.floor(os.clock() * 10 % 4);
+		if (newIndex !== currentIndex) {
+			setImageId(imageIds[newIndex]);
+			currentIndexRef.current = newIndex;
+		}
 		
-		return () => {
-			disconnectStepped();
-		};
-	}, [characterParts]);
+		const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
+		const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
+		const size = math.clamp((110 - fieldOfView) / 10, 1.4, 6);
+		setImageTransparency(1 - (6 - size) / 4.6);
+		setSize(new UDim2(size, 0, size, 0));
+	});
 	
 	return (
 		<screengui
@@ -51,11 +51,10 @@ const SpeedEffect: React.FC = () => {
 			IgnoreGuiInset
 		>
 			<imagelabel
-				ref={imageLabelRef}
-				Image={imageIds[0]}
 				BackgroundTransparency={1}
-				ImageTransparency={1}
-				Size={new UDim2(6, 0, 6, 0)}
+				ImageTransparency={imageTransparency}
+				Image={imageId}
+				Size={size}
 				AnchorPoint={new Vector2(0.5, 0.5)}
 				Position={new UDim2(0.5, 0, 0.5, 0)}
 			/>

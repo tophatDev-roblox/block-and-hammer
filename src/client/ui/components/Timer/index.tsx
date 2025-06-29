@@ -1,62 +1,53 @@
-import React, { useEffect, useRef } from '@rbxts/react';
+import { RunService } from '@rbxts/services';
+import React, { useBinding, useMemo } from '@rbxts/react';
+import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 import { peek } from '@rbxts/charm';
 
 import { Shake } from 'shared/shake';
 import { TimeSpan } from 'shared/timeSpan';
 import { RichText } from 'shared/richText';
-import { useStepped } from 'client/ui/hooks/useStepped';
 import { usePx } from 'client/ui/hooks/usePx';
 import { Styles } from 'client/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 
 const Timer: React.FC = () => {
-	const labelRef = useRef<TextLabel>();
+	const [text, setText] = useBinding<string>('--');
+	const [rotation, setRotation] = useBinding<number>(0);
 	
-	const character = useAtom(CharacterState.partsAtom);
+	const timeStart = useAtom(CharacterState.timeStartAtom);
 	const styles = useAtom(Styles.stateAtom);
 	const px = usePx();
 	
-	useEffect(() => {
-		const label = labelRef.current;
-		if (label === undefined || character === undefined) {
+	const millisecondsRichText = useMemo(() => {
+		return new RichText({ font: { size: px(styles.text.timer.display.millisecondsFontSize) } });
+	}, [styles.text.timer.display.millisecondsFontSize]);
+	
+	useEventListener(RunService.Stepped, (time) => {
+		if (timeStart === undefined) {
+			setText(`0.${millisecondsRichText.apply('00')}`);
 			return;
 		}
 		
-		const millisecondsRichText = new RichText({ font: { size: px(styles.text.timer.display.millisecondsFontSize) } });
+		const currentTime = TimeSpan.now();
+		const elapsedTime = currentTime - timeStart;
 		
-		const disconnectSteppedEvent = useStepped((_, time) => {
-			const currentTime = TimeSpan.now();
-			const startTime = character.model.GetAttribute('startTime') ?? currentTime;
-			if (!typeIs(startTime, 'number')) {
-				warn('[client::ui/Timer] character attribute "startTime" is not a number');
-				return;
-			}
-			
-			const elapsedTime = currentTime - startTime;
-			
-			const seconds = math.floor(elapsedTime) % 60;
-			const minutes = elapsedTime.idiv(60) % 60;
-			const hours = elapsedTime.idiv(3600);
-			
-			let timeString = tostring(seconds);
-			if (hours > 0) {
-				timeString = string.format('%d:%02d:%02d', hours, minutes, seconds);
-			} else if (minutes > 0) {
-				timeString = string.format('%d:%02d', minutes, seconds);
-			}
-			
-			const millisecondsString = string.format('%02d', math.floor(elapsedTime % 1 * 100));
-			label.Text = `${timeString}.${millisecondsRichText.apply(millisecondsString)}`;
-			label.Rotation = Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 1);
-		});
+		const seconds = math.floor(elapsedTime) % 60;
+		const minutes = elapsedTime.idiv(60) % 60;
+		const hours = elapsedTime.idiv(3600);
 		
-		return () => {
-			disconnectSteppedEvent();
-			label.Text = '--';
-		};
-	}, [character, styles.text.timer.display.millisecondsFontSize, px]);
+		let timeString = tostring(seconds);
+		if (hours > 0) {
+			timeString = string.format('%d:%02d:%02d', hours, minutes, seconds);
+		} else if (minutes > 0) {
+			timeString = string.format('%d:%02d', minutes, seconds);
+		}
+		
+		const millisecondsString = string.format('%02d', math.floor(elapsedTime % 1 * 100));
+		setText(`${timeString}.${millisecondsRichText.apply(millisecondsString)}`);
+		setRotation(Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 1));
+	});
 	
 	return (
 		<screengui
@@ -80,10 +71,10 @@ const Timer: React.FC = () => {
 				AutomaticSize={Enum.AutomaticSize.XY}
 			>
 				<Text
-					ref={labelRef}
 					styles={styles.text.timer}
-					text={'--'}
+					text={text}
 					alignX={Enum.TextXAlignment.Left}
+					rotation={rotation}
 					automaticHeight
 					automaticWidth
 					richText

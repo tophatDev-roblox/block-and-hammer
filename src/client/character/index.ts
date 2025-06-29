@@ -22,8 +22,6 @@ const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.Mou
 const RNG = new Random();
 let ragdollTimeEnd: number | undefined = undefined;
 let previousCameraCFrame: CFrame | undefined = undefined;
-let hasTimeStarted = false;
-
 
 export namespace Character {
 	export function quickReset(): void {
@@ -34,12 +32,11 @@ export namespace Character {
 		
 		print('[client::character] running quick reset');
 		
-		hasTimeStarted = false;
 		endRagdoll();
+		CharacterState.timeStartAtom(undefined);
 		CharacterState.mousePositionAtom(undefined);
 		CharacterState.shakeStrengthAtom(0);
 		characterParts.model.SetAttribute('justReset', true);
-		characterParts.model.SetAttribute('startTime', undefined);
 		mouseCursorPart.Position = new Vector3(0, -500, 0);
 		
 		const target = new CFrame(0, 3, 0);
@@ -67,7 +64,7 @@ export namespace Character {
 		}
 		
 		if (ragdollTimeEnd === undefined) {
-			ragdollTimeEnd = os.clock() + seconds;
+			ragdollTimeEnd = TimeSpan.now() + seconds;
 			
 			const centerAttachment = characterParts.centerAttachment;
 			
@@ -167,14 +164,14 @@ function clampPositionToCircle(position: Vector3, center: Vector3, radius: numbe
 
 function moveTargetAttachment(position: Vector3): void {
 	const hammerDistance = peek(CharacterState.hammerDistanceAtom);
+	const timeStarted = peek(CharacterState.timeStartAtom);
 	const characterParts = peek(CharacterState.partsAtom);
 	if (characterParts === undefined) {
 		return;
 	}
 	
-	if (!hasTimeStarted) {
-		characterParts.model.SetAttribute('startTime', TimeSpan.now());
-		hasTimeStarted = true;
+	if (timeStarted === undefined) {
+		CharacterState.timeStartAtom(TimeSpan.now());
 	}
 	
 	characterParts.targetAttachment.WorldCFrame = CFrame.lookAt(
@@ -241,11 +238,10 @@ function onResetButton(): void {
 function onCharacterAdded(newCharacter: Model): void {
 	print('[client::character] character added');
 	
-	hasTimeStarted = false;
 	ragdollTimeEnd = undefined;
+	CharacterState.timeStartAtom(undefined);
 	CharacterState.mousePositionAtom(undefined);
 	CharacterState.shakeStrengthAtom(0);
-	newCharacter.SetAttribute('startTime', undefined);
 	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
 	const body = newCharacter.FindFirstChild('Body') as Part;
@@ -288,7 +284,7 @@ function onCharacterRemoving(): void {
 }
 
 function onRenderStepped(dt: number): void {
-	const currentTime = os.clock();
+	const currentTime = TimeSpan.now();
 	const characterParts = peek(CharacterState.partsAtom);
 	if (characterParts === undefined) {
 		return;
@@ -381,9 +377,9 @@ subscribe(() => {
 		characterParts.body.Anchored = true;
 		characterParts.hammer.head.Anchored = true;
 		
-		const startTime = characterParts.model.GetAttribute('startTime');
+		const startTime = peek(CharacterState.forcePauseTimeAtom);
 		if (typeIs(startTime, 'number')) {
-			CharacterState.forcePauseTimeAtom(os.clock() - startTime);
+			CharacterState.forcePauseTimeAtom(TimeSpan.now() - startTime);
 		}
 	} else {
 		characterParts.body.Anchored = false;
@@ -391,7 +387,7 @@ subscribe(() => {
 		
 		const forcePauseTime = peek(CharacterState.forcePauseTimeAtom);
 		if (forcePauseTime !== undefined) {
-			characterParts.model.SetAttribute('startTime', os.clock() - forcePauseTime);
+			CharacterState.forcePauseTimeAtom(TimeSpan.now() - forcePauseTime);
 		}
 	}
 });

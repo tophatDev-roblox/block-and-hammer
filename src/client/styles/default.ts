@@ -85,6 +85,24 @@ const data: Styles.Data = {
 			},
 		},
 	},
+	controller: {
+		selectionOutline: {
+			color: {
+				rotation: 45,
+				colors: [
+					{ position: 0, color: { red: 255, green: 255, blue: 255 } },
+					{ position: 0.5, color: { red: 128, green: 128, blue: 128 } },
+					{ position: 1, color: { red: 255, green: 255, blue: 255 } },
+				],
+				transparency: [
+					{ position: 0, transparency: 0 },
+					{ position: 1, transparency: 0 },
+				],
+			},
+			thickness: 6,
+			joinMode: 'round',
+		},
+	},
 	containers: {
 		sideMenu: {
 			background: {

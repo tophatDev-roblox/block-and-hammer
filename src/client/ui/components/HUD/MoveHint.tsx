@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from '@rbxts/react';
+import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { InputType } from 'client/inputType';
@@ -7,42 +7,12 @@ import { Styles } from 'client/styles';
 import Text from '../Text';
 
 const MoveHint: React.FC = () => {
-	const character = useAtom(CharacterState.partsAtom);
+	const timeStart = useAtom(CharacterState.timeStartAtom);
 	const inputType = useAtom(InputType.stateAtom);
-	
-	const [isVisible, setVisible] = useState<boolean>(true);
 	
 	const styles = useAtom(Styles.stateAtom);
 	
-	useEffect(() => {
-		if (character === undefined) {
-			setVisible(false);
-			return;
-		}
-		
-		setVisible(true);
-		
-		const onAttributeChanged = (attribute: string): void => {
-			if (attribute !== 'startTime') {
-				return;
-			}
-			
-			if (character.model.GetAttribute('startTime') !== undefined) {
-				setVisible(false);
-			} else {
-				setVisible(true);
-			}
-		};
-		
-		onAttributeChanged('startTime');
-		const attributeChangedEvent = character.model.AttributeChanged.Connect(onAttributeChanged);
-		
-		return () => {
-			attributeChangedEvent.Disconnect();
-		};
-	}, [character]);
-	
-	if (!isVisible) {
+	if (timeStart !== undefined) {
 		return undefined;
 	}
 	

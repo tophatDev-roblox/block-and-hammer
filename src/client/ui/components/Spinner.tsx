@@ -1,15 +1,18 @@
-import React, { useEffect, useRef } from '@rbxts/react';
+import { RunService } from '@rbxts/services';
+import React, { useBinding, useState } from '@rbxts/react';
+import { useEventListener } from '@rbxts/pretty-react-hooks';
 
 import { usePx } from '../hooks/usePx';
-import { useStepped } from '../hooks/useStepped';
 
 interface SpinnerProps {
 	size?: number;
 }
 
 const Spinner: React.FC<SpinnerProps> = ({ size = 180 }) => {
-	const leftGradientRef = useRef<UIGradient>();
-	const rightGradientRef = useRef<UIGradient>();
+	const [startTime] = useState<number>(os.clock());
+	
+	const [leftRotation, setLeftRotation] = useBinding<number>(0);
+	const [rightRotation, setRightRotation] = useBinding<number>(0);
 	
 	const px = usePx();
 	
@@ -20,49 +23,35 @@ const Spinner: React.FC<SpinnerProps> = ({ size = 180 }) => {
 		new NumberSequenceKeypoint(1, 1),
 	]);
 	
-	useEffect(() => {
-		const leftGradient = leftGradientRef.current;
-		const rightGradient = rightGradientRef.current;
-		if (leftGradient === undefined || rightGradient === undefined) {
-			return;
-		}
+	useEventListener(RunService.Stepped, () => {
+		const elapsedTime = (os.clock() - startTime) % 2;
+		const phase = math.floor(elapsedTime / 0.5);
+		const value = (elapsedTime % 0.5) / 0.5;
+		const inverseValue = 1 - value;
 		
-		const startTime = os.clock();
-		
-		const disconnectStepped = useStepped(() => {
-			const elapsedTime = (os.clock() - startTime) % 2;
-			const phase = math.floor(elapsedTime / 0.5);
-			const value = (elapsedTime % 0.5) / 0.5;
-			const inverseValue = 1 - value;
-			
-			switch (phase) {
-				case 0: {
-					leftGradient.Rotation = 180 * value;
-					rightGradient.Rotation = 0;
-					break;
-				}
-				case 1: {
-					leftGradient.Rotation = 180;
-					rightGradient.Rotation = 180 * value;
-					break;
-				}
-				case 2: {
-					leftGradient.Rotation = 180 * inverseValue;
-					rightGradient.Rotation = 180;
-					break;
-				}
-				case 3: {
-					leftGradient.Rotation = 0;
-					rightGradient.Rotation = 180 * inverseValue;
-					break;
-				}
+		switch (phase) {
+			case 0: {
+				setLeftRotation(180 * value);
+				setRightRotation(0);
+				break;
 			}
-		});
-		
-		return () => {
-			disconnectStepped();
-		};
-	}, []);
+			case 1: {
+				setLeftRotation(180);
+				setRightRotation(180 * value);
+				break;
+			}
+			case 2: {
+				setLeftRotation(180 * inverseValue);
+				setRightRotation(180);
+				break;
+			}
+			case 3: {
+				setLeftRotation(0);
+				setRightRotation(180 * inverseValue);
+				break;
+			}
+		}
+	});
 	
 	return (
 		<frame
@@ -80,9 +69,8 @@ const Spinner: React.FC<SpinnerProps> = ({ size = 180 }) => {
 					Size={new UDim2(2, 0, 1, 0)}
 				>
 					<uigradient
-						ref={leftGradientRef}
 						Transparency={transparencySequence}
-						Rotation={0}
+						Rotation={leftRotation}
 					/>
 					<uicorner
 						CornerRadius={new UDim(1, 0)}
@@ -102,9 +90,8 @@ const Spinner: React.FC<SpinnerProps> = ({ size = 180 }) => {
 					Size={new UDim2(2, 0, 1, 0)}
 				>
 					<uigradient
-						ref={rightGradientRef}
 						Transparency={transparencySequence}
-						Rotation={0}
+						Rotation={rightRotation}
 					/>
 					<uicorner
 						CornerRadius={new UDim(1, 0)}

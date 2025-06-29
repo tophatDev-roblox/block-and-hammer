@@ -1,19 +1,23 @@
-import { TweenService } from '@rbxts/services';
-import React, { useCallback, useEffect, useRef } from '@rbxts/react';
+import React, { useEffect, useRef, useState } from '@rbxts/react';
+import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { Styles, StyleParse } from 'client/styles';
 import { SideMenu } from 'client/sideMenu';
+import { InputType } from 'client/inputType';
 import { usePx } from '../../hooks/usePx';
 import Text from '../Text';
 import Gradient from '../Gradient';
 import Outline from '../Outline';
+import { UserInputService } from '@rbxts/services';
+import { Controller } from 'shared/controller';
 
 interface ButtonProps {
 	styles: Styles.Button;
 	text: string;
 	iconId: string;
 	index: number;
+	focusIndex?: number;
 	totalButtons: number;
 	widthScale?: number;
 	widthOffset?: number;
@@ -35,6 +39,7 @@ const Button: React.FC<ButtonProps> = (props) => {
 		},
 		text,
 		iconId,
+		focusIndex,
 		index,
 		totalButtons,
 		widthScale = 0,
@@ -44,47 +49,73 @@ const Button: React.FC<ButtonProps> = (props) => {
 		onClick = () => {},
 	} = props;
 	
-	const buttonRef = useRef<ImageButton>();
-	const tweenRef = useRef<Tween>();
+	const [isHovered, setHovered] = useState<boolean>(false);
+	const [isPressed, setPressed] = useState<boolean>(false);
+	const [canAnimate, setCanAnimate] = useState<boolean>(false);
 	
+	const wasFocusedRef = useRef<boolean>(focusIndex === index);
+	
+	const inputType = useAtom(InputType.stateAtom);
 	const sideMenuOpened = useAtom(SideMenu.isOpenAtom);
+	const styles = useAtom(Styles.stateAtom);
 	
 	const px = usePx();
+	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
 	
 	const isBackgroundRGBA = 'red' in background;
 	const isIconBackgroundRGBA = 'red' in iconBackground;
 	const isIconColorRGBA = 'red' in iconColor;
 	const iconSize = textStyles.autoScale === false ? textStyles.size : px(textStyles.size);
 	
-	const tweenButton = useCallback((tweenInfo: TweenInfo, properties: Partial<ExtractMembers<ImageButton, Tweenable>>, disableOnClose: boolean = true) => {
-		const button = buttonRef.current;
-		if (button === undefined || (disableOnClose && !sideMenuOpened)) {
+	useEventListener(UserInputService.InputBegan, (input, processed) => {
+		if (processed || inputType !== InputType.Value.Controller) {
 			return;
 		}
 		
-		tweenRef.current?.Cancel();
+		if (input.KeyCode === Controller.UINavigationSelect && isHovered) {
+			setPressed(true);
+		}
+	});
+	
+	useEventListener(UserInputService.InputEnded, (input) => {
+		if (inputType !== InputType.Value.Controller) {
+			return;
+		}
 		
-		const tween = TweenService.Create(button, tweenInfo, properties);
-		tween.Play();
-		tweenRef.current = tween;
-	}, [sideMenuOpened]);
+		if (input.KeyCode === Controller.UINavigationSelect && isPressed) {
+			setPressed(false);
+		}
+	});
 	
 	useEffect(() => {
 		if (sideMenuOpened) {
-			const thread = task.delay((totalButtons - index - 1) / 30, () => {
-				tweenButton(new TweenInfo(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-					Size: new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0),
-				}, false);
+			const delay = (totalButtons - index - 1) / 30;
+			
+			const thread = task.delay(delay, () => {
+				sizeMotion.tween(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0), {
+					style: Enum.EasingStyle.Back,
+					direction: Enum.EasingDirection.Out,
+					time: 0.3,
+				});
+			});
+			
+			const animateThread = task.delay(delay + 0.3, () => {
+				setCanAnimate(true);
 			});
 			
 			return () => {
 				task.cancel(thread);
+				task.cancel(animateThread);
 			};
 		} else {
+			setCanAnimate(false);
+			
 			const thread = task.delay(index / 20, () => {
-				tweenButton(new TweenInfo(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-					Size: new UDim2(widthScale, widthOffset, 1, 0),
-				}, false);
+				sizeMotion.tween(new UDim2(widthScale, widthOffset, 1, 0), {
+					style: Enum.EasingStyle.Back,
+					direction: Enum.EasingDirection.In,
+					time: 0.3,
+				});
 			});
 			
 			return () => {
@@ -92,6 +123,51 @@ const Button: React.FC<ButtonProps> = (props) => {
 			};
 		}
 	}, [sideMenuOpened]);
+	
+	useEffect(() => {
+		if (inputType !== InputType.Value.Controller) {
+			setHovered(false);
+			return;
+		}
+		
+		const isFocused = focusIndex === index;
+		const wasFocused = wasFocusedRef.current;
+		if (isFocused && !wasFocused) {
+			setHovered(true);
+		} else if (!isFocused && wasFocused) {
+			setHovered(false);
+		}
+		
+		wasFocusedRef.current = isFocused
+	}, [focusIndex, index]);
+	
+	useEffect(() => {
+		if (!canAnimate) {
+			return;
+		}
+		
+		if (isPressed) {
+			sizeMotion.tween(new UDim2(1 + widthScale, px(-15) + widthOffset, 1, 0), {
+				style: Enum.EasingStyle.Sine,
+				direction: Enum.EasingDirection.Out,
+				time: 0.1,
+			});
+		} else {
+			if (isHovered) {
+				sizeMotion.tween(new UDim2(1 + widthScale, widthOffset, 1, 0), {
+					style: Enum.EasingStyle.Elastic,
+					direction: Enum.EasingDirection.Out,
+					time: 0.8,
+				});
+			} else {
+				sizeMotion.tween(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0), {
+					style: Enum.EasingStyle.Sine,
+					direction: Enum.EasingDirection.Out,
+					time: 0.2,
+				});
+			}
+		}
+	}, [canAnimate, isHovered, isPressed]);
 	
 	return (
 		<frame
@@ -99,9 +175,8 @@ const Button: React.FC<ButtonProps> = (props) => {
 			Size={new UDim2(1, 0, 0, iconSize + px(padding) * 2)}
 		>
 			<imagebutton
-				ref={buttonRef}
 				BackgroundTransparency={1}
-				Size={new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0)}
+				Size={size}
 				Position={new UDim2(1, 0, 0, 0)}
 				AnchorPoint={new Vector2(1, 0)}
 				Image={'rbxassetid://116917521691205'}
@@ -111,30 +186,13 @@ const Button: React.FC<ButtonProps> = (props) => {
 				SliceCenter={new Rect(256, 256, 256, 256)}
 				SliceScale={1}
 				AutoButtonColor={false}
+				Selectable={false}
 				Event={{
-					MouseEnter: () => {
-						tweenButton(new TweenInfo(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
-							Size: new UDim2(1 + widthScale, widthOffset, 1, 0),
-						});
-					},
-					MouseLeave: () => {
-						tweenButton(new TweenInfo(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-							Size: new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0),
-						});
-					},
-					MouseButton1Down: () => {
-						tweenButton(new TweenInfo(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-							Size: new UDim2(1 + widthScale, px(-15) + widthOffset, 1, 0),
-						});
-					},
-					MouseButton1Up: () => {
-						tweenButton(new TweenInfo(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
-							Size: new UDim2(1 + widthScale, widthOffset, 1, 0),
-						});
-					},
-					MouseButton1Click: () => {
-						onClick();
-					},
+					MouseEnter: () => setHovered(true),
+					MouseLeave: () => setHovered(false),
+					MouseButton1Down: () => setPressed(true),
+					MouseButton1Up: () => setPressed(false),
+					MouseButton1Click: () => onClick(),
 				}}
 			>
 				<uilistlayout
@@ -156,6 +214,13 @@ const Button: React.FC<ButtonProps> = (props) => {
 					{!isIconBackgroundRGBA && (
 						<Gradient
 							styles={iconBackground}
+						/>
+					)}
+					{inputType === InputType.Value.Controller && (
+						<Outline
+							styles={styles.controller.selectionOutline}
+							applyStrokeMode={Enum.ApplyStrokeMode.Border}
+							overwriteThickness={focusIndex === index ? undefined : 0}
 						/>
 					)}
 					<uiaspectratioconstraint

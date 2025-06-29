@@ -92,6 +92,9 @@ export namespace Styles {
 				username: Text;
 			};
 		};
+		controller: {
+			selectionOutline: Outline;
+		};
 		containers: {
 			sideMenu: Container;
 		};

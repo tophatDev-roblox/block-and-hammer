@@ -17,6 +17,7 @@ export namespace CharacterState {
 	}
 	
 	export const partsAtom = atom<CharacterState.Parts>();
+	export const timeStartAtom = atom<number>();
 	export const hammerDistanceAtom = atom<number>(13);
 	export const cameraZOffsetAtom = atom<number>(-30);
 	export const mousePositionAtom = atom<Vector2>();

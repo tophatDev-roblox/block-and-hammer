@@ -8,7 +8,7 @@ import Outline from './Outline';
 
 interface TextProps extends React.PropsWithChildren {
 	styles: Styles.Text;
-	text: string;
+	text: React.Binding<string> | string;
 	width?: UDim;
 	height?: UDim;
 	automaticWidth?: boolean;
@@ -17,6 +17,7 @@ interface TextProps extends React.PropsWithChildren {
 	alignX?: Enum.TextXAlignment;
 	alignY?: Enum.TextYAlignment;
 	richText?: boolean;
+	rotation?: React.Binding<number> | number;
 }
 
 const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
@@ -38,6 +39,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 		alignY = Enum.TextYAlignment.Center,
 		richText = false,
 		children,
+		rotation = 0,
 	} = props;
 	
 	const fontFace = useMemo<Font>(() => StyleParse.font(font), [font]);
@@ -62,6 +64,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 			ref={ref}
 			BackgroundTransparency={1}
 			Size={labelSize}
+			Rotation={rotation}
 			AutomaticSize={automaticSize}
 			FontFace={fontFace}
 			TextColor3={isRGBA ? Color3.fromRGB(color.red, color.green, color.blue) : Color3.fromRGB(255, 255, 255)}

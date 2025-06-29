@@ -1,38 +1,35 @@
-import React, { useEffect, useRef } from '@rbxts/react';
+import { RunService } from '@rbxts/services';
+import React, { useBinding, useMemo } from '@rbxts/react';
+import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 import { peek } from '@rbxts/charm';
 
 import { Shake } from 'shared/shake';
 import { Units } from 'shared/units';
-import { useStepped } from 'client/ui/hooks/useStepped';
 import { Styles } from 'client/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 
 const Altitude: React.FC = () => {
-	const labelRef = useRef<TextLabel>();
+	const [text, setText] = useBinding<string>('--');
+	const [rotation, setRotation] = useBinding<number>(0);
 	
 	const characterParts = useAtom(CharacterState.partsAtom);
 	const styles = useAtom(Styles.stateAtom);
 	
-	useEffect(() => {
-		const labelFormat = `%.${styles.text.hudPrimary.display.decimals}fm`;
-		const label = labelRef.current;
-		if (label === undefined || characterParts === undefined) {
+	const labelFormat = useMemo(() => `%.${styles.text.hudPrimary.display.decimals}fm`, [styles.text.hudPrimary.display.decimals]);
+	
+	useEventListener(RunService.Stepped, (time) => {
+		if (characterParts === undefined) {
+			setText('--');
+			setRotation(0);
 			return;
 		}
 		
-		const disconnectSteppedEvent = useStepped((_, time) => {
-			const altitude = Units.studsToMeters(math.max(characterParts.body.Position.Y - characterParts.body.Size.Y / 2, 0));
-			label.Text = labelFormat.format(altitude);
-			label.Rotation = Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 2);
-		});
-		
-		return () => {
-			disconnectSteppedEvent();
-			label.Text = '--';
-		};
-	}, [characterParts, styles.text.hudPrimary.display.decimals]);
+		const altitude = Units.studsToMeters(math.max(characterParts.body.Position.Y - characterParts.body.Size.Y / 2, 0));
+		setText(labelFormat.format(altitude));
+		setRotation(Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 2));
+	});
 	
 	return (
 		<frame
@@ -41,10 +38,10 @@ const Altitude: React.FC = () => {
 			AutomaticSize={Enum.AutomaticSize.XY}
 		>
 			<Text
-				ref={labelRef}
 				styles={styles.text.hudPrimary}
-				text={'--'}
+				text={text}
 				order={2}
+				rotation={rotation}
 				automaticWidth
 				automaticHeight
 			/>
