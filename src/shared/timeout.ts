@@ -4,6 +4,10 @@ export function setTimeout<T extends Array<unknown>>(callback: (...args: T) => v
 	return task.delay(timeout, callback, ...args);
 }
 
-export function clearTimeout(timeout: thread): void {
+export function clearTimeout(timeout?: thread): void {
+	if (timeout === undefined) {
+		return;
+	}
+	
 	task.cancel(timeout);
 }
