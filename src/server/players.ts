@@ -63,7 +63,7 @@ function onPlayerAdded(player: Player): void {
 	respawn(player);
 	
 	const playerRichText = new RichText({ font: { color: player.GetAttribute('color') as Color3 } });
-	Remotes.sendSystemMessage.fireAll(joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} joined the server`)));
+	Remotes.sendSystemMessage.fireAllExcept(player, joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} joined the server`)));
 }
 
 function onPlayerRemoving(player: Player): void {
