@@ -1,16 +1,18 @@
 import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/services';
 
 import computeNameColor from 'shared/NameColor';
-import { Remotes } from 'shared/events';
+import { Remotes } from 'shared/remotes';
 import { Leaderstats } from './leaderstats';
 import { PlayerData } from './playerData';
 import { Badge } from './badge';
 import { RichText } from 'shared/richText';
+import { setTimeout } from 'shared/timeout';
 
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
 const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
 
 const createdCharacters = new Set<Model>();
+const playerResetDebounces = new Set<Player>();
 
 const joinLeaveRichText = new RichText({ bold: true, italic: true, font: { size: 14 } });
 
@@ -46,6 +48,19 @@ function respawn(player: Player): void {
 	body.SetNetworkOwner(player);
 	
 	player.Character = character;
+}
+
+function onFullReset(player: Player): boolean {
+	if (playerResetDebounces.has(player)) {
+		return false;
+	}
+	
+	respawn(player);
+	
+	playerResetDebounces.add(player);
+	setTimeout(() => playerResetDebounces.delete(player), 1);
+	
+	return true;
 }
 
 async function onPlayerAdded(player: Player): Promise<void> {
@@ -88,15 +103,11 @@ function onStepped(_time: number, _dt: number): void {
 	}
 }
 
-function onFullReset(player: Player): void {
-	respawn(player);
-}
-
 for (const player of Players.GetPlayers()) {
 	onPlayerAdded(player);
 }
 
+Remotes.fullReset.onRequest(onFullReset);
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);
 RunService.Stepped.Connect(onStepped);
-Remotes.fullReset.connect(onFullReset);

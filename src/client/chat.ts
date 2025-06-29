@@ -1,5 +1,5 @@
 import { Players, TextChatService } from '@rbxts/services';
-import { Remotes } from 'shared/events';
+import { Remotes } from 'shared/remotes';
 
 const textChannels = TextChatService.WaitForChild('TextChannels') as Folder;
 const rbxGeneral = textChannels.WaitForChild('RBXGeneral') as TextChannel;
