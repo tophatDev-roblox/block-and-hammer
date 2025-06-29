@@ -88,11 +88,11 @@ const data: Styles.Data = {
 	controller: {
 		selectionOutline: {
 			color: {
-				rotation: 45,
+				rotation: 30,
 				colors: [
-					{ position: 0, color: { red: 255, green: 255, blue: 255 } },
-					{ position: 0.5, color: { red: 128, green: 128, blue: 128 } },
-					{ position: 1, color: { red: 255, green: 255, blue: 255 } },
+					{ position: 0, color: { red: 160, green: 160, blue: 160 } },
+					{ position: 0.5, color: { red: 255, green: 255, blue: 255 } },
+					{ position: 1, color: { red: 160, green: 160, blue: 160 } },
 				],
 				transparency: [
 					{ position: 0, transparency: 0 },
