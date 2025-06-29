@@ -1,13 +1,13 @@
 import React, { useEffect } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
+import { useMotion } from '@rbxts/pretty-react-hooks';
 
 import { Styles } from 'client/styles';
 import { SideMenu as ClientSideMenu } from 'client/sideMenu';
+import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
 import { usePx } from 'client/ui/hooks/usePx';
 import Container from '../Container';
 import Button from './Button';
-import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
-import { useMotion } from '@rbxts/pretty-react-hooks';
 
 const SideMenu: React.FC = () => {
 	const styles = useAtom(Styles.stateAtom);
