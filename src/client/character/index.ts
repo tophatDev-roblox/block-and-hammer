@@ -280,7 +280,12 @@ function onCharacterAdded(newCharacter: Model): void {
 
 function onCharacterRemoving(): void {
 	print('[client::character] character removing');
+	
 	CharacterState.partsAtom(undefined);
+	CharacterState.mousePositionAtom(undefined);
+	CharacterState.timeStartAtom(undefined);
+	
+	mouseCursorPart.Position = new Vector3(0, -500, 0);
 }
 
 function onRenderStepped(dt: number): void {
