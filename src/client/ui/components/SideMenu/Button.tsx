@@ -1,16 +1,16 @@
+import { UserInputService } from '@rbxts/services';
 import React, { useEffect, useRef, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { Styles, StyleParse } from 'client/styles';
+import { Controller } from 'shared/controller';
 import { SideMenu } from 'client/sideMenu';
 import { InputType } from 'client/inputType';
 import { usePx } from '../../hooks/usePx';
 import Text from '../Text';
 import Gradient from '../Gradient';
 import Outline from '../Outline';
-import { UserInputService } from '@rbxts/services';
-import { Controller } from 'shared/controller';
 
 interface ButtonProps {
 	styles: Styles.Button;
@@ -84,6 +84,10 @@ const Button: React.FC<ButtonProps> = (props) => {
 		
 		if (input.KeyCode === Controller.UINavigationSelect && isPressed) {
 			setPressed(false);
+			
+			if (index === focusIndex) {
+				onClick();
+			}
 		}
 	});
 	
@@ -195,25 +199,19 @@ const Button: React.FC<ButtonProps> = (props) => {
 					MouseButton1Click: () => onClick(),
 				}}
 			>
-				<uilistlayout
-					FillDirection={Enum.FillDirection.Horizontal}
-					Padding={new UDim(0, px(padding))}
-				/>
-				<uipadding
-					PaddingTop={new UDim(0, px(padding))}
-					PaddingRight={new UDim(0, px(padding))}
-					PaddingBottom={new UDim(0, px(padding))}
-					PaddingLeft={new UDim(0, px(padding))}
-				/>
+				{!isBackgroundRGBA && (
+					<Gradient
+						styles={background}
+					/>
+				)}
 				<frame
-					BackgroundColor3={isIconBackgroundRGBA ? StyleParse.color(iconBackground) : Color3.fromRGB(255, 255, 255)}
-					BackgroundTransparency={isIconBackgroundRGBA ? 1 - iconBackground.alpha : 0}
-					BorderSizePixel={0}
-					Size={new UDim2(0, iconSize, 0, iconSize)}
+					BackgroundTransparency={1}
+					Size={new UDim2(1, 0, 1, 0)}
 				>
-					{!isIconBackgroundRGBA && (
-						<Gradient
-							styles={iconBackground}
+					{outline !== false && (
+						<Outline
+							styles={outline}
+							applyStrokeMode={Enum.ApplyStrokeMode.Border}
 						/>
 					)}
 					{inputType === InputType.Value.Controller && (
@@ -223,45 +221,59 @@ const Button: React.FC<ButtonProps> = (props) => {
 							overwriteThickness={focusIndex === index ? undefined : 0}
 						/>
 					)}
-					<uiaspectratioconstraint
-						AspectRatio={1}
+					<uilistlayout
+						FillDirection={Enum.FillDirection.Horizontal}
+						Padding={new UDim(0, px(padding))}
+					/>
+					<uipadding
+						PaddingTop={new UDim(0, px(padding))}
+						PaddingRight={new UDim(0, px(padding))}
+						PaddingBottom={new UDim(0, px(padding))}
+						PaddingLeft={new UDim(0, px(padding))}
 					/>
 					<uicorner
 						CornerRadius={new UDim(1, 0)}
 					/>
-					<imagelabel
-						BackgroundTransparency={1}
-						Size={new UDim2(iconScale, 0, iconScale, 0)}
-						Position={new UDim2(0.5, 0, 0.5, 0)}
-						AnchorPoint={new Vector2(0.5, 0.5)}
-						Image={`rbxassetid://${iconId}`}
-						ImageColor3={isIconColorRGBA ? StyleParse.color(iconColor) : Color3.fromRGB(255, 255, 255)}
-						ImageTransparency={isIconColorRGBA ? 1 - iconColor.alpha : 0}
+					<frame
+						BackgroundColor3={isIconBackgroundRGBA ? StyleParse.color(iconBackground) : Color3.fromRGB(255, 255, 255)}
+						BackgroundTransparency={isIconBackgroundRGBA ? 1 - iconBackground.alpha : 0}
+						BorderSizePixel={0}
+						Size={new UDim2(0, iconSize, 0, iconSize)}
 					>
-						{!isIconColorRGBA && (
+						{!isIconBackgroundRGBA && (
 							<Gradient
-								styles={iconColor}
+								styles={iconBackground}
 							/>
 						)}
-					</imagelabel>
+						<uiaspectratioconstraint
+							AspectRatio={1}
+						/>
+						<uicorner
+							CornerRadius={new UDim(1, 0)}
+						/>
+						<imagelabel
+							BackgroundTransparency={1}
+							Size={new UDim2(iconScale, 0, iconScale, 0)}
+							Position={new UDim2(0.5, 0, 0.5, 0)}
+							AnchorPoint={new Vector2(0.5, 0.5)}
+							Image={iconId}
+							ImageColor3={isIconColorRGBA ? StyleParse.color(iconColor) : Color3.fromRGB(255, 255, 255)}
+							ImageTransparency={isIconColorRGBA ? 1 - iconColor.alpha : 0}
+						>
+							{!isIconColorRGBA && (
+								<Gradient
+									styles={iconColor}
+								/>
+							)}
+						</imagelabel>
+					</frame>
+					<Text
+						styles={textStyles}
+						text={text}
+						automaticWidth
+						automaticHeight
+					/>
 				</frame>
-				{!isBackgroundRGBA && (
-					<Gradient
-						styles={background}
-					/>
-				)}
-				{outline !== false && (
-					<Outline
-						styles={outline}
-						applyStrokeMode={Enum.ApplyStrokeMode.Border}
-					/>
-				)}
-				<Text
-					styles={textStyles}
-					text={text}
-					automaticWidth
-					automaticHeight
-				/>
 			</imagebutton>
 		</frame>
 	);
