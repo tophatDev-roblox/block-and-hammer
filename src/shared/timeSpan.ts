@@ -3,10 +3,6 @@ export namespace TimeSpan {
 		return milliseconds / 1000;
 	}
 	
-	export function seconds(seconds: number): number {
-		return seconds;
-	}
-	
 	export function minutes(minutes: number): number {
 		return minutes * 60;
 	}
