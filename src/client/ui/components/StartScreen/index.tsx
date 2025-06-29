@@ -52,7 +52,7 @@ const StartScreen: React.FC = () => {
 			return;
 		}
 		
-		setFocusIndex(0);
+		setFocusIndex(-1);
 		pivot.CFrame = startPivot.CFrame;
 		
 		positionMotion.tween(new UDim2(0, 0, -1, 0), {
@@ -92,6 +92,8 @@ const StartScreen: React.FC = () => {
 				style: Enum.EasingStyle.Elastic,
 				direction: Enum.EasingDirection.Out,
 			});
+			
+			setFocusIndex(0);
 		}, 0.5);
 		
 		return () => {
