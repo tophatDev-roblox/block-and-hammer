@@ -1,5 +1,5 @@
 import { Players } from '@rbxts/services';
-import { subscribe } from '@rbxts/charm';
+import { peek, subscribe } from '@rbxts/charm';
 
 import Icon from 'shared/Icon';
 import NumberSpinner from 'shared/NumberSpinner';
@@ -39,7 +39,7 @@ const menuIcon = new Icon()
 	.setCaption('Toggle menu')
 	.bindToggleKey(Enum.KeyCode.ButtonB)
 	.bindToggleKey(Enum.KeyCode.B)
-	.setCaptionHint(Enum.KeyCode.B)
+	.setCaptionHint(peek(InputType.stateAtom) === InputType.Value.Controller ? Enum.KeyCode.ButtonB : Enum.KeyCode.B)
 	.setOrder(0)
 	.autoDeselect(false)
 	.modifyTheme(theme);
