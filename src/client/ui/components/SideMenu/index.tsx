@@ -2,6 +2,7 @@ import React, { useEffect } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 
+import { Assets } from 'shared/assets';
 import { Styles } from 'client/styles';
 import { SideMenu as ClientSideMenu } from 'client/sideMenu';
 import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
@@ -16,8 +17,8 @@ const SideMenu: React.FC = () => {
 	const px = usePx();
 	const [position, positionMotion] = useMotion<UDim2>(new UDim2(1.5, 0, 0, 0));
 	
-	const containerWidth = 680;
-	const buttonGapOffset = -13 / containerWidth;
+	const containerWidth = 750;
+	const buttonGapOffset = -15 / containerWidth;
 	const totalButtons = 6;
 	
 	const [focusIndex, setFocusIndex] = useGamepadNavigation([
@@ -77,7 +78,7 @@ const SideMenu: React.FC = () => {
 							FillDirection={Enum.FillDirection.Vertical}
 						/>
 						<uipadding
-							PaddingLeft={new UDim(0, px(60))}
+							PaddingLeft={new UDim(0, px(80))}
 						/>
 						<frame
 							BackgroundTransparency={1}
@@ -99,7 +100,7 @@ const SideMenu: React.FC = () => {
 							<Button
 								styles={styles.buttons.sideMenu}
 								text={'Inventory'}
-								iconId={''}
+								iconId={Assets.Icons.InventoryIcon}
 								index={0}
 								totalButtons={totalButtons}
 								focusIndex={focusIndex}
@@ -107,7 +108,7 @@ const SideMenu: React.FC = () => {
 							<Button
 								styles={styles.buttons.sideMenu}
 								text={'Badges'}
-								iconId={''}
+								iconId={Assets.Icons.BadgesIcon}
 								widthScale={buttonGapOffset}
 								index={1}
 								focusIndex={focusIndex}
@@ -116,7 +117,7 @@ const SideMenu: React.FC = () => {
 							<Button
 								styles={styles.buttons.sideMenu}
 								text={'Settings'}
-								iconId={''}
+								iconId={Assets.Icons.SettingsIcon}
 								widthScale={buttonGapOffset * 2}
 								index={2}
 								focusIndex={focusIndex}
@@ -124,8 +125,8 @@ const SideMenu: React.FC = () => {
 							/>
 							<Button
 								styles={styles.buttons.sideMenu}
-								text={'Spectate'}
-								iconId={''}
+								text={'Customize'}
+								iconId={Assets.Icons.CustomizeIcon}
 								widthScale={buttonGapOffset * 3}
 								index={3}
 								focusIndex={focusIndex}
@@ -133,8 +134,8 @@ const SideMenu: React.FC = () => {
 							/>
 							<Button
 								styles={styles.buttons.sideMenu}
-								text={'Reset'}
-								iconId={'79494611958305'}
+								text={'Spectate'}
+								iconId={Assets.Icons.SpectateIcon}
 								widthScale={buttonGapOffset * 4}
 								index={4}
 								focusIndex={focusIndex}
@@ -143,11 +144,14 @@ const SideMenu: React.FC = () => {
 							<Button
 								styles={styles.buttons.sideMenu}
 								text={'Start Menu'}
-								iconId={'79239443855874'}
+								iconId={Assets.Icons.StartMenuIcon}
 								widthScale={buttonGapOffset * 5}
 								index={5}
 								focusIndex={focusIndex}
 								totalButtons={totalButtons}
+								onClick={() => {
+									ClientSideMenu.isOpenAtom(false);
+								}}
 							/>
 						</frame>
 					</>
