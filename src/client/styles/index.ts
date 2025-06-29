@@ -26,7 +26,9 @@ export namespace Styles {
 	export interface Gradient {
 		colors?: [GradientColorKeypoint<0>, ...Array<GradientColorKeypoint>, GradientColorKeypoint<1>];
 		transparency?: [GradientTransparencyKeypoint<0>, ...Array<GradientTransparencyKeypoint>, GradientTransparencyKeypoint<1>];
-		rotation: number;
+		rotation: number | {
+			rotationsPerSecond: number;
+		};
 	}
 	
 	export interface Font {
