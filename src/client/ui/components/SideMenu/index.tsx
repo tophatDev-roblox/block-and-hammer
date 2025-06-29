@@ -4,11 +4,12 @@ import { useMotion } from '@rbxts/pretty-react-hooks';
 
 import { Assets } from 'shared/assets';
 import { Styles } from 'client/styles';
-import { SideMenuState } from 'client/sideMenu';
+import { SideMenuState } from 'client/sideMenuState';
 import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
 import { usePx } from 'client/ui/hooks/usePx';
 import Container from '../Container';
-import Button from './Button';
+import MenuButton from './MenuButton';
+import { StartScreenState } from 'client/startScreenState';
 
 const SideMenu: React.FC = () => {
 	const styles = useAtom(Styles.stateAtom);
@@ -16,10 +17,6 @@ const SideMenu: React.FC = () => {
 	
 	const px = usePx();
 	const [position, positionMotion] = useMotion<UDim2>(new UDim2(1.5, 0, 0, 0));
-	
-	const containerWidth = 750;
-	const buttonGapOffset = -15 / containerWidth;
-	const totalButtons = 6;
 	
 	const [focusIndex, setFocusIndex] = useGamepadNavigation([
 		new Vector2(0, 0),
@@ -29,6 +26,10 @@ const SideMenu: React.FC = () => {
 		new Vector2(0, 4),
 		new Vector2(0, 5),
 	]);
+	
+	const containerWidth = 750;
+	const buttonGapOffset = -15 / containerWidth;
+	const totalButtons = 6;
 	
 	useEffect(() => {
 		if (sideMenuOpened) {
@@ -97,7 +98,7 @@ const SideMenu: React.FC = () => {
 								PaddingBottom={new UDim(0, px(42))}
 								PaddingLeft={new UDim(0, px(12))}
 							/>
-							<Button
+							<MenuButton
 								styles={styles.buttons.sideMenu}
 								text={'Inventory'}
 								iconId={Assets.Icons.InventoryIcon}
@@ -105,7 +106,7 @@ const SideMenu: React.FC = () => {
 								totalButtons={totalButtons}
 								focusIndex={focusIndex}
 							/>
-							<Button
+							<MenuButton
 								styles={styles.buttons.sideMenu}
 								text={'Badges'}
 								iconId={Assets.Icons.BadgesIcon}
@@ -114,7 +115,7 @@ const SideMenu: React.FC = () => {
 								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 							/>
-							<Button
+							<MenuButton
 								styles={styles.buttons.sideMenu}
 								text={'Settings'}
 								iconId={Assets.Icons.SettingsIcon}
@@ -123,7 +124,7 @@ const SideMenu: React.FC = () => {
 								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 							/>
-							<Button
+							<MenuButton
 								styles={styles.buttons.sideMenu}
 								text={'Customize'}
 								iconId={Assets.Icons.CustomizeIcon}
@@ -132,7 +133,7 @@ const SideMenu: React.FC = () => {
 								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 							/>
-							<Button
+							<MenuButton
 								styles={styles.buttons.sideMenu}
 								text={'Spectate'}
 								iconId={Assets.Icons.SpectateIcon}
@@ -141,9 +142,9 @@ const SideMenu: React.FC = () => {
 								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 							/>
-							<Button
+							<MenuButton
 								styles={styles.buttons.sideMenu}
-								text={'Start Menu'}
+								text={'Start Screen'}
 								iconId={Assets.Icons.StartMenuIcon}
 								widthScale={buttonGapOffset * 5}
 								index={5}
@@ -151,6 +152,7 @@ const SideMenu: React.FC = () => {
 								totalButtons={totalButtons}
 								onClick={() => {
 									SideMenuState.isOpenAtom(false);
+									StartScreenState.isVisibleAtom(true);
 								}}
 							/>
 						</frame>

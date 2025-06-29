@@ -31,6 +31,8 @@ export namespace Styles {
 		};
 	}
 	
+	export type GradientWithoutTransparency = Omit<Gradient, 'transparency'>;
+	
 	export interface Font {
 		fontId: string;
 		weight: Enum.FontWeight['Value'];
@@ -102,6 +104,15 @@ export namespace Styles {
 		};
 		buttons: {
 			sideMenu: Button;
+		};
+		startScreen: {
+			logo: Text;
+			button: Button;
+			loading: {
+				background: Color | GradientWithoutTransparency;
+				logo: Text;
+				status: Text;
+			};
 		};
 		layout: {}; // TODO: ui layout
 	}

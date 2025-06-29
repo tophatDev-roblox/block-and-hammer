@@ -1,32 +1,36 @@
 import { UserInputService } from '@rbxts/services';
-import React, { useEffect, useRef, useState } from '@rbxts/react';
-import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
+import React, { useEffect } from '@rbxts/react';
+import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { Styles, StyleParse } from 'client/styles';
 import { Controller } from 'shared/controller';
-import { SideMenuState } from 'client/sideMenu';
 import { InputType } from 'client/inputType';
-import { usePx } from '../../hooks/usePx';
-import Text from '../Text';
-import Gradient from '../Gradient';
-import Outline from '../Outline';
+import { usePx } from '../hooks/usePx';
+import Text from './Text';
+import Gradient from './Gradient';
+import Outline from './Outline';
 
-interface ButtonProps {
+interface SideButtonProps {
 	styles: Styles.Button;
 	text: string;
 	iconId: string;
-	index: number;
-	focusIndex?: number;
-	totalButtons: number;
+	size: React.Binding<UDim2>;
+	sizeMotion: Ripple.Motion<UDim2>;
+	canAnimate: boolean;
+	isFocused: boolean;
+	isHovered: boolean;
+	isPressed: boolean;
 	widthScale?: number;
 	widthOffset?: number;
 	iconScale?: number;
 	padding?: number;
 	onClick?: () => void;
+	onHover?: (hovered: boolean) => void;
+	onPress?: (pressed: boolean) => void;
 }
 
-const Button: React.FC<ButtonProps> = (props) => {
+const SideButton: React.FC<SideButtonProps> = (props) => {
 	const {
 		styles: {
 			text: textStyles,
@@ -39,28 +43,25 @@ const Button: React.FC<ButtonProps> = (props) => {
 		},
 		text,
 		iconId,
-		focusIndex,
-		index,
-		totalButtons,
+		size,
+		sizeMotion,
+		canAnimate,
+		isFocused,
+		isPressed,
+		isHovered,
 		widthScale = 0,
 		widthOffset = 0,
 		iconScale = 0.8,
 		padding = 12,
 		onClick = () => {},
+		onHover = () => {},
+		onPress = () => {},
 	} = props;
 	
-	const [isHovered, setHovered] = useState<boolean>(false);
-	const [isPressed, setPressed] = useState<boolean>(false);
-	const [canAnimate, setCanAnimate] = useState<boolean>(false);
-	
-	const wasFocusedRef = useRef<boolean>(focusIndex === index);
-	
 	const inputType = useAtom(InputType.stateAtom);
-	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
 	const styles = useAtom(Styles.stateAtom);
 	
 	const px = usePx();
-	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
 	
 	const isBackgroundRGBA = 'red' in background;
 	const isIconBackgroundRGBA = 'red' in iconBackground;
@@ -73,7 +74,7 @@ const Button: React.FC<ButtonProps> = (props) => {
 		}
 		
 		if (input.KeyCode === Controller.UINavigationSelect && isHovered) {
-			setPressed(true);
+			onPress(true);
 		}
 	});
 	
@@ -83,67 +84,26 @@ const Button: React.FC<ButtonProps> = (props) => {
 		}
 		
 		if (input.KeyCode === Controller.UINavigationSelect && isPressed) {
-			setPressed(false);
+			onPress(false);
 			
-			if (index === focusIndex) {
+			if (isFocused) {
 				onClick();
 			}
 		}
 	});
 	
 	useEffect(() => {
-		if (sideMenuOpened) {
-			const delay = (totalButtons - index - 1) / 30;
-			
-			const thread = task.delay(delay, () => {
-				sizeMotion.tween(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0), {
-					style: Enum.EasingStyle.Back,
-					direction: Enum.EasingDirection.Out,
-					time: 0.3,
-				});
-			});
-			
-			const animateThread = task.delay(delay + 0.3, () => {
-				setCanAnimate(true);
-			});
-			
-			return () => {
-				task.cancel(thread);
-				task.cancel(animateThread);
-			};
-		} else {
-			setCanAnimate(false);
-			
-			const thread = task.delay(index / 20, () => {
-				sizeMotion.tween(new UDim2(widthScale, widthOffset, 1, 0), {
-					style: Enum.EasingStyle.Back,
-					direction: Enum.EasingDirection.In,
-					time: 0.3,
-				});
-			});
-			
-			return () => {
-				task.cancel(thread);
-			};
-		}
-	}, [sideMenuOpened]);
-	
-	useEffect(() => {
 		if (inputType !== InputType.Value.Controller) {
-			setHovered(false);
+			onHover(false);
 			return;
 		}
 		
-		const isFocused = focusIndex === index;
-		const wasFocused = wasFocusedRef.current;
-		if (isFocused && !wasFocused) {
-			setHovered(true);
-		} else if (!isFocused && wasFocused) {
-			setHovered(false);
+		if (isFocused) {
+			onHover(true);
+		} else if (!isFocused) {
+			onHover(false);
 		}
-		
-		wasFocusedRef.current = isFocused
-	}, [focusIndex, index]);
+	}, [isFocused]);
 	
 	useEffect(() => {
 		if (!canAnimate) {
@@ -171,7 +131,7 @@ const Button: React.FC<ButtonProps> = (props) => {
 				});
 			}
 		}
-	}, [canAnimate, isHovered, isPressed]);
+	}, [canAnimate, isHovered, isPressed, widthScale, widthOffset, px]);
 	
 	return (
 		<frame
@@ -192,10 +152,10 @@ const Button: React.FC<ButtonProps> = (props) => {
 				AutoButtonColor={false}
 				Selectable={false}
 				Event={{
-					MouseEnter: () => setHovered(true),
-					MouseLeave: () => setHovered(false),
-					MouseButton1Down: () => setPressed(true),
-					MouseButton1Up: () => setPressed(false),
+					MouseEnter: () => onHover(true),
+					MouseLeave: () => onHover(false),
+					MouseButton1Down: () => onPress(true),
+					MouseButton1Up: () => onPress(false),
 					MouseButton1Click: () => onClick(),
 				}}
 			>
@@ -218,7 +178,8 @@ const Button: React.FC<ButtonProps> = (props) => {
 						<Outline
 							styles={styles.controller.selectionOutline}
 							applyStrokeMode={Enum.ApplyStrokeMode.Border}
-							overwriteThickness={focusIndex === index ? undefined : 0}
+							overwriteThickness={isFocused ? undefined : 0}
+							animateThickness
 						/>
 					)}
 					<uilistlayout
@@ -279,4 +240,4 @@ const Button: React.FC<ButtonProps> = (props) => {
 	);
 };
 
-export default Button;
+export default SideButton;

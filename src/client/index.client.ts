@@ -1,11 +1,12 @@
 print('[client::index] initializing');
 
+import './coreGuis';
+import './ui';
 import './character';
 import './effects';
 import './topbar';
 import './chat';
-import './ui';
+import './startScreenState'
 import './leaveSound';
-import './disableCoreGuis';
 import './debugPanel';
 import './centurion';

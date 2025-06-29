@@ -9,7 +9,7 @@ import { DebugPanel } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { UserSettings } from 'client/settings';
 import { InputType } from 'client/inputType';
-import { SideMenu } from 'client/sideMenu';
+import { SideMenuState } from 'client/sideMenuState';
 import { camera } from 'client/camera';
 import { CharacterState } from './state';
 
@@ -194,7 +194,7 @@ function processInput(input: InputObject): void {
 	const characterParts = peek(CharacterState.partsAtom);
 	const inputType = peek(InputType.stateAtom);
 	const userSettings = peek(UserSettings.stateAtom);
-	const sideMenuOpen = peek(SideMenu.isOpenAtom);
+	const sideMenuOpen = peek(SideMenuState.isOpenAtom);
 	const hammerDistance = peek(CharacterState.hammerDistanceAtom);
 	if (characterParts === undefined || sideMenuOpen) {
 		return;

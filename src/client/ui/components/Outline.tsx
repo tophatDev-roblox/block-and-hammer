@@ -9,21 +9,27 @@ interface OutlineProps {
 	styles: Styles.Outline;
 	applyStrokeMode: Enum.ApplyStrokeMode;
 	overwriteThickness?: number;
+	animateThickness?: true;
 }
 
-const Outline: React.FC<OutlineProps> = ({ styles: { color, thickness, joinMode, autoScale = true }, applyStrokeMode, overwriteThickness }) => {
+const Outline: React.FC<OutlineProps> = ({ styles: { color, thickness, joinMode, autoScale = true }, applyStrokeMode, overwriteThickness, animateThickness }) => {
 	const px = usePx();
 	const [thicknessValue, thicknessMotion] = useMotion(0);
 	
 	const isRGBA = 'red' in color;
 	
 	useEffect(() => {
-		thicknessMotion.tween(overwriteThickness ?? (autoScale ? px(thickness, false) : thickness), {
-			time: 0.2,
-			style: Enum.EasingStyle.Sine,
-			direction: Enum.EasingDirection.Out,
-		});
-	}, [thickness, overwriteThickness]);
+		const value = overwriteThickness ?? (autoScale ? px(thickness, false) : thickness);
+		if (animateThickness) {
+			thicknessMotion.tween(value, {
+				time: 0.2,
+				style: Enum.EasingStyle.Sine,
+				direction: Enum.EasingDirection.Out,
+			});
+		} else {
+			thicknessMotion.set(value);
+		}
+	}, [thickness, overwriteThickness, animateThickness, px]);
 	
 	return (
 		<uistroke

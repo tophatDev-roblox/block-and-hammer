@@ -5,7 +5,7 @@ import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
 import { Character } from 'client/character';
 import { CharacterState } from 'client/character/state';
-import { materialConfiguration } from './materials';
+import { MaterialConfig, materialConfiguration } from './materials';
 import { UserSettings } from 'client/settings';
 
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
@@ -21,11 +21,132 @@ explosionHaptics.Type = Enum.HapticEffectType.GameplayExplosion;
 explosionHaptics.Name = 'CharacterExplosion';
 explosionHaptics.Parent = hapticsFolder;
 
-function getPointOn3dCircle(center: Vector3, normal: Vector3, radius: number, theta: number): Vector3 {
-	const A = math.abs(normal.X) < 0.1 ? Vector3.xAxis : Vector3.yAxis;
-	const U = normal.Cross(A).Unit;
-	const V = normal.Cross(U);
-	return center.add(U.mul(math.cos(theta)).add(V.mul(math.sin(theta))).mul(radius));
+export namespace Effects {
+	export function getPointOn3dCircle(center: Vector3, normal: Vector3, radius: number, theta: number): Vector3 {
+		const A = math.abs(normal.X) < 0.1 ? Vector3.xAxis : Vector3.yAxis;
+		const U = normal.Cross(A).Unit;
+		const V = normal.Cross(U);
+		return center.add(U.mul(math.cos(theta)).add(V.mul(math.sin(theta))).mul(radius));
+	}
+	
+	export function playSound(configuration: NonNullable<MaterialConfig['sound']>): void {
+		const sound = configuration.instance.Clone();
+		sound.TimePosition = configuration.startTime;
+		sound.Volume = configuration.volume;
+		sound.PlaybackSpeed = configuration.speed;
+		
+		if (configuration.volumeVariation !== undefined) {
+			sound.Volume += RNG.NextNumber(-configuration.volumeVariation, configuration.volumeVariation);
+		}
+		
+		if (configuration.speedVariation !== undefined) {
+			sound.PlaybackSpeed += RNG.NextNumber(-configuration.speedVariation, configuration.speedVariation);
+		}
+		
+		sound.Parent = Workspace;
+		sound.Destroy();
+	}
+	
+	export function createBaseParticle(part: BasePart): BasePart {
+		const baseParticle = Instance.fromExisting(part);
+		baseParticle.Anchored = false;
+		baseParticle.Massless = true;
+		baseParticle.CanCollide = true;
+		baseParticle.CastShadow = false;
+		baseParticle.CollisionGroup = 'Particles';
+		
+		return baseParticle;
+	}
+	
+	export function makeHitParticles(partMaterial: Enum.Material, baseParticle: BasePart, point: Vector3, normalVector: Vector3, inheritedVelocity: Vector3): void {
+		const material = materialConfiguration.get(partMaterial);
+		if (material === undefined) {
+			print(`[client::effects] unsupported material: ${partMaterial}`);
+			return;
+		}
+		
+		const { totalParticles, colorMultiplier, duration } = material.getData();
+		const tweenInfo = new TweenInfo(duration, Enum.EasingStyle.Linear);
+		
+		baseParticle.Color = new Color3(
+			baseParticle.Color.R * colorMultiplier,
+			baseParticle.Color.G * colorMultiplier,
+			baseParticle.Color.B * colorMultiplier,
+		);
+		
+		const particles = new Set<BasePart>();
+		for (const i of $range(1, totalParticles)) {
+			const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi);
+			const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.1, 1), theta);
+			
+			const particle = Instance.fromExisting(baseParticle);
+			material.style(particle);
+			particle.CFrame = CFrame.lookAlong(point, RNG.NextUnitVector());
+			particle.AssemblyLinearVelocity = spreadDirection.Unit.mul(RNG.NextNumber(40, 50)).add(inheritedVelocity);
+			particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
+			particle.Parent = effectsFolder;
+			
+			const tween = TweenService.Create(particle, tweenInfo, {
+				Size: Vector3.zero,
+				LocalTransparencyModifier: 1,
+			});
+			
+			tween.Play();
+			
+			particles.add(particle);
+		}
+		
+		if (material.sound !== undefined) {
+			Effects.playSound(material.sound);
+		}
+		
+		task.delay(duration, () => {
+			for (const particle of particles) {
+				particle.Destroy();
+			}
+		});
+	}
+	
+	export function makeSmashParticles(baseParticle: BasePart, magnitude: number, point: Vector3, normalVector: Vector3, inheritedVelocity: Vector3): void {
+		const tweenInfo = new TweenInfo(5, Enum.EasingStyle.Linear);
+		
+		const velocityStrength = math.min((magnitude - 140) / 15, 15);
+		const totalParticles = RNG.NextInteger(10, 20);
+		
+		const particles = new Set<BasePart>();
+		for (const i of $range(1, totalParticles)) {
+			const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi);
+			const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.1, 1), theta);
+			
+			const particle = Instance.fromExisting(baseParticle);
+			particle.Size = Vector3.one.mul(RNG.NextNumber(0.6, 1.2));
+			particle.CFrame = CFrame.lookAlong(point, RNG.NextUnitVector());
+			particle.AssemblyLinearVelocity = spreadDirection.Unit.mul(RNG.NextNumber(5, 6) * velocityStrength).add(inheritedVelocity);
+			particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
+			particle.Parent = effectsFolder;
+			
+			const tween = TweenService.Create(particle, tweenInfo, {
+				Size: Vector3.zero,
+				LocalTransparencyModifier: 1,
+			});
+			
+			tween.Play();
+			
+			particles.add(particle);
+		}
+		
+		task.delay(tweenInfo.Time, () => {
+			for (const particle of particles) {
+				particle.Destroy();
+			}
+		});
+		
+		const sound = hammerHitSound.Clone();
+		sound.TimePosition = 0.1;
+		sound.PlaybackSpeed = RNG.NextNumber(0.95, 1.05);
+		sound.Parent = Workspace;
+		sound.Destroy();
+	}
 }
 
 effect(() => {
@@ -66,113 +187,12 @@ effect(() => {
 		const point = targetPart.GetClosestPointOnSurface(characterParts.hammer.head.Position);
 		const inheritedVelocity = hammerVelocity.mul(-0.2);
 		
-		const baseParticle = Instance.fromExisting(targetPart);
-		baseParticle.Anchored = false;
-		baseParticle.Massless = true;
-		baseParticle.CanCollide = true;
-		baseParticle.CastShadow = false;
-		baseParticle.CollisionGroup = 'Particles';
-		
-		const tweenProperties: Partial<ExtractMembers<BasePart, Tweenable>> = {
-			Size: Vector3.zero,
-			LocalTransparencyModifier: 1,
-		};
-		
+		const baseParticle = Effects.createBaseParticle(targetPart);
 		const normalVector = result.Normal.Unit;
 		if (magnitude > 165) {
-			const tweenInfo = new TweenInfo(5, Enum.EasingStyle.Linear);
-			
-			const velocityStrength = math.min((magnitude - 140) / 15, 15);
-			const totalParticles = RNG.NextInteger(10, 20);
-			
-			const particles = new Set<BasePart>();
-			for (const i of $range(1, totalParticles)) {
-				const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi);
-				const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.1, 1), theta);
-				
-				const particle = Instance.fromExisting(baseParticle);
-				particle.Size = Vector3.one.mul(RNG.NextNumber(0.6, 1.2));
-				particle.CFrame = CFrame.lookAlong(point, RNG.NextUnitVector());
-				particle.AssemblyLinearVelocity = spreadDirection.Unit.mul(RNG.NextNumber(5, 6) * velocityStrength).add(inheritedVelocity);
-				particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
-				particle.Parent = effectsFolder;
-				
-				const tween = TweenService.Create(particle, tweenInfo, tweenProperties);
-				tween.Play();
-				
-				particles.add(particle);
-			}
-			
-			task.delay(tweenInfo.Time, () => {
-				for (const particle of particles) {
-					particle.Destroy();
-				}
-			});
-			
-			const sound = hammerHitSound.Clone();
-			sound.TimePosition = 0.1;
-			sound.PlaybackSpeed = RNG.NextNumber(0.95, 1.05);
-			sound.Parent = Workspace;
-			sound.Destroy();
+			Effects.makeSmashParticles(baseParticle, magnitude, point, normalVector, inheritedVelocity)
 		} else if (magnitude > 50) {
-			const material = materialConfiguration.get(otherPart.Material);
-			if (material === undefined) {
-				print(`[client::effects] unsupported material: ${otherPart.Material}`);
-				return;
-			}
-			
-			const { totalParticles, colorMultiplier, duration } = material.getData();
-			const tweenInfo = new TweenInfo(duration, Enum.EasingStyle.Linear);
-			
-			baseParticle.Color = new Color3(
-				baseParticle.Color.R * colorMultiplier,
-				baseParticle.Color.G * colorMultiplier,
-				baseParticle.Color.B * colorMultiplier,
-			);
-			
-			const particles = new Set<BasePart>();
-			for (const i of $range(1, totalParticles)) {
-				const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi);
-				const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.1, 1), theta);
-				
-				const particle = Instance.fromExisting(baseParticle);
-				material.style(particle);
-				particle.CFrame = CFrame.lookAlong(point, RNG.NextUnitVector());
-				particle.AssemblyLinearVelocity = spreadDirection.Unit.mul(RNG.NextNumber(40, 50)).add(inheritedVelocity);
-				particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
-				particle.Parent = effectsFolder;
-				
-				const tween = TweenService.Create(particle, tweenInfo, tweenProperties);
-				tween.Play();
-				
-				particles.add(particle);
-			}
-			
-			if (material.sound !== undefined) {
-				const configuration = material.sound;
-				
-				const sound = configuration.instance.Clone();
-				sound.TimePosition = configuration.startTime;
-				sound.Volume = configuration.volume;
-				sound.PlaybackSpeed = configuration.speed;
-				
-				if (configuration.volumeVariation !== undefined) {
-					sound.Volume += RNG.NextNumber(-configuration.volumeVariation, configuration.volumeVariation);
-				}
-				
-				if (configuration.speedVariation !== undefined) {
-					sound.PlaybackSpeed += RNG.NextNumber(-configuration.speedVariation, configuration.speedVariation);
-				}
-				
-				sound.Parent = Workspace;
-				sound.Destroy();
-			}
-			
-			task.delay(duration, () => {
-				for (const particle of particles) {
-					particle.Destroy();
-				}
-			});
+			Effects.makeHitParticles(otherPart.Material, baseParticle, point, normalVector, inheritedVelocity);
 		}
 		
 		baseParticle.Destroy();
@@ -241,7 +261,7 @@ effect(() => {
 				const particles = new Set<BasePart>();
 				for (const i of $range(1, totalParticles)) {
 					const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi);
-					const spreadDirection = getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.3, 2), theta);
+					const spreadDirection = Effects.getPointOn3dCircle(normalVector, normalVector.Unit, RNG.NextNumber(0.3, 2), theta);
 					
 					const particle = Instance.fromExisting(baseParticle);
 					particle.Size = Vector3.one.mul(RNG.NextNumber(1.5, 3));
@@ -275,7 +295,7 @@ effect(() => {
 					const blocks = new Set<BasePart>();
 					for (const i of $range(1, totalParts)) {
 						const theta = math.map(i, 1, totalParticles, 0, 2 * math.pi) + RNG.NextNumber(-randomAngleOffset, randomAngleOffset);
-						const point = getPointOn3dCircle(result.Position, result.Normal, radius, theta);
+						const point = Effects.getPointOn3dCircle(result.Position, result.Normal, radius, theta);
 						
 						const origin = point.add(result.Normal.mul(5));
 						const direction = result.Normal.mul(-rayDistance);

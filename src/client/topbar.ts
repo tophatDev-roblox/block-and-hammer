@@ -1,5 +1,5 @@
 import { Players } from '@rbxts/services';
-import { peek, subscribe } from '@rbxts/charm';
+import { effect, subscribe } from '@rbxts/charm';
 
 import Icon from 'shared/Icon';
 import NumberSpinner from 'shared/NumberSpinner';
@@ -7,7 +7,8 @@ import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
 import { Styles } from 'client/styles';
 import { InputType } from 'client/inputType';
 import { DebugPanel } from 'client/debugPanel';
-import { SideMenu } from 'client/sideMenu';
+import { SideMenuState } from 'client/sideMenuState';
+import { StartScreenState } from './startScreenState';
 import defaultStyles from 'client/styles/default';
 
 const client = Players.LocalPlayer;
@@ -32,6 +33,7 @@ const theme = [
 	['IconGradient', 'Color', new ColorSequence(Color3.fromRGB(69, 69, 69), Color3.fromRGB(35, 35, 35)), 'Selected'],
 ];
 
+Icon.setDisplayOrder(100);
 Icon.modifyBaseTheme(theme);
 
 const menuIcon = new Icon()
@@ -39,7 +41,6 @@ const menuIcon = new Icon()
 	.setCaption('Toggle menu')
 	.bindToggleKey(Enum.KeyCode.ButtonB)
 	.bindToggleKey(Enum.KeyCode.B)
-	.setCaptionHint(peek(InputType.stateAtom) === InputType.Value.Controller ? Enum.KeyCode.ButtonB : Enum.KeyCode.B)
 	.setOrder(0)
 	.autoDeselect(false)
 	.modifyTheme(theme);
@@ -56,14 +57,14 @@ const dollarsIcon = new Icon()
 	]);
 
 menuIcon.toggled.Connect((toggled) => {
-	SideMenu.isOpenAtom(toggled);
+	SideMenuState.isOpenAtom(toggled);
 });
 
 dollarsIcon.selected.Connect(() => {
 	menuIcon.select();
 });
 
-subscribe(SideMenu.isOpenAtom, (isOpen) => {
+subscribe(SideMenuState.isOpenAtom, (isOpen) => {
 	if (isOpen) {
 		menuIcon.select();
 	} else {
@@ -71,7 +72,19 @@ subscribe(SideMenu.isOpenAtom, (isOpen) => {
 	}
 });
 
-subscribe(InputType.stateAtom, (inputType) => {
+effect(() => {
+	const isVisible = StartScreenState.isVisibleAtom();
+	if (isVisible) {
+		menuIcon.lock();
+		dollarsIcon.lock();
+	} else {
+		menuIcon.unlock();
+		dollarsIcon.unlock();
+	}
+});
+
+effect(() => {
+	const inputType = InputType.stateAtom();
 	switch (inputType) {
 		case InputType.Value.Desktop: {
 			menuIcon.setCaptionHint(Enum.KeyCode.B);

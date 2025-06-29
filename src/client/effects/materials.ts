@@ -6,7 +6,7 @@ export interface ParticleData {
 	duration: number;
 }
 
-interface MaterialConfig {
+export interface MaterialConfig {
 	sound?: {
 		instance: Sound;
 		startTime: number;

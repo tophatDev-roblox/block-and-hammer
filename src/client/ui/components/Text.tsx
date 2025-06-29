@@ -38,8 +38,8 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 		alignX = Enum.TextXAlignment.Center,
 		alignY = Enum.TextYAlignment.Center,
 		richText = false,
-		children,
 		rotation = 0,
+		children,
 	} = props;
 	
 	const fontFace = useMemo<Font>(() => StyleParse.font(font), [font]);

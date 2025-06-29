@@ -137,6 +137,43 @@ const data: Styles.Data = {
 			outline: false,
 		},
 	},
+	startScreen: {
+		logo: {
+			font: { fontId, weight: 900, italics: false },
+			color: { red: 255, green: 255, blue: 255, alpha: 1 },
+			size: 90,
+			outline: { color: { red: 0, green: 0, blue: 0, alpha: 1 }, thickness: 6, joinMode: 'miter' },
+		},
+		button: {
+			text: {
+				font: { fontId, weight: 700, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 70,
+				outline: false,
+			},
+			icon: {
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				background: { red: 255, green: 255, blue: 255, alpha: 0.06 },
+			},
+			background: { red: 0, green: 0, blue: 0, alpha: 0.5 },
+			outline: false,
+		},
+		loading: {
+			background: { red: 0, green: 0, blue: 0 },
+			logo: {
+				font: { fontId, weight: 900, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 80,
+				outline: false,
+			},
+			status: {
+				font: { fontId, weight: 700, italics: false },
+				color: { red: 200, green: 200, blue: 200, alpha: 1 },
+				size: 60,
+				outline: false,
+			},
+		},
+	},
 	layout: {},
 };
 

@@ -38,7 +38,10 @@ function respawn(player: Player): void {
 	
 	character.Destroying.Once(() => {
 		createdCharacters.delete(character);
-		respawn(player);
+		
+		if (character.GetAttribute('unloading') !== true) {
+			respawn(player);
+		}
 	});
 	
 	character.Parent = Workspace;
@@ -58,9 +61,21 @@ function onFullReset(player: Player): boolean {
 	respawn(player);
 	
 	playerResetDebounces.add(player);
-	setTimeout(() => playerResetDebounces.delete(player), 1);
+	setTimeout(() => playerResetDebounces.delete(player), 0.1);
 	
 	return true;
+}
+
+function onUnloadCharacter(player: Player): void {
+	const character = player.Character;
+	if (character === undefined) {
+		return;
+	}
+	
+	player.Character = undefined;
+	
+	character.SetAttribute('unloading', true);
+	character.Destroy();
 }
 
 async function onPlayerAdded(player: Player): Promise<void> {
@@ -75,7 +90,6 @@ async function onPlayerAdded(player: Player): Promise<void> {
 	
 	Badge.award(Badge.Id.Welcome, player);
 	Leaderstats.apply(player);
-	respawn(player);
 	
 	const playerRichText = new RichText({ font: { color: player.GetAttribute('color') as Color3 } });
 	Remotes.sendSystemMessage.fireAllExcept(player, joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} joined the server`)));
@@ -108,6 +122,7 @@ for (const player of Players.GetPlayers()) {
 }
 
 Remotes.fullReset.onRequest(onFullReset);
+Remotes.unloadCharacter.connect(onUnloadCharacter);
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);
 RunService.Stepped.Connect(onStepped);
