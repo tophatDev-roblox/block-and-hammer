@@ -4,6 +4,7 @@ import { useMotion } from '@rbxts/pretty-react-hooks';
 import { Styles, StyleParse } from 'client/styles';
 import { usePx } from '../hooks/usePx';
 import Gradient from './Gradient';
+
 interface OutlineProps {
 	styles: Styles.Outline;
 	applyStrokeMode: Enum.ApplyStrokeMode;
