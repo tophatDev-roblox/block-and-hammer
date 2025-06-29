@@ -23,14 +23,14 @@ if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
 	print('[server::profileStore] loading live datastore');
 }
 
+const startSession = Promise.promisify((...args: Parameters<ProfileStore['StartSessionAsync']>) => PlayerStore.StartSessionAsync(...args));
+
 const loadedProfiles = new Map<Player, LoadedProfile>();
 
 export namespace PlayerData {
-	export function load(player: Player): LoadedProfile | undefined {
-		const profile = PlayerStore.StartSessionAsync(`player_${player.UserId}`, {
-			Cancel: () => {
-				return player.Parent !== Players;
-			},
+	export async function load(player: Player): Promise<LoadedProfile | undefined> {
+		const profile = await startSession(`player_${player.UserId}`, {
+			Cancel: () => player.Parent !== Players,
 		});
 		
 		if (profile === undefined) {
@@ -43,7 +43,7 @@ export namespace PlayerData {
 		
 		profile.OnSessionEnd.Connect(() => {
 			loadedProfiles.delete(player);
-			player.Kick('Profile session ended - please rejoin');
+			player.Kick('Profile session ended, please rejoin');
 		});
 		
 		if (player.Parent !== Players) {

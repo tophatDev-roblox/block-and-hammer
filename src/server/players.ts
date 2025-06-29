@@ -48,8 +48,8 @@ function respawn(player: Player): void {
 	player.Character = character;
 }
 
-function onPlayerAdded(player: Player): void {
-	const profile = PlayerData.load(player);
+async function onPlayerAdded(player: Player): Promise<void> {
+	const profile = await PlayerData.load(player);
 	if (profile === undefined) {
 		return;
 	}
@@ -93,7 +93,7 @@ function onFullReset(player: Player): void {
 }
 
 for (const player of Players.GetPlayers()) {
-	task.spawn(onPlayerAdded, player);
+	onPlayerAdded(player);
 }
 
 Players.PlayerAdded.Connect(onPlayerAdded);
