@@ -1,26 +1,31 @@
 import { StarterGui } from '@rbxts/services';
 import { atom, effect } from '@rbxts/charm';
 
+import { clearTimeout, setTimeout, Timeout } from 'shared/timeout';
+
 export namespace SideMenu {
 	export const isOpenAtom = atom<boolean>(false);
+}
+
+function setPlayerListEnabled(enabled: boolean): void {
+	StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, enabled);
 }
 
 effect(() => {
 	const sideMenuOpen = SideMenu.isOpenAtom();
 	
-	const thread = task.delay(sideMenuOpen ? 0 : 0.6, () => {
-		while (true) {
-			try {
-				StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, !sideMenuOpen);
-				break;
-			} catch (err) {
-				warn(`[client::sideMenu] failed to toggle leaderboard: ${err}`);
-				task.wait(0.1);
-			}
-		}
-	});
+	let timeout: Timeout;
 	
-	return () => {
-		task.cancel(thread);
+	const updatePlayerList = () => {
+		try {
+			setPlayerListEnabled(!sideMenuOpen);
+		} catch (err) {
+			warn(`[client::sideMenu] failed to toggle leaderboard: ${err}`);
+			timeout = setTimeout(updatePlayerList, 0.1);
+		}
 	};
+	
+	timeout = setTimeout(updatePlayerList, sideMenuOpen ? 0 : 0.6);
+	
+	return () => clearTimeout(timeout);
 });
