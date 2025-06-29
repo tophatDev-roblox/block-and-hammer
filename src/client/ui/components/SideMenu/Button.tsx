@@ -22,16 +22,27 @@ interface ButtonProps {
 	onClick?: () => void;
 }
 
-const Button: React.FC<ButtonProps> = ({ styles, text, iconId, index, totalButtons, widthScale = 0, widthOffset = 0, iconScale = 0.8, padding = 12, onClick = () => {} }) => {
+const Button: React.FC<ButtonProps> = (props) => {
 	const {
-		text: textStyles,
-		icon: {
-			background: iconBackground,
-			color: iconColor,
+		styles: {
+			text: textStyles,
+			icon: {
+				background: iconBackground,
+				color: iconColor,
+			},
+			background,
+			outline,
 		},
-		background,
-		outline,
-	} = styles;
+		text,
+		iconId,
+		index,
+		totalButtons,
+		widthScale = 0,
+		widthOffset = 0,
+		iconScale = 0.8,
+		padding = 12,
+		onClick = () => {},
+	} = props;
 	
 	const buttonRef = useRef<ImageButton>();
 	const tweenRef = useRef<Tween>();
