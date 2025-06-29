@@ -37,8 +37,9 @@ Icon.modifyBaseTheme(theme);
 const menuIcon = new Icon()
 	.setImage(79239443855874)
 	.setCaption('Toggle menu')
-	.bindToggleKey(Enum.KeyCode.B)
 	.bindToggleKey(Enum.KeyCode.ButtonB)
+	.bindToggleKey(Enum.KeyCode.B)
+	.setCaptionHint(Enum.KeyCode.B)
 	.setOrder(0)
 	.autoDeselect(false)
 	.modifyTheme(theme);
