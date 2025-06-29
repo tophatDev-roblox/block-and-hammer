@@ -4,7 +4,7 @@ import { useMotion } from '@rbxts/pretty-react-hooks';
 
 import { Assets } from 'shared/assets';
 import { Styles } from 'client/styles';
-import { SideMenu as ClientSideMenu } from 'client/sideMenu';
+import { SideMenuState } from 'client/sideMenu';
 import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
 import { usePx } from 'client/ui/hooks/usePx';
 import Container from '../Container';
@@ -12,7 +12,7 @@ import Button from './Button';
 
 const SideMenu: React.FC = () => {
 	const styles = useAtom(Styles.stateAtom);
-	const sideMenuOpened = useAtom(ClientSideMenu.isOpenAtom);
+	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
 	
 	const px = usePx();
 	const [position, positionMotion] = useMotion<UDim2>(new UDim2(1.5, 0, 0, 0));
@@ -150,7 +150,7 @@ const SideMenu: React.FC = () => {
 								focusIndex={focusIndex}
 								totalButtons={totalButtons}
 								onClick={() => {
-									ClientSideMenu.isOpenAtom(false);
+									SideMenuState.isOpenAtom(false);
 								}}
 							/>
 						</frame>

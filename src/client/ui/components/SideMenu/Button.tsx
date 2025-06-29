@@ -5,7 +5,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { Styles, StyleParse } from 'client/styles';
 import { Controller } from 'shared/controller';
-import { SideMenu } from 'client/sideMenu';
+import { SideMenuState } from 'client/sideMenu';
 import { InputType } from 'client/inputType';
 import { usePx } from '../../hooks/usePx';
 import Text from '../Text';
@@ -56,7 +56,7 @@ const Button: React.FC<ButtonProps> = (props) => {
 	const wasFocusedRef = useRef<boolean>(focusIndex === index);
 	
 	const inputType = useAtom(InputType.stateAtom);
-	const sideMenuOpened = useAtom(SideMenu.isOpenAtom);
+	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
 	const styles = useAtom(Styles.stateAtom);
 	
 	const px = usePx();

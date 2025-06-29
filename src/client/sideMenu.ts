@@ -3,7 +3,7 @@ import { atom, effect } from '@rbxts/charm';
 
 import { clearTimeout, setTimeout, Timeout } from 'shared/timeout';
 
-export namespace SideMenu {
+export namespace SideMenuState {
 	export const isOpenAtom = atom<boolean>(false);
 }
 
@@ -12,7 +12,7 @@ function setPlayerListEnabled(enabled: boolean): void {
 }
 
 effect(() => {
-	const sideMenuOpen = SideMenu.isOpenAtom();
+	const sideMenuOpen = SideMenuState.isOpenAtom();
 	
 	let timeout: Timeout;
 	
