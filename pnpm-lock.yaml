@@ -23,6 +23,9 @@ importers:
       '@rbxts/iris':
         specifier: 2.3.1-ts.1
         version: 2.3.1-ts.1
+      '@rbxts/pretty-react-hooks':
+        specifier: ^0.6.4
+        version: 0.6.4(@rbxts/react-roblox@17.2.3)(@rbxts/react@17.2.3)
       '@rbxts/react':
         specifier: ^17.2.3
         version: 17.2.3
@@ -35,6 +38,9 @@ importers:
       '@rbxts/remo':
         specifier: ^1.5.2
         version: 1.5.2
+      '@rbxts/ripple':
+        specifier: ^0.9.3
+        version: 0.9.3
       '@rbxts/services':
         specifier: ^1.5.5
         version: 1.5.5
@@ -73,6 +79,12 @@ packages:
   '@rbxts/iris@2.3.1-ts.1':
     resolution: {integrity: sha512-L/lja+ugKNH3ywdz5c8omXUS34L9oGKlul3yVifzTfQVJS4ryePU/hS6IdMaSbIwNda+qEOehXbSxglF9qxa/A==}
 
+  '@rbxts/pretty-react-hooks@0.6.4':
+    resolution: {integrity: sha512-yiuM3kOD0s2x0GFCUVfFdeSDJRX2ZycS88WOvqydaYwPIZ5rYDjzHjOzRgSpAzGcTVOFXsO64QOtD6svAdadzg==}
+    peerDependencies:
+      '@rbxts/react': '*'
+      '@rbxts/react-roblox': '*'
+
   '@rbxts/react-charm@0.3.0':
     resolution: {integrity: sha512-w64HoO6SxRSX86yNPiGazPQpR7cWBaWVATK9jkCphLQYmzdUV1BL9pRNN1Y1VMAk/PKiZ1mJdwX3PnwwvLXFvg==}
     peerDependencies:
@@ -90,6 +102,9 @@ packages:
 
   '@rbxts/remo@1.5.2':
     resolution: {integrity: sha512-UQSlJgLcLg1+ocXvg30TfdbuvrS4Qc3yzoxLltc+OP71fF6PmaUg/b6EQlXIt/uBCTOszDHJ7I3nlyG+pTLFjQ==}
+
+  '@rbxts/ripple@0.9.3':
+    resolution: {integrity: sha512-GmwjQl7a8pvGPGQYLmaAcf2RBPpneOL5P1+U8CzTHt9tBhCdk0TEJ/MQoTv9JnHD62RMBE1jogQBvuGgl9VXAg==}
 
   '@rbxts/services@1.5.5':
     resolution: {integrity: sha512-Hu7QH2ecefS60zpakKG3T2vgABydoOJqpSG7nXr59wFAbPk/cA+OcsntYPHUWyHAat0VFGZ5jNZLTLdiqfssvg==}
@@ -335,6 +350,14 @@ snapshots:
 
   '@rbxts/iris@2.3.1-ts.1': {}
 
+  '@rbxts/pretty-react-hooks@0.6.4(@rbxts/react-roblox@17.2.3)(@rbxts/react@17.2.3)':
+    dependencies:
+      '@rbxts/react': 17.2.3
+      '@rbxts/react-roblox': 17.2.3
+      '@rbxts/ripple': 0.9.3
+      '@rbxts/services': 1.5.5
+      '@rbxts/set-timeout': 1.1.2
+
   '@rbxts/react-charm@0.3.0(@rbxts/charm@0.10.0)(@rbxts/react@17.2.3)':
     dependencies:
       '@rbxts/charm': 0.10.0
@@ -352,6 +375,8 @@ snapshots:
       '@rbxts/react-vendor': 17.2.3
 
   '@rbxts/remo@1.5.2': {}
+
+  '@rbxts/ripple@0.9.3': {}
 
   '@rbxts/services@1.5.5': {}
 
