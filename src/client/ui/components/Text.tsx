@@ -21,7 +21,13 @@ interface TextProps extends React.PropsWithChildren {
 
 const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 	const {
-		styles: { font, color, size, outline, autoScale },
+		styles: {
+			font,
+			color,
+			size,
+			outline,
+			autoScale,
+		},
 		text,
 		width,
 		height,
