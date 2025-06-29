@@ -6,33 +6,30 @@ import { useAtom } from '@rbxts/react-charm';
 import { Controller } from 'shared/controller';
 import { InputType } from 'client/inputType';
 
-interface NavigationPoint {
-	position: Vector2;
-}
-
-export function useGamepadNavigation(points: Array<NavigationPoint>, onSelect?: (index: number) => void): LuaTuple<[number | undefined, (index: number) => void]> {
+// TODO: fix x position not working properly
+export function useGamepadNavigation(points: Array<Vector2>, onSelect?: (index: number) => void): LuaTuple<[number | undefined, (index: number) => void]> {
 	const inputType = useAtom(InputType.stateAtom);
 	
 	const [focusedIndex, setFocusedId] = useState<number>(-1);
 	
 	const directionRef = useRef<Controller.Direction>(Controller.Direction.None);
 	
-	const findNextPoint = (current: NavigationPoint, index: number, direction: Controller.Direction): number => {
+	const findNextPoint = (current: Vector2, index: number, direction: Controller.Direction): number => {
 		const possiblePoints = points.filter((_, i) => i !== index);
 		
 		const filteredPoints = possiblePoints.filter((point) => {
 			switch (direction) {
 				case Controller.Direction.Up: {
-					return point.position.Y < current.position.Y;
+					return point.Y < current.Y;
 				}
 				case Controller.Direction.Down: {
-					return point.position.Y > current.position.Y;
+					return point.Y > current.Y;
 				}
 				case Controller.Direction.Left: {
-					return point.position.X < current.position.X;
+					return point.X < current.X;
 				}
 				case Controller.Direction.Left: {
-					return point.position.X > current.position.X;
+					return point.X > current.X;
 				}
 			}
 			
@@ -44,12 +41,12 @@ export function useGamepadNavigation(points: Array<NavigationPoint>, onSelect?: 
 		}
 		
 		const sortedPoints = filteredPoints.sort((a, b) => {
-			return a.position.sub(current.position).Magnitude < b.position.sub(current.position).Magnitude;
+			return a.sub(current).Magnitude < b.sub(current).Magnitude;
 		});
 		
 		const firstPoint = sortedPoints[0];
 		for (const i of $range(0, points.size() - 1)) {
-			if (points[i].position === firstPoint.position) {
+			if (points[i] === firstPoint) {
 				return i;
 			}
 		}

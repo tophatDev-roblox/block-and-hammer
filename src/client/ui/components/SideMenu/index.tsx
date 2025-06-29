@@ -21,12 +21,12 @@ const SideMenu: React.FC = () => {
 	const totalButtons = 6;
 	
 	const [focusIndex, setFocusIndex] = useGamepadNavigation([
-		{ position: new Vector2(0, 0) },
-		{ position: new Vector2(0, 1) },
-		{ position: new Vector2(0, 2) },
-		{ position: new Vector2(0, 3) },
-		{ position: new Vector2(0, 4) },
-		{ position: new Vector2(0, 5) },
+		new Vector2(0, 0),
+		new Vector2(0, 1),
+		new Vector2(0, 2),
+		new Vector2(0, 3),
+		new Vector2(0, 4),
+		new Vector2(0, 5),
 	]);
 	
 	useEffect(() => {
