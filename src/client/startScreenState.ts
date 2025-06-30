@@ -23,8 +23,6 @@ function fullReset(): void {
 };
 
 (async () => {
-	const preload = Promise.promisify((...args: Parameters<ContentProvider['PreloadAsync']>) => ContentProvider.PreloadAsync(...args));
-	
 	StartScreenState.loadingStatusAtom('preloading asset ids...');
 	
 	const allAssets = { ...Assets.Icons, ...Assets.Images };
@@ -35,15 +33,21 @@ function fullReset(): void {
 		const decal = new Instance('Decal');
 		decal.Texture = id;
 		
-		await preload([decal], (_, status) => {
-			if (status === Enum.AssetFetchStatus.Success) {
-				StartScreenState.loadingStatusAtom(`'${name}' preloaded successfully`);
-			} else {
-				StartScreenState.loadingStatusAtom(`'${name}' failed to preload with status ${status}`);
-			}
-			
-			loadedAssets++;
-			StartScreenState.loadingPercentage(loadedAssets / totalAssets);
+		StartScreenState.loadingStatusAtom(`attempting to preload '${name}'`);
+		
+		await new Promise<void>((resolve) => {
+			ContentProvider.PreloadAsync([decal], (_, status) => {
+				if (status === Enum.AssetFetchStatus.Success) {
+					StartScreenState.loadingStatusAtom(`'${name}' preloaded successfully`);
+					resolve();
+				} else {
+					StartScreenState.loadingStatusAtom(`'${name}' failed to preload with status ${status}`);
+					setTimeout(resolve, 0.05);
+				}
+				
+				loadedAssets++;
+				StartScreenState.loadingPercentage(loadedAssets / totalAssets);
+			});
 		});
 	}
 	
