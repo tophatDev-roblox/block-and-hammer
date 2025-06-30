@@ -19,7 +19,7 @@ export namespace CharacterState {
 	export const partsAtom = atom<CharacterState.Parts>();
 	export const timeStartAtom = atom<number>();
 	export const hammerDistanceAtom = atom<number>(13);
-	export const cameraZOffsetAtom = atom<number>(-30);
+	export const cameraZOffsetAtom = atom<number>(-36);
 	export const mousePositionAtom = atom<Vector2>();
 	export const disableCameraAtom = atom<boolean>(false);
 	export const shakeStrengthAtom = atom<number>(0);
