@@ -36,7 +36,7 @@ const StartScreen: React.FC = () => {
 	
 	const px = usePx();
 	
-	const [focusIndex, setFocusIndex] = useGamepadNavigation([
+	const [focusIndex, setFocusIndex] = useGamepadNavigation(isVisible, [
 		new Vector2(0, 0),
 	]);
 	

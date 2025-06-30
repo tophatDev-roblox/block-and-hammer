@@ -18,7 +18,7 @@ const SideMenu: React.FC = () => {
 	const px = usePx();
 	const [position, positionMotion] = useMotion<UDim2>(new UDim2(1.5, 0, 0, 0));
 	
-	const [focusIndex, setFocusIndex] = useGamepadNavigation([
+	const [focusIndex, setFocusIndex] = useGamepadNavigation(sideMenuOpened, [
 		new Vector2(0, 0),
 		new Vector2(0, 1),
 		new Vector2(0, 2),

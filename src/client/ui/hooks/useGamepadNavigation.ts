@@ -7,7 +7,7 @@ import { Controller } from 'shared/controller';
 import { InputType } from 'client/inputType';
 
 // TODO: fix x position not working properly
-export function useGamepadNavigation(points: Array<Vector2>): LuaTuple<[number | undefined, (index: number) => void]> {
+export function useGamepadNavigation(focused: boolean, points: Array<Vector2>): LuaTuple<[number | undefined, (index: number) => void]> {
 	const [focusedIndex, setFocusedIndex] = useState<number>(-1);
 	
 	const directionRef = useRef<Controller.Direction>(Controller.Direction.None);
@@ -28,7 +28,7 @@ export function useGamepadNavigation(points: Array<Vector2>): LuaTuple<[number |
 				case Controller.Direction.Left: {
 					return point.X < current.X;
 				}
-				case Controller.Direction.Left: {
+				case Controller.Direction.Right: {
 					return point.X > current.X;
 				}
 			}
@@ -55,7 +55,7 @@ export function useGamepadNavigation(points: Array<Vector2>): LuaTuple<[number |
 	}
 	
 	useEventListener(RunService.RenderStepped, () => {
-		if (inputType !== InputType.Value.Controller || focusedIndex === -1) {
+		if (inputType !== InputType.Value.Controller || !focused || focusedIndex === -1) {
 			return;
 		}
 		
@@ -79,7 +79,7 @@ export function useGamepadNavigation(points: Array<Vector2>): LuaTuple<[number |
 	});
 	
 	useEventListener(UserInputService.InputChanged, (input, processed) => {
-		if (processed || inputType !== InputType.Value.Controller) {
+		if (processed || inputType !== InputType.Value.Controller || !focused) {
 			return;
 		}
 		
@@ -89,7 +89,7 @@ export function useGamepadNavigation(points: Array<Vector2>): LuaTuple<[number |
 	});
 	
 	useEventListener(UserInputService.InputEnded, (input, processed) => {
-		if (processed || inputType !== InputType.Value.Controller) {
+		if (processed || inputType !== InputType.Value.Controller || !focused) {
 			return;
 		}
 		
