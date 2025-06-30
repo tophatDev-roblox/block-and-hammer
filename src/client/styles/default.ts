@@ -27,23 +27,23 @@ const data: Styles.Data = {
 		timer: {
 			font: { fontId, weight: 900, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 1 },
-			size: 70,
-			outline: { color: textOutlineGradient, thickness: 3, joinMode: 'miter' },
+			size: 60,
+			outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
 			display: {
-				millisecondsFontSize: 45,
+				millisecondsFontSize: 35,
 			},
 		},
 		moveHint: {
 			font: { fontId, weight: 700, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 0.7 },
-			size: 35,
-			outline: { color: textOutlineGradient, thickness: 3, joinMode: 'miter' },
+			size: 25,
+			outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
 		},
 		hudPrimary: {
 			font: { fontId, weight: 900, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 1 },
-			size: 70,
-			outline: { color: textOutlineGradient, thickness: 3, joinMode: 'miter' },
+			size: 60,
+			outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
 			display: {
 				decimals: 1,
 			},
@@ -51,8 +51,8 @@ const data: Styles.Data = {
 		hudSecondary: {
 			font: { fontId, weight: 900, italics: false },
 			color: { red: 200, green: 200, blue: 200, alpha: 1 },
-			size: 45,
-			outline: { color: textOutlineGradient, thickness: 3, joinMode: 'miter' },
+			size: 35,
+			outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
 			display: {
 				decimals: 1,
 			},
@@ -68,14 +68,14 @@ const data: Styles.Data = {
 			displayName: {
 				font: { fontId, weight: 700, italics: false },
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 35,
-				outline: { color: textOutlineGradient, thickness: 3, joinMode: 'miter' },
+				size: 25,
+				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
 			},
 			username: {
 				font: { fontId, weight: 700, italics: false },
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 25,
-				outline: { color: textOutlineGradient, thickness: 3, joinMode: 'miter' },
+				size: 15,
+				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
 			},
 		},
 	},
@@ -94,7 +94,7 @@ const data: Styles.Data = {
 					{ position: 1, transparency: 0 },
 				],
 			},
-			thickness: 6,
+			thickness: 2,
 			joinMode: 'round',
 		},
 	},
@@ -120,7 +120,7 @@ const data: Styles.Data = {
 			text: {
 				font: { fontId, weight: 700, italics: false },
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 70,
+				size: 60,
 				outline: false,
 			},
 			icon: {
@@ -135,14 +135,14 @@ const data: Styles.Data = {
 		logo: {
 			font: { fontId, weight: 900, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 1 },
-			size: 90,
+			size: 80,
 			outline: { color: { red: 0, green: 0, blue: 0, alpha: 1 }, thickness: 6, joinMode: 'miter' },
 		},
 		button: {
 			text: {
 				font: { fontId, weight: 700, italics: false },
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 70,
+				size: 60,
 				outline: false,
 			},
 			icon: {
@@ -157,19 +157,19 @@ const data: Styles.Data = {
 			logo: {
 				font: { fontId, weight: 900, italics: false },
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 80,
+				size: 70,
 				outline: false,
 			},
 			status: {
 				font: { fontId, weight: 700, italics: false },
 				color: { red: 200, green: 200, blue: 200, alpha: 1 },
-				size: 60,
+				size: 50,
 				outline: false,
 			},
 			percentage: {
 				font: { fontId, weight: 900, italics: false },
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 50,
+				size: 40,
 				outline: false,
 			},
 		},
