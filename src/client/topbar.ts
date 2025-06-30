@@ -45,11 +45,10 @@ const menuIcon = new Icon()
 	.autoDeselect(false)
 	.modifyTheme(theme);
 
-const dollarsIcon = new Icon()
+new Icon()
 	.convertLabelToNumberSpinner(dollarsNumber)
-	.setCaption('Open shop')
-	.oneClick(true)
 	.setOrder(10)
+	.lock()
 	.modifyTheme(theme)
 	.modifyTheme([
 		['PaddingLeft', 'Size', new UDim2(0, 24, 1, 0)],
@@ -58,10 +57,6 @@ const dollarsIcon = new Icon()
 
 menuIcon.toggled.Connect((toggled) => {
 	SideMenuState.isOpenAtom(toggled);
-});
-
-dollarsIcon.selected.Connect(() => {
-	menuIcon.select();
 });
 
 subscribe(SideMenuState.isOpenAtom, (isOpen) => {
@@ -76,10 +71,8 @@ effect(() => {
 	const isVisible = StartScreenState.isVisibleAtom();
 	if (isVisible) {
 		menuIcon.lock();
-		dollarsIcon.lock();
 	} else {
 		menuIcon.unlock();
-		dollarsIcon.unlock();
 	}
 });
 
