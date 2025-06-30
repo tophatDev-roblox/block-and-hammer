@@ -85,7 +85,7 @@ const StartScreen: React.FC = () => {
 			
 			setTimeout(() => {
 				setSelectable(true);
-			}, 0.7);
+			}, 0.4);
 		}, 0.5);
 		
 		return () => {

@@ -34,7 +34,7 @@ const SideMenu: React.FC = () => {
 			
 			const timeout = setTimeout(() => {
 				setSelectable(true);
-			}, 0.6);
+			}, 0.3);
 			
 			return () => {
 				clearTimeout(timeout);
