@@ -18,6 +18,7 @@ const client = Players.LocalPlayer;
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
 const baseStunParticles = assetsFolder.WaitForChild('StunParticles') as Part;
 const mouseCursorPart = Workspace.WaitForChild('MouseCursor') as Part;
+const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 const RNG = new Random();
@@ -34,6 +35,7 @@ export namespace Character {
 		print('[client::character] running quick reset');
 		
 		endRagdoll();
+		effectsFolder.ClearAllChildren();
 		CharacterState.timeStartAtom(undefined);
 		CharacterState.mousePositionAtom(undefined);
 		CharacterState.shakeStrengthAtom(0);
@@ -240,6 +242,7 @@ function onCharacterAdded(newCharacter: Model): void {
 	print('[client::character] character added');
 	
 	ragdollTimeEnd = undefined;
+	effectsFolder.ClearAllChildren();
 	CharacterState.timeStartAtom(undefined);
 	CharacterState.mousePositionAtom(undefined);
 	CharacterState.shakeStrengthAtom(0);
