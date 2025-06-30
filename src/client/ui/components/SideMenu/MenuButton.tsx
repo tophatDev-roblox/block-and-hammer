@@ -2,23 +2,12 @@ import React, { useEffect, useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { Styles } from 'client/styles';
 import { SideMenuState } from 'client/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
-import SideButton from '../SideButton';
+import SideButton, { InheritedProps } from '../SideButton';
 
-interface MenuButtonProps {
-	styles: Styles.Button;
-	text: string;
-	iconId: string;
-	index: number;
-	focusIndex?: number;
+interface MenuButtonProps extends InheritedProps {
 	totalButtons: number;
-	widthScale?: number;
-	widthOffset?: number;
-	iconScale?: number;
-	padding?: number;
-	onClick?: () => void;
 }
 
 const MenuButton: React.FC<MenuButtonProps> = (props) => {

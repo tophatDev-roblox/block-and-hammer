@@ -1,24 +1,10 @@
 import React, { useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 
-import { Styles } from 'client/styles';
 import { usePx } from 'client/ui/hooks/usePx';
-import SideButton from '../SideButton';
+import SideButton, { InheritedProps } from '../SideButton';
 
-interface ButtonProps {
-	styles: Styles.Button;
-	text: string;
-	iconId: string;
-	index: number;
-	focusIndex?: number;
-	widthScale?: number;
-	widthOffset?: number;
-	iconScale?: number;
-	padding?: number;
-	onClick?: () => void;
-}
-
-const Button: React.FC<ButtonProps> = (props) => {
+const Button: React.FC<InheritedProps> = (props) => {
 	const {
 		styles,
 		text,

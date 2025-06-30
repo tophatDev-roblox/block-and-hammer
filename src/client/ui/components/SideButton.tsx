@@ -30,6 +30,19 @@ interface SideButtonProps {
 	onPress?: (pressed: boolean) => void;
 }
 
+export interface InheritedProps {
+	styles: Styles.Button;
+	text: string;
+	iconId: string;
+	index: number;
+	focusIndex?: number;
+	widthScale?: number;
+	widthOffset?: number;
+	iconScale?: number;
+	padding?: number;
+	onClick?: () => void;
+}
+
 const SideButton: React.FC<SideButtonProps> = (props) => {
 	const {
 		styles: {

@@ -28,19 +28,18 @@ const SideMenu: React.FC = () => {
 	]);
 	
 	const containerWidth = 750;
-	const buttonGapOffset = -15 / containerWidth;
+	const buttonGapOffset = -10 / containerWidth;
 	const totalButtons = 6;
 	
 	useEffect(() => {
+		setFocusIndex(sideMenuOpened ? 0 : -1);
 		if (sideMenuOpened) {
-			setFocusIndex(0);
 			positionMotion.tween(new UDim2(1, 0, 0, 0), {
 				time: 0.6,
 				style: Enum.EasingStyle.Back,
 				direction: Enum.EasingDirection.Out,
 			});
 		} else {
-			setFocusIndex(-1);
 			positionMotion.tween(new UDim2(1.5, 0, 0, 0), {
 				time: 0.6,
 				style: Enum.EasingStyle.Back,
@@ -70,7 +69,7 @@ const SideMenu: React.FC = () => {
 					width={new UDim(1.5, 0)}
 					height={new UDim(1, 0)}
 					imageProps={{
-						Image: 'rbxassetid://131216396630449',
+						Image: 'rbxassetid://93722965597146',
 					}}
 				>
 					<>
