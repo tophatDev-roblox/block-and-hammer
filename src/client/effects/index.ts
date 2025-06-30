@@ -13,6 +13,7 @@ const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
 const hapticsFolder = Workspace.WaitForChild('Haptics') as Folder;
 const hammerHitSound = SoundService.WaitForChild('HammerHit') as Sound;
 const explosionSound = SoundService.WaitForChild('Explosion') as Sound;
+const windSound = SoundService.WaitForChild('Wind') as Sound;
 
 const RNG = new Random();
 
@@ -209,6 +210,8 @@ effect(() => {
 			previousBodyVelocity = bodyVelocity;
 			characterParts.model.SetAttribute('justReset', undefined);
 		}
+		
+		windSound.PlaybackSpeed = math.clamp((bodyVelocity.Magnitude - 50) / 150, 0, 2);
 		
 		const impactMagnitude = math.abs(bodyVelocity.Magnitude - previousBodyVelocity.Magnitude);
 		if (impactMagnitude > 130) {

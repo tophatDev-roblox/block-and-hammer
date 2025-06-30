@@ -23,6 +23,7 @@ export namespace Assets {
 		WoodHit = 'rbxassetid://8394333801',
 		FabricHit = 'rbxassetid://9113819689',
 		Explosion = 'rbxassetid://5801257793',
+		Wind = 'rbxassetid://106270796117861',
 	}
 	
 	export enum Music {
