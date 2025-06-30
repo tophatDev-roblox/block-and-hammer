@@ -1,5 +1,3 @@
-import { setTimeout } from './timeout';
-
 export namespace TimeSpan {
 	export function milliseconds(milliseconds: number): number {
 		return milliseconds / 1000;
@@ -52,7 +50,5 @@ export namespace TimeSpan {
 		return os.clock();
 	}
 	
-	export async function sleep(seconds: number): Promise<void> {
-		return new Promise((resolve) => setTimeout(resolve, seconds));
-	}
+	export const sleep = Promise.promisify(task.wait);
 }
