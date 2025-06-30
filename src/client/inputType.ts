@@ -1,4 +1,4 @@
-import { UserInputService } from '@rbxts/services';
+import { GuiService, UserInputService } from '@rbxts/services';
 import { atom, peek } from '@rbxts/charm';
 
 import { Controller } from 'shared/controller';
@@ -15,10 +15,14 @@ export namespace InputType {
 	export const stateAtom = atom<InputType.Value>(InputType.Value.Unknown);
 }
 
-if (UserInputService.GetConnectedGamepads().size() > 0) {
+if (GuiService.IsTenFootInterface()) {
+	print('[client::inputType] detected 10-foot interface, switching to controller');
+	InputType.stateAtom(InputType.Value.Controller);
+} else if (UserInputService.GetConnectedGamepads().size() > 0) {
 	print('[client::inputType] detected one or more connected gamepads, possibly using controller');
 	InputType.stateAtom(InputType.Value.Controller);
 }
+
 
 const mouseInputTypes = new Set<Enum.UserInputType>([
 	Enum.UserInputType.MouseMovement,
