@@ -1,4 +1,4 @@
-import { RunService, TweenService, Workspace } from '@rbxts/services';
+import { GuiService, RunService, TweenService, Workspace } from '@rbxts/services';
 import React, { useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
@@ -150,6 +150,7 @@ const StartScreen: React.FC = () => {
 					selectable={selectable}
 					autoSelect
 					onClick={() => {
+						GuiService.SelectedObject = undefined;
 						StartScreenState.isVisibleAtom(false);
 					}}
 				/>
