@@ -1,4 +1,4 @@
-import { RunService } from '@rbxts/services';
+import { GuiService, RunService } from '@rbxts/services';
 import React, { useBinding, useRef } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
@@ -31,7 +31,8 @@ const SpeedEffect: React.FC = () => {
 		
 		const currentIndex = currentIndexRef.current;
 		
-		const newIndex = math.floor(os.clock() * 10 % 4);
+		const speed = !GuiService.ReducedMotionEnabled ? 10 : 1;
+		const newIndex = math.floor(os.clock() * speed % 4);
 		if (newIndex !== currentIndex) {
 			setImageId(imageIds[newIndex]);
 			currentIndexRef.current = newIndex;

@@ -1,4 +1,4 @@
-import { Players, ReplicatedStorage, RunService, StarterGui, TweenService, UserInputService, Workspace } from '@rbxts/services';
+import { GuiService, Players, ReplicatedStorage, RunService, StarterGui, TweenService, UserInputService, Workspace } from '@rbxts/services';
 import { effect, peek, subscribe } from '@rbxts/charm';
 
 import { TimeSpan } from 'shared/timeSpan';
@@ -344,8 +344,13 @@ function onRenderStepped(dt: number): void {
 		const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
 		camera.FieldOfView = fieldOfView;
 		
+		if (GuiService.ReducedMotionEnabled) {
+			camera.FieldOfView = math.min(camera.FieldOfView, 80);
+		}
+		
 		if (velocity > 300) {
-			const windCFrame = Shake.camera(math.min((velocity - 250) / 50, 6), currentTime, true, 2);
+			const windStrength = math.min((velocity - 250) / 50, 6)
+			const windCFrame = Shake.camera(windStrength, currentTime, true, 2);
 			camera.CFrame = camera.CFrame.mul(windCFrame);
 		}
 	}
