@@ -25,7 +25,7 @@
     "@rbxts/ripple": "^0.9.3",
     "@rbxts/services": "^1.5.5",
     "@rbxts/types": "^1.0.858",
-    "@rbxts/ui-labs": "^2.3.8",
+    "@rbxts/ui-labs": "^2.4.0",
     "roblox-ts": "^3.0.0",
     "typescript": "^5.8.3"
   }
