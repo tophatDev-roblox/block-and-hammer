@@ -94,7 +94,7 @@ const data: Styles.Data = {
 					{ position: 1, transparency: 0 },
 				],
 			},
-			thickness: 2,
+			thickness: 4,
 			joinMode: 'round',
 		},
 	},
