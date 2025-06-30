@@ -12,6 +12,7 @@ import { InputType } from 'client/inputType';
 import { SideMenuState } from 'client/sideMenuState';
 import { camera } from 'client/camera';
 import { CharacterState } from './state';
+import { setTimeout } from 'shared/timeout';
 
 const client = Players.LocalPlayer;
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
@@ -347,19 +348,17 @@ function onRenderStepped(dt: number): void {
 	}
 }
 
-task.spawn(() => {
-	const resetEvent = new Instance('BindableEvent');
-	resetEvent.Event.Connect(onResetButton);
-	
-	while (true) {
-		try {
-			StarterGui.SetCore('ResetButtonCallback', resetEvent);
-			break;
-		} catch (err) {
-			task.wait(1);
-		}
+function bindResetButtonCallback(resetEvent: BindableEvent): void {
+	try {
+		StarterGui.SetCore('ResetButtonCallback', resetEvent);
+	} catch (err) {
+		setTimeout(bindResetButtonCallback, 1, resetEvent);
 	}
-});
+}
+
+const resetEvent = new Instance('BindableEvent');
+resetEvent.Event.Connect(onResetButton);
+bindResetButtonCallback(resetEvent);
 
 subscribe(CharacterState.disableCameraAtom, (disableCamera) => {
 	if (disableCamera) {
