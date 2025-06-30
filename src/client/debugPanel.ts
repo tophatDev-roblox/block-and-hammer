@@ -22,7 +22,7 @@ const windowPositionState = Iris.State<Vector2>(Vector2.zero);
 const windowSizeState = Iris.State<Vector2>(new Vector2(400, 250));
 const windowOpenedState = Iris.State<boolean>(false);
 
-const cameraZOffsetState = Iris.State<number>(30);
+const cameraZOffsetState = Iris.State<number>(peek(CharacterState.cameraZOffsetAtom));
 cameraZOffsetState.onChange((cameraZOffset) => CharacterState.cameraZOffsetAtom(-cameraZOffset));
 
 const disableRagdollState = Iris.State<boolean>(false);
