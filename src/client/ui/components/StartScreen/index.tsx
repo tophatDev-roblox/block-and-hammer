@@ -7,12 +7,14 @@ import Ripple from '@rbxts/ripple';
 import { clearTimeout, setTimeout } from 'shared/timeout';
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/startScreenState';
+import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
+import { useAtomBinding } from 'client/ui/hooks/useAtomBinding';
 import { Styles } from 'client/styles';
 import { camera } from 'client/camera';
 import { Effects } from 'client/effects';
 import Text from '../Text';
 import Button from './Button';
-import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
+import { computed } from '@rbxts/charm';
 
 const startScreen = Workspace.WaitForChild('StartScreen') as Model;
 const prop = startScreen.WaitForChild('Prop') as Model;
@@ -26,9 +28,10 @@ const cameraPart = startScreen.WaitForChild('Camera') as Part;
 
 const StartScreen: React.FC = () => {
 	const isVisible = useAtom(StartScreenState.isVisibleAtom);
-	const loadingStatus = useAtom(StartScreenState.loadingStatusAtom);
 	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinished);
 	const styles = useAtom(Styles.stateAtom);
+	const loadingStatus = useAtomBinding(StartScreenState.loadingStatusAtom);
+	const loadingPercentage = useAtomBinding(computed(() => new UDim2(StartScreenState.loadingPercentage(), 0, 1, 0)));
 	
 	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? new UDim2(0, 0, -1, 0) : new UDim2(0, 0, 0, 0));
 	const [logoTransparency, logoTransparencyMotion] = useMotion<number>(1);
@@ -123,24 +126,42 @@ const StartScreen: React.FC = () => {
 				Position={position}
 				ZIndex={2}
 			>
-				<uilistlayout
-					FillDirection={Enum.FillDirection.Vertical}
-					Padding={new UDim(0, px(12))}
-					HorizontalAlignment={Enum.HorizontalAlignment.Center}
-					VerticalAlignment={Enum.VerticalAlignment.Center}
-				/>
-				<Text
-					styles={styles.startScreen.loading.logo}
-					text={'block and hammer'}
-					automaticWidth
-					automaticHeight
-				/>
-				<Text
-					styles={styles.startScreen.loading.status}
-					text={loadingStatus}
-					automaticWidth
-					automaticHeight
-				/>
+				<frame
+					BackgroundTransparency={1}
+					Size={new UDim2(1, 0, 1, 0)}
+				>
+					<uilistlayout
+						FillDirection={Enum.FillDirection.Vertical}
+						Padding={new UDim(0, px(12))}
+						HorizontalAlignment={Enum.HorizontalAlignment.Center}
+						VerticalAlignment={Enum.VerticalAlignment.Center}
+					/>
+					<Text
+						styles={styles.startScreen.loading.logo}
+						text={'block and hammer'}
+						automaticWidth
+						automaticHeight
+					/>
+					<Text
+						styles={styles.startScreen.loading.status}
+						text={loadingStatus}
+						automaticWidth
+						automaticHeight
+					/>
+				</frame>
+				<frame
+					BackgroundTransparency={1}
+					Size={new UDim2(1, 0, 0, px(60))}
+					Position={new UDim2(0, 0, 1, 0)}
+					AnchorPoint={new Vector2(0, 1)}
+				>
+					<frame
+						BackgroundColor3={Color3.fromRGB(255, 255, 255)}
+						BackgroundTransparency={0.4}
+						BorderSizePixel={0}
+						Size={loadingPercentage}
+					/>
+				</frame>
 			</frame>
 			<canvasgroup
 				BackgroundTransparency={1}

@@ -3,14 +3,16 @@ import { ContentProvider } from '@rbxts/services';
 
 import { setTimeout } from 'shared/timeout';
 import { Remotes } from 'shared/remotes';
+import { Dictionary } from 'shared/dictionary';
+import { Assets } from 'shared/assets';
 import { CharacterState } from './character/state';
 import { CoreGuis } from './coreGuis';
-import { Assets } from 'shared/assets';
 
 export namespace StartScreenState {
 	export const isVisibleAtom = atom<boolean>(true);
 	export const loadingStatusAtom = atom<string>('initializing...');
 	export const isLoadingFinished = atom<boolean>(false);
+	export const loadingPercentage = atom<number>(0);
 }
 
 function fullReset(): void {
@@ -25,6 +27,9 @@ function fullReset(): void {
 	
 	StartScreenState.loadingStatusAtom('preloading icons...');
 	
+	const totalIcons = Dictionary.countKeys(Assets.Icons);
+	
+	let loadedIcons = 0;
 	for (const [icon, id] of pairs(Assets.Icons)) {
 		const decal = new Instance('Decal');
 		decal.Texture = id;
@@ -35,6 +40,9 @@ function fullReset(): void {
 			} else {
 				StartScreenState.loadingStatusAtom(`'${icon}' failed to preload with status ${status}`);
 			}
+			
+			loadedIcons++;
+			StartScreenState.loadingPercentage(loadedIcons / totalIcons);
 		});
 	}
 	
