@@ -8,6 +8,7 @@ import { useAtomBinding } from 'client/ui/hooks/useAtomBinding';
 import { Styles } from 'client/styles';
 import { usePx } from 'client/ui/hooks/usePx';
 import Text from '../Text';
+import { GuiService } from '@rbxts/services';
 
 const LoadingScreen: React.FC= () => {
 	const styles = useAtom(Styles.stateAtom);
@@ -26,11 +27,16 @@ const LoadingScreen: React.FC= () => {
 			return;
 		}
 		
-		positionMotion.tween(new UDim2(0, 0, -1, 0), {
-			time: 0.5,
-			style: Enum.EasingStyle.Sine,
-			direction: Enum.EasingDirection.In,
-		});
+		const position = new UDim2(0, 0, -1, 0);
+		if (!GuiService.ReducedMotionEnabled) {
+			positionMotion.tween(position, {
+				time: 0.5,
+				style: Enum.EasingStyle.Sine,
+				direction: Enum.EasingDirection.In,
+			});
+		} else {
+			positionMotion.immediate(position);
+		}
 	}, [isLoadingFinished]);
 	
 	return (

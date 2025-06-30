@@ -1,3 +1,4 @@
+import { GuiService } from '@rbxts/services';
 import React, { useEffect, useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
@@ -36,39 +37,51 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
 	
 	useEffect(() => {
-		if (sideMenuOpened) {
-			const delay = (totalButtons - index - 1) / 30;
-			
-			const thread = task.delay(delay, () => {
-				sizeMotion.tween(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0), {
-					style: Enum.EasingStyle.Back,
-					direction: Enum.EasingDirection.Out,
-					time: 0.3,
+		const openSize = new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0);
+		const closeSize = new UDim2(widthScale, widthOffset, 1, 0);
+		if (!GuiService.ReducedMotionEnabled) {
+			if (sideMenuOpened) {
+				const delay = (totalButtons - index - 1) / 30;
+				
+				const thread = task.delay(delay, () => {
+					sizeMotion.tween(openSize, {
+						style: Enum.EasingStyle.Back,
+						direction: Enum.EasingDirection.Out,
+						time: 0.3,
+					});
 				});
-			});
-			
-			const animateThread = task.delay(delay + 0.3, () => {
-				setCanAnimate(true);
-			});
-			
-			return () => {
-				task.cancel(thread);
-				task.cancel(animateThread);
-			};
+				
+				const animateThread = task.delay(delay + 0.3, () => {
+					setCanAnimate(true);
+				});
+				
+				return () => {
+					task.cancel(thread);
+					task.cancel(animateThread);
+				};
+			} else {
+				setCanAnimate(false);
+				
+				const thread = task.delay(index / 20, () => {
+					sizeMotion.tween(closeSize, {
+						style: Enum.EasingStyle.Back,
+						direction: Enum.EasingDirection.In,
+						time: 0.3,
+					});
+				});
+				
+				return () => {
+					task.cancel(thread);
+				};
+			}
 		} else {
-			setCanAnimate(false);
-			
-			const thread = task.delay(index / 20, () => {
-				sizeMotion.tween(new UDim2(widthScale, widthOffset, 1, 0), {
-					style: Enum.EasingStyle.Back,
-					direction: Enum.EasingDirection.In,
-					time: 0.3,
-				});
-			});
-			
-			return () => {
-				task.cancel(thread);
-			};
+			if (sideMenuOpened) {
+				sizeMotion.immediate(openSize);
+				setCanAnimate(true);
+			} else {
+				sizeMotion.immediate(closeSize);
+				setCanAnimate(false);
+			}
 		}
 	}, [sideMenuOpened]);
 	

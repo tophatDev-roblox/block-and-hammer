@@ -75,17 +75,25 @@ const StartScreen: React.FC = () => {
 			};
 			
 			logoTransparencyMotion.tween(0, tweenOptions);
-			logoAnchorPointMotion.tween(new Vector2(1, 1), tweenOptions);
 			
-			buttonsAnchorPointMotion.tween(new Vector2(0.8, 1), {
-				time: 0.7,
-				style: Enum.EasingStyle.Elastic,
-				direction: Enum.EasingDirection.Out,
-			});
-			
-			setTimeout(() => {
-				setSelectable(true);
-			}, 0.4);
+			const logoAnchorPoint = new Vector2(1, 1);
+			const buttonsAnchorPoint = new Vector2(0.8, 1);
+			if (!GuiService.ReducedMotionEnabled) {
+				logoAnchorPointMotion.tween(logoAnchorPoint, tweenOptions);
+				
+				buttonsAnchorPointMotion.tween(buttonsAnchorPoint, {
+					time: 0.7,
+					style: Enum.EasingStyle.Elastic,
+					direction: Enum.EasingDirection.Out,
+				});
+				
+				setTimeout(setSelectable, 0.4, true);
+			} else {
+				logoAnchorPointMotion.immediate(logoAnchorPoint);
+				buttonsAnchorPointMotion.immediate(buttonsAnchorPoint);
+				
+				setTimeout(setSelectable, 0.05, true);
+			}
 		}, 0.5);
 		
 		return () => {

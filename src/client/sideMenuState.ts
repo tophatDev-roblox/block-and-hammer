@@ -1,3 +1,4 @@
+import { GuiService } from '@rbxts/services';
 import { atom, effect } from '@rbxts/charm';
 
 import { StartScreenState } from './startScreenState';
@@ -18,12 +19,16 @@ effect(() => {
 	if (sideMenuOpen) {
 		CoreGuis.playerListAtom(false);
 	} else {
-		const timeout = setTimeout(() => {
+		if (!GuiService.ReducedMotionEnabled) {
+			const timeout = setTimeout(() => {
+				CoreGuis.playerListAtom(true);
+			}, 0.6);
+			
+			return () => {
+				clearTimeout(timeout);
+			};
+		} else {
 			CoreGuis.playerListAtom(true);
-		}, 0.6);
-		
-		return () => {
-			clearTimeout(timeout);
-		};
+		}
 	}
 });

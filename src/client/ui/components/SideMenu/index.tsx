@@ -1,15 +1,16 @@
+import { GuiService } from '@rbxts/services';
 import React, { useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 
 import { Assets } from 'shared/assets';
+import { clearTimeout, setTimeout } from 'shared/timeout';
 import { Styles } from 'client/styles';
 import { SideMenuState } from 'client/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/startScreenState';
 import Container from '../Container';
 import MenuButton from './MenuButton';
-import { clearTimeout, setTimeout } from 'shared/timeout';
 
 const SideMenu: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);
@@ -25,28 +26,43 @@ const SideMenu: React.FC = () => {
 	const totalButtons = 6;
 	
 	useEffect(() => {
-		if (sideMenuOpened) {
-			positionMotion.tween(new UDim2(1, 0, 0, 0), {
-				time: 0.6,
-				style: Enum.EasingStyle.Back,
-				direction: Enum.EasingDirection.Out,
-			});
-			
-			const timeout = setTimeout(() => {
-				setSelectable(true);
-			}, 0.3);
-			
-			return () => {
-				clearTimeout(timeout);
-			};
+		const openPosition = new UDim2(1, 0, 0, 0);
+		const closePosition = new UDim2(1.5, 0, 0, 0);
+		if (!GuiService.ReducedMotionEnabled) {
+			if (sideMenuOpened) {
+				positionMotion.tween(openPosition, {
+					time: 0.6,
+					style: Enum.EasingStyle.Back,
+					direction: Enum.EasingDirection.Out,
+				});
+				
+				const timeout = setTimeout(setSelectable, 0.3, true);
+				
+				return () => {
+					clearTimeout(timeout);
+				};
+			} else {
+				positionMotion.tween(closePosition, {
+					time: 0.6,
+					style: Enum.EasingStyle.Back,
+					direction: Enum.EasingDirection.In,
+				});
+				
+				setSelectable(false);
+			}
 		} else {
-			positionMotion.tween(new UDim2(1.5, 0, 0, 0), {
-				time: 0.6,
-				style: Enum.EasingStyle.Back,
-				direction: Enum.EasingDirection.In,
-			});
-			
-			setSelectable(false);
+			if (sideMenuOpened) {
+				positionMotion.immediate(openPosition);
+				
+				const timeout = setTimeout(setSelectable, 0.05, true);
+				
+				return () => {
+					clearTimeout(timeout);
+				};
+			} else {
+				positionMotion.immediate(closePosition);
+				setSelectable(false);
+			}
 		}
 	}, [sideMenuOpened]);
 	
