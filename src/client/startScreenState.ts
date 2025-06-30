@@ -25,24 +25,25 @@ function fullReset(): void {
 (async () => {
 	const preload = Promise.promisify((...args: Parameters<ContentProvider['PreloadAsync']>) => ContentProvider.PreloadAsync(...args));
 	
-	StartScreenState.loadingStatusAtom('preloading icons...');
+	StartScreenState.loadingStatusAtom('preloading asset ids...');
 	
-	const totalIcons = Dictionary.countKeys(Assets.Icons);
+	const allAssets = { ...Assets.Icons, ...Assets.Images };
 	
-	let loadedIcons = 0;
-	for (const [icon, id] of pairs(Assets.Icons)) {
+	const totalAssets = Dictionary.countKeys(allAssets);
+	let loadedAssets = 0;
+	for (const [name, id] of pairs(allAssets)) {
 		const decal = new Instance('Decal');
 		decal.Texture = id;
 		
 		await preload([decal], (_, status) => {
 			if (status === Enum.AssetFetchStatus.Success) {
-				StartScreenState.loadingStatusAtom(`'${icon}' preloaded successfully`);
+				StartScreenState.loadingStatusAtom(`'${name}' preloaded successfully`);
 			} else {
-				StartScreenState.loadingStatusAtom(`'${icon}' failed to preload with status ${status}`);
+				StartScreenState.loadingStatusAtom(`'${name}' failed to preload with status ${status}`);
 			}
 			
-			loadedIcons++;
-			StartScreenState.loadingPercentage(loadedIcons / totalIcons);
+			loadedAssets++;
+			StartScreenState.loadingPercentage(loadedAssets / totalAssets);
 		});
 	}
 	

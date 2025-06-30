@@ -7,4 +7,8 @@ export namespace Assets {
 		SpectateIcon = 'rbxassetid://102925807754269',
 		StartMenuIcon = 'rbxassetid://136761769714294',
 	}
+	
+	export enum Images {
+		SideMenuBackground = 'rbxassetid://93722965597146',
+	}
 }

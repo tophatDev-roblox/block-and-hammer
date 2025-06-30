@@ -69,7 +69,7 @@ const SideMenu: React.FC = () => {
 					width={new UDim(1.5, 0)}
 					height={new UDim(1, 0)}
 					imageProps={{
-						Image: 'rbxassetid://93722965597146',
+						Image: Assets.Images.SideMenuBackground,
 					}}
 				>
 					<>
