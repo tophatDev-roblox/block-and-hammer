@@ -17,12 +17,6 @@ const textOutlineGradient: Styles.Gradient = {
 const data: Styles.Data = {
 	version: 1,
 	text: {
-		containerTitle: {
-			font: { fontId, weight: 700, italics: false },
-			color: { red: 255, green: 255, blue: 255, alpha: 1 },
-			size: 50,
-			outline: false,
-		},
 		version: {
 			font: { fontId, weight: 700, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 0.7 },

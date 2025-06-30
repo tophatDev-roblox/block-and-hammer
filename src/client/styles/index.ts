@@ -78,7 +78,6 @@ export namespace Styles {
 	export interface Data {
 		version: 1;
 		text: {
-			containerTitle: Text;
 			version: Text;
 			timer: Text & { display: { millisecondsFontSize: number } };
 			moveHint: Text;
