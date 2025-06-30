@@ -1,4 +1,5 @@
-import React from '@rbxts/react';
+import React, { useEffect } from '@rbxts/react';
+import { useMotion } from '@rbxts/pretty-react-hooks';
 import { computed } from '@rbxts/charm';
 import { useAtom } from '@rbxts/react-charm';
 
@@ -8,18 +9,29 @@ import { Styles } from 'client/styles';
 import { usePx } from 'client/ui/hooks/usePx';
 import Text from '../Text';
 
-interface LoadingScreenProps {
-	position: React.Binding<UDim2>;
-}
-
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ position }) => {
+const LoadingScreen: React.FC= () => {
 	const styles = useAtom(Styles.stateAtom);
+	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinished);
 	
 	const loadingStatus = useAtomBinding(StartScreenState.loadingStatusAtom);
 	const percentageSize = useAtomBinding(computed(() => new UDim2(StartScreenState.loadingPercentage(), 0, 1, 0)));
 	const percentageText = useAtomBinding(computed(() => '%.1f%%'.format(StartScreenState.loadingPercentage() * 100)));
 	
+	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? new UDim2(0, 0, -1, 0) : new UDim2(0, 0, 0, 0));
+	
 	const px = usePx();
+	
+	useEffect(() => {
+		if (!isLoadingFinished) {
+			return;
+		}
+		
+		positionMotion.tween(new UDim2(0, 0, -1, 0), {
+			time: 0.5,
+			style: Enum.EasingStyle.Sine,
+			direction: Enum.EasingDirection.In,
+		});
+	}, [isLoadingFinished]);
 	
 	return (
 		<frame

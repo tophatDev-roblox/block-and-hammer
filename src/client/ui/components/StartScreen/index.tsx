@@ -27,10 +27,9 @@ const cameraPart = startScreen.WaitForChild('Camera') as Part;
 
 const StartScreen: React.FC = () => {
 	const isVisible = useAtom(StartScreenState.isVisibleAtom);
-	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinished);
 	const styles = useAtom(Styles.stateAtom);
+	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinished);
 	
-	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? new UDim2(0, 0, -1, 0) : new UDim2(0, 0, 0, 0));
 	const [logoTransparency, logoTransparencyMotion] = useMotion<number>(1);
 	const [logoAnchorPoint, logoAnchorPointMotion] = useMotion<Vector2>(new Vector2(1, 0));
 	const [buttonsAnchorPoint, buttonsAnchorPointMotion] = useMotion<Vector2>(new Vector2(0, 1));
@@ -54,12 +53,6 @@ const StartScreen: React.FC = () => {
 		
 		setFocusIndex(-1);
 		pivot.CFrame = startPivot.CFrame;
-		
-		positionMotion.tween(new UDim2(0, 0, -1, 0), {
-			time: 0.5,
-			style: Enum.EasingStyle.Sine,
-			direction: Enum.EasingDirection.In,
-		});
 		
 		const timeout = setTimeout(() => {
 			const hammerTween = TweenService.Create(pivot, new TweenInfo(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {
@@ -116,9 +109,7 @@ const StartScreen: React.FC = () => {
 			ResetOnSpawn={false}
 			Enabled={isVisible}
 		>
-			<LoadingScreen
-				position={position}
-			/>
+			<LoadingScreen />
 			<canvasgroup
 				BackgroundTransparency={1}
 				Size={new UDim2(0, 0, 0, 0)}
