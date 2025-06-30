@@ -112,6 +112,7 @@ export namespace Styles {
 				background: Color | GradientWithoutTransparency;
 				logo: Text;
 				status: Text;
+				percentage: Text;
 			};
 		};
 		layout: {}; // TODO: ui layout

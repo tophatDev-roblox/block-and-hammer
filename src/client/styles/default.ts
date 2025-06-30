@@ -172,6 +172,12 @@ const data: Styles.Data = {
 				size: 60,
 				outline: false,
 			},
+			percentage: {
+				font: { fontId, weight: 900, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 50,
+				outline: false,
+			},
 		},
 	},
 	layout: {},

@@ -30,8 +30,10 @@ const StartScreen: React.FC = () => {
 	const isVisible = useAtom(StartScreenState.isVisibleAtom);
 	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinished);
 	const styles = useAtom(Styles.stateAtom);
+	
 	const loadingStatus = useAtomBinding(StartScreenState.loadingStatusAtom);
-	const loadingPercentage = useAtomBinding(computed(() => new UDim2(StartScreenState.loadingPercentage(), 0, 1, 0)));
+	const percentageSize = useAtomBinding(computed(() => new UDim2(StartScreenState.loadingPercentage(), 0, 1, 0)));
+	const percentageText = useAtomBinding(computed(() => '%.1f%%'.format(StartScreenState.loadingPercentage() * 100)));
 	
 	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? new UDim2(0, 0, -1, 0) : new UDim2(0, 0, 0, 0));
 	const [logoTransparency, logoTransparencyMotion] = useMotion<number>(1);
@@ -157,10 +159,23 @@ const StartScreen: React.FC = () => {
 				>
 					<frame
 						BackgroundColor3={Color3.fromRGB(255, 255, 255)}
-						BackgroundTransparency={0.4}
+						BackgroundTransparency={0}
 						BorderSizePixel={0}
-						Size={loadingPercentage}
+						Size={percentageSize}
 					/>
+					<frame
+						BackgroundTransparency={1}
+						Size={new UDim2(1, 0, 0, 0)}
+						AutomaticSize={Enum.AutomaticSize.Y}
+						Position={new UDim2(0, 0, 0, px(-10))}
+						AnchorPoint={new Vector2(0, 1)}
+					>
+						<Text
+							styles={styles.startScreen.loading.percentage}
+							text={percentageText}
+							automaticHeight
+						/>
+					</frame>
 				</frame>
 			</frame>
 			<canvasgroup
