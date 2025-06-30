@@ -92,8 +92,8 @@ const data: Styles.Data = {
 					rotationsPerSecond: 0.3,
 				},
 				colors: [
-					{ position: 0, color: { red: 255, green: 255, blue: 255 } },
-					{ position: 1, color: { red: 86, green: 86, blue: 86 } },
+					{ position: 0, color: { red: 74, green: 136, blue: 237 } },
+					{ position: 1, color: { red: 14, green: 64, blue: 144 } },
 				],
 				transparency: [
 					{ position: 0, transparency: 0 },
