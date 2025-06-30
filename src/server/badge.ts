@@ -1,4 +1,6 @@
 import { BadgeService } from '@rbxts/services';
+import { setTimeout } from 'shared/timeout';
+import { TimeSpan } from 'shared/timeSpan';
 
 const awardBadge = Promise.promisify((userId: number, badgeId: number) => BadgeService.AwardBadge(userId, badgeId));
 const hasBadge = Promise.promisify((userId: number, badgeId: number) => BadgeService.UserHasBadgeAsync(userId, badgeId));
@@ -10,30 +12,28 @@ export namespace Badge {
 	}
 	
 	export async function award(badgeId: Badge.Id, player: Player): Promise<void> {
-		while (true) {
-			try {
-				if (badgeId !== -1) {
-					await awardBadge(player.UserId, badgeId);
-				} else {
-					warn('[server::badge] placeholder');
-				}
-				
-				return;
-			} catch (err) {
-				warn(`[server::badge] failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
-				task.wait(0.5);
+		try {
+			if (badgeId !== -1) {
+				await awardBadge(player.UserId, badgeId);
+			} else {
+				warn('[server::badge] placeholder');
 			}
+			
+			return;
+		} catch (err) {
+			warn(`[server::badge] failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
+			setTimeout(Badge.award, 0.5, badgeId, player);
 		}
 	}
 	
 	export async function has(badgeId: Badge.Id, player: Player): Promise<boolean> {
-		while (true) {
-			try {
-				return await hasBadge(player.UserId, badgeId);
-			} catch (err) {
-				warn(`[server::badge] failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
-				task.wait(0.5);
-			}
+		try {
+			return await hasBadge(player.UserId, badgeId);
+		} catch (err) {
+			warn(`[server::badge] failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
+			
+			await TimeSpan.sleep(0.5);
+			return await Badge.has(badgeId, player);
 		}
 	}
 }
