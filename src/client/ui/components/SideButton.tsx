@@ -1,5 +1,5 @@
-import { UserInputService } from '@rbxts/services';
-import React, { useEffect } from '@rbxts/react';
+import { GuiService, UserInputService } from '@rbxts/services';
+import React, { useEffect, useRef, useState } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
@@ -18,9 +18,10 @@ interface SideButtonProps {
 	size: React.Binding<UDim2>;
 	sizeMotion: Ripple.Motion<UDim2>;
 	canAnimate: boolean;
-	isFocused: boolean;
 	isHovered: boolean;
 	isPressed: boolean;
+	selectable: boolean;
+	autoSelect?: boolean;
 	widthScale?: number;
 	widthOffset?: number;
 	iconScale?: number;
@@ -35,7 +36,8 @@ export interface InheritedProps {
 	text: string;
 	iconId: string;
 	index: number;
-	focusIndex?: number;
+	selectable: boolean;
+	autoSelect?: boolean;
 	widthScale?: number;
 	widthOffset?: number;
 	iconScale?: number;
@@ -59,7 +61,8 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 		size,
 		sizeMotion,
 		canAnimate,
-		isFocused,
+		selectable,
+		autoSelect,
 		isPressed,
 		isHovered,
 		widthScale = 0,
@@ -70,6 +73,11 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 		onHover = () => {},
 		onPress = () => {},
 	} = props;
+	
+	const [isFocused, setFocused] = useState<boolean>(false);
+	
+	const selectionImageObjectRef = useRef<Frame>();
+	const buttonRef = useRef<ImageButton>();
 	
 	const inputType = useAtom(InputType.stateAtom);
 	const styles = useAtom(Styles.stateAtom);
@@ -105,18 +113,30 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 		}
 	});
 	
-	useEffect(() => {
-		if (inputType !== InputType.Value.Controller) {
+	useEventListener(GuiService.GetPropertyChangedSignal('SelectedObject'), () => {
+		if (GuiService.SelectedObject === buttonRef.current) {
+			setFocused(true);
+			onHover(true);
+		} else {
+			setFocused(false);
 			onHover(false);
+		}
+	});
+	
+	useEffect(() => {
+		const button = buttonRef.current;
+		if (button === undefined || inputType !== InputType.Value.Controller) {
 			return;
 		}
 		
-		if (isFocused) {
-			onHover(true);
-		} else if (!isFocused) {
-			onHover(false);
+		if (selectable) {
+			if (autoSelect) {
+				GuiService.SelectedObject = button;
+			}
+		} else if (GuiService.SelectedObject === button) {
+			GuiService.SelectedObject = undefined;
 		}
-	}, [isFocused]);
+	}, [autoSelect, selectable]);
 	
 	useEffect(() => {
 		if (!canAnimate) {
@@ -152,6 +172,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 			Size={new UDim2(1, 0, 0, iconSize + px(padding) * 2)}
 		>
 			<imagebutton
+				ref={buttonRef}
 				BackgroundTransparency={1}
 				Size={size}
 				Position={new UDim2(1, 0, 0, 0)}
@@ -163,7 +184,8 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 				SliceCenter={new Rect(256, 256, 256, 256)}
 				SliceScale={1}
 				AutoButtonColor={false}
-				Selectable={false}
+				SelectionImageObject={selectionImageObjectRef.current}
+				Selectable
 				Event={{
 					MouseEnter: () => onHover(true),
 					MouseLeave: () => onHover(false),
@@ -181,72 +203,84 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 					BackgroundTransparency={1}
 					Size={new UDim2(1, 0, 1, 0)}
 				>
-					{outline !== false && (
-						<Outline
-							styles={outline}
-							applyStrokeMode={Enum.ApplyStrokeMode.Border}
+					<frame
+						ref={selectionImageObjectRef}
+						BackgroundTransparency={1}
+						Size={new UDim2(1, 0, 1, 0)}
+					>
+						<uicorner
+							CornerRadius={new UDim(1, 0)}
 						/>
-					)}
-					{inputType === InputType.Value.Controller && (
 						<Outline
 							styles={styles.controller.selectionOutline}
 							applyStrokeMode={Enum.ApplyStrokeMode.Border}
 							overwriteThickness={isFocused ? undefined : 0}
 							animateThickness
 						/>
-					)}
-					<uilistlayout
-						FillDirection={Enum.FillDirection.Horizontal}
-						Padding={new UDim(0, px(padding))}
-					/>
-					<uipadding
-						PaddingTop={new UDim(0, px(padding))}
-						PaddingRight={new UDim(0, px(padding))}
-						PaddingBottom={new UDim(0, px(padding))}
-						PaddingLeft={new UDim(0, px(padding))}
-					/>
-					<uicorner
-						CornerRadius={new UDim(1, 0)}
-					/>
+					</frame>
 					<frame
-						BackgroundColor3={isIconBackgroundRGBA ? StyleParse.color(iconBackground) : Color3.fromRGB(255, 255, 255)}
-						BackgroundTransparency={isIconBackgroundRGBA ? 1 - iconBackground.alpha : 0}
-						BorderSizePixel={0}
-						Size={new UDim2(0, iconSize, 0, iconSize)}
+						BackgroundTransparency={1}
+						Size={new UDim2(1, 0, 1, 0)}
 					>
-						{!isIconBackgroundRGBA && (
-							<Gradient
-								styles={iconBackground}
+						{outline !== false && (
+							<Outline
+								styles={outline}
+								applyStrokeMode={Enum.ApplyStrokeMode.Border}
 							/>
 						)}
-						<uiaspectratioconstraint
-							AspectRatio={1}
+						<uilistlayout
+							FillDirection={Enum.FillDirection.Horizontal}
+							Padding={new UDim(0, px(padding))}
+						/>
+						<uipadding
+							PaddingTop={new UDim(0, px(padding))}
+							PaddingRight={new UDim(0, px(padding))}
+							PaddingBottom={new UDim(0, px(padding))}
+							PaddingLeft={new UDim(0, px(padding))}
 						/>
 						<uicorner
 							CornerRadius={new UDim(1, 0)}
 						/>
-						<imagelabel
-							BackgroundTransparency={1}
-							Size={new UDim2(iconScale, 0, iconScale, 0)}
-							Position={new UDim2(0.5, 0, 0.5, 0)}
-							AnchorPoint={new Vector2(0.5, 0.5)}
-							Image={iconId}
-							ImageColor3={isIconColorRGBA ? StyleParse.color(iconColor) : Color3.fromRGB(255, 255, 255)}
-							ImageTransparency={isIconColorRGBA ? 1 - iconColor.alpha : 0}
+						<frame
+							BackgroundColor3={isIconBackgroundRGBA ? StyleParse.color(iconBackground) : Color3.fromRGB(255, 255, 255)}
+							BackgroundTransparency={isIconBackgroundRGBA ? 1 - iconBackground.alpha : 0}
+							BorderSizePixel={0}
+							Size={new UDim2(0, iconSize, 0, iconSize)}
 						>
-							{!isIconColorRGBA && (
+							{!isIconBackgroundRGBA && (
 								<Gradient
-									styles={iconColor}
+									styles={iconBackground}
 								/>
 							)}
-						</imagelabel>
+							<uiaspectratioconstraint
+								AspectRatio={1}
+							/>
+							<uicorner
+								CornerRadius={new UDim(1, 0)}
+							/>
+							<imagelabel
+								BackgroundTransparency={1}
+								Size={new UDim2(iconScale, 0, iconScale, 0)}
+								Position={new UDim2(0.5, 0, 0.5, 0)}
+								AnchorPoint={new Vector2(0.5, 0.5)}
+								Image={iconId}
+								ImageColor3={isIconColorRGBA ? StyleParse.color(iconColor) : Color3.fromRGB(255, 255, 255)}
+								ImageTransparency={isIconColorRGBA ? 1 - iconColor.alpha : 0}
+							>
+								{!isIconColorRGBA && (
+									<Gradient
+										styles={iconColor}
+									/>
+								)}
+							</imagelabel>
+						</frame>
+						<Text
+							styles={textStyles}
+							text={text}
+							automaticWidth
+							automaticHeight
+						/>
 					</frame>
-					<Text
-						styles={textStyles}
-						text={text}
-						automaticWidth
-						automaticHeight
-					/>
 				</frame>
 			</imagebutton>
 		</frame>

@@ -1,50 +1,52 @@
-import React, { useEffect } from '@rbxts/react';
+import React, { useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 
 import { Assets } from 'shared/assets';
 import { Styles } from 'client/styles';
 import { SideMenuState } from 'client/sideMenuState';
-import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
 import { usePx } from 'client/ui/hooks/usePx';
+import { StartScreenState } from 'client/startScreenState';
 import Container from '../Container';
 import MenuButton from './MenuButton';
-import { StartScreenState } from 'client/startScreenState';
+import { clearTimeout, setTimeout } from 'shared/timeout';
 
 const SideMenu: React.FC = () => {
+	const [selectable, setSelectable] = useState<boolean>(false);
+	
 	const styles = useAtom(Styles.stateAtom);
 	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
 	
 	const px = usePx();
 	const [position, positionMotion] = useMotion<UDim2>(new UDim2(1.5, 0, 0, 0));
 	
-	const [focusIndex, setFocusIndex] = useGamepadNavigation(sideMenuOpened, [
-		new Vector2(0, 0),
-		new Vector2(0, 1),
-		new Vector2(0, 2),
-		new Vector2(0, 3),
-		new Vector2(0, 4),
-		new Vector2(0, 5),
-	]);
-	
 	const containerWidth = 750;
 	const buttonGapOffset = -10 / containerWidth;
 	const totalButtons = 6;
 	
 	useEffect(() => {
-		setFocusIndex(sideMenuOpened ? 0 : -1);
 		if (sideMenuOpened) {
 			positionMotion.tween(new UDim2(1, 0, 0, 0), {
 				time: 0.6,
 				style: Enum.EasingStyle.Back,
 				direction: Enum.EasingDirection.Out,
 			});
+			
+			const timeout = setTimeout(() => {
+				setSelectable(true);
+			}, 0.6);
+			
+			return () => {
+				clearTimeout(timeout);
+			};
 		} else {
 			positionMotion.tween(new UDim2(1.5, 0, 0, 0), {
 				time: 0.6,
 				style: Enum.EasingStyle.Back,
 				direction: Enum.EasingDirection.In,
 			});
+			
+			setSelectable(false);
 		}
 	}, [sideMenuOpened]);
 	
@@ -103,7 +105,8 @@ const SideMenu: React.FC = () => {
 								iconId={Assets.Icons.InventoryIcon}
 								index={0}
 								totalButtons={totalButtons}
-								focusIndex={focusIndex}
+								selectable={selectable}
+								autoSelect
 							/>
 							<MenuButton
 								styles={styles.buttons.sideMenu}
@@ -111,8 +114,8 @@ const SideMenu: React.FC = () => {
 								iconId={Assets.Icons.BadgesIcon}
 								widthScale={buttonGapOffset}
 								index={1}
-								focusIndex={focusIndex}
 								totalButtons={totalButtons}
+								selectable={selectable}
 							/>
 							<MenuButton
 								styles={styles.buttons.sideMenu}
@@ -120,8 +123,8 @@ const SideMenu: React.FC = () => {
 								iconId={Assets.Icons.SettingsIcon}
 								widthScale={buttonGapOffset * 2}
 								index={2}
-								focusIndex={focusIndex}
 								totalButtons={totalButtons}
+								selectable={selectable}
 							/>
 							<MenuButton
 								styles={styles.buttons.sideMenu}
@@ -129,8 +132,8 @@ const SideMenu: React.FC = () => {
 								iconId={Assets.Icons.CustomizeIcon}
 								widthScale={buttonGapOffset * 3}
 								index={3}
-								focusIndex={focusIndex}
 								totalButtons={totalButtons}
+								selectable={selectable}
 							/>
 							<MenuButton
 								styles={styles.buttons.sideMenu}
@@ -138,8 +141,8 @@ const SideMenu: React.FC = () => {
 								iconId={Assets.Icons.SpectateIcon}
 								widthScale={buttonGapOffset * 4}
 								index={4}
-								focusIndex={focusIndex}
 								totalButtons={totalButtons}
+								selectable={selectable}
 							/>
 							<MenuButton
 								styles={styles.buttons.sideMenu}
@@ -147,8 +150,8 @@ const SideMenu: React.FC = () => {
 								iconId={Assets.Icons.StartMenuIcon}
 								widthScale={buttonGapOffset * 5}
 								index={5}
-								focusIndex={focusIndex}
 								totalButtons={totalButtons}
+								selectable={selectable}
 								onClick={() => {
 									SideMenuState.isOpenAtom(false);
 									StartScreenState.isVisibleAtom(true);

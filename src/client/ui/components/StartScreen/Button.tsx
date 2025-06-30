@@ -3,14 +3,16 @@ import { useMotion } from '@rbxts/pretty-react-hooks';
 
 import { usePx } from 'client/ui/hooks/usePx';
 import SideButton, { InheritedProps } from '../SideButton';
+import { useAtom } from '@rbxts/react-charm';
+import { StartScreenState } from 'client/startScreenState';
 
 const Button: React.FC<InheritedProps> = (props) => {
 	const {
 		styles,
 		text,
 		iconId,
-		index,
-		focusIndex,
+		autoSelect,
+		selectable,
 		widthScale = 0,
 		widthOffset = 0,
 		iconScale,
@@ -20,6 +22,8 @@ const Button: React.FC<InheritedProps> = (props) => {
 	
 	const [isHovered, setHovered] = useState<boolean>(false);
 	const [isPressed, setPressed] = useState<boolean>(false);
+	
+	const isInStartScreen = useAtom(StartScreenState.isVisibleAtom);
 	
 	const px = usePx();
 	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
@@ -33,7 +37,8 @@ const Button: React.FC<InheritedProps> = (props) => {
 			sizeMotion={sizeMotion}
 			isHovered={isHovered}
 			isPressed={isPressed}
-			isFocused={focusIndex === index}
+			selectable={selectable}
+			autoSelect={isInStartScreen && autoSelect}
 			widthOffset={widthOffset}
 			widthScale={widthScale}
 			iconScale={iconScale}

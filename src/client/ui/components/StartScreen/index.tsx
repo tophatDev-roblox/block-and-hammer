@@ -1,5 +1,5 @@
 import { RunService, TweenService, Workspace } from '@rbxts/services';
-import React, { useEffect } from '@rbxts/react';
+import React, { useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import Ripple from '@rbxts/ripple';
@@ -7,7 +7,6 @@ import Ripple from '@rbxts/ripple';
 import { clearTimeout, setTimeout } from 'shared/timeout';
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/startScreenState';
-import { useGamepadNavigation } from 'client/ui/hooks/useGamepadNavigation';
 import { Styles } from 'client/styles';
 import { camera } from 'client/camera';
 import { Effects } from 'client/effects';
@@ -26,6 +25,8 @@ const endPivot = startScreen.WaitForChild('EndPivot') as Part;
 const cameraPart = startScreen.WaitForChild('Camera') as Part;
 
 const StartScreen: React.FC = () => {
+	const [selectable, setSelectable] = useState<boolean>(false);
+	
 	const isVisible = useAtom(StartScreenState.isVisibleAtom);
 	const styles = useAtom(Styles.stateAtom);
 	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinished);
@@ -35,10 +36,6 @@ const StartScreen: React.FC = () => {
 	const [buttonsAnchorPoint, buttonsAnchorPointMotion] = useMotion<Vector2>(new Vector2(0, 1));
 	
 	const px = usePx();
-	
-	const [focusIndex, setFocusIndex] = useGamepadNavigation(isVisible, [
-		new Vector2(0, 0),
-	]);
 	
 	useEventListener(RunService.RenderStepped, () => {
 		camera.FieldOfView = 45;
@@ -51,7 +48,7 @@ const StartScreen: React.FC = () => {
 			return;
 		}
 		
-		setFocusIndex(-1);
+		setSelectable(false);
 		pivot.CFrame = startPivot.CFrame;
 		
 		const timeout = setTimeout(() => {
@@ -86,7 +83,9 @@ const StartScreen: React.FC = () => {
 				direction: Enum.EasingDirection.Out,
 			});
 			
-			setFocusIndex(0);
+			setTimeout(() => {
+				setSelectable(true);
+			}, 0.7);
 		}, 0.5);
 		
 		return () => {
@@ -148,7 +147,8 @@ const StartScreen: React.FC = () => {
 					text={'Start'}
 					iconId={''}
 					index={0}
-					focusIndex={focusIndex}
+					selectable={selectable}
+					autoSelect
 					onClick={() => {
 						StartScreenState.isVisibleAtom(false);
 					}}

@@ -16,7 +16,8 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 		text,
 		iconId,
 		index,
-		focusIndex,
+		selectable,
+		autoSelect,
 		totalButtons,
 		widthScale = 0,
 		widthOffset = 0,
@@ -81,7 +82,8 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 			isHovered={isHovered}
 			isPressed={isPressed}
 			canAnimate={canAnimate}
-			isFocused={focusIndex === index}
+			selectable={selectable}
+			autoSelect={sideMenuOpened && autoSelect}
 			widthOffset={widthOffset}
 			widthScale={widthScale}
 			iconScale={iconScale}
