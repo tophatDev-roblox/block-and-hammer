@@ -1,9 +1,8 @@
 import { atom, batch, effect } from '@rbxts/charm';
-import { ContentProvider } from '@rbxts/services';
+import { ContentProvider, RunService } from '@rbxts/services';
 
 import { setTimeout } from 'shared/timeout';
 import { Remotes } from 'shared/remotes';
-import { Dictionary } from 'shared/dictionary';
 import { Assets } from 'shared/assets';
 import { CharacterState } from './character/state';
 import { CoreGuis } from './coreGuis';
@@ -22,38 +21,51 @@ function fullReset(): void {
 	}
 };
 
-(async () => {
+(() => {
+	const preload = Promise.promisify((...args: Parameters<ContentProvider['PreloadAsync']>) => ContentProvider.PreloadAsync(...args));
+	
 	StartScreenState.loadingStatusAtom('preloading asset ids...');
 	
-	const allAssets = { ...Assets.Icons, ...Assets.Images };
+	const contentList = new Array<Instance | string>();
 	
-	const totalAssets = Dictionary.countKeys(allAssets);
-	let loadedAssets = 0;
-	for (const [name, id] of pairs(allAssets)) {
+	const allImages = { ...Assets.Icons, ...Assets.Images };
+	for (const [name, id] of pairs(allImages)) {
 		const decal = new Instance('Decal');
+		decal.Name = name;
 		decal.Texture = id;
-		
-		StartScreenState.loadingStatusAtom(`attempting to preload '${name}'`);
-		
-		await new Promise<void>((resolve) => {
-			ContentProvider.PreloadAsync([decal], (_, status) => {
-				if (status === Enum.AssetFetchStatus.Success) {
-					StartScreenState.loadingStatusAtom(`'${name}' preloaded successfully`);
-					resolve();
-				} else {
-					StartScreenState.loadingStatusAtom(`'${name}' failed to preload with status ${status}`);
-					setTimeout(resolve, 0.05);
-				}
-				
-				loadedAssets++;
-				StartScreenState.loadingPercentage(loadedAssets / totalAssets);
-			});
-		});
+		contentList.push(decal);
 	}
 	
-	batch(() => {
-		StartScreenState.loadingStatusAtom('all done!');
-		StartScreenState.isLoadingFinished(true);
+	const allSounds = { ...Assets.SFX, ...Assets.Music };
+	for (const [name, id] of pairs(allSounds)) {
+		const sound = new Instance('Sound');
+		sound.Name = name;
+		sound.SoundId = id;
+		contentList.push(sound);
+	}
+	
+	let loadedAssets = 0;
+	preload(contentList, (id, status) => {
+		if (status === Enum.AssetFetchStatus.Success) {
+			StartScreenState.loadingStatusAtom(`${id} preloaded successfully`);
+		} else {
+			StartScreenState.loadingStatusAtom(`${id} failed to preload (${status})`);
+		}
+		
+		loadedAssets++;
+		StartScreenState.loadingPercentage(loadedAssets / contentList.size());
+	});
+	
+	const connection = RunService.Heartbeat.Connect(() => {
+		if (loadedAssets < contentList.size()) {
+			return;
+		}
+		
+		connection.Disconnect();
+		batch(() => {
+			StartScreenState.loadingStatusAtom('all done!');
+			StartScreenState.isLoadingFinished(true);
+		});
 	});
 })();
 

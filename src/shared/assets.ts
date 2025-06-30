@@ -11,4 +11,21 @@ export namespace Assets {
 	export enum Images {
 		SideMenuBackground = 'rbxassetid://93722965597146',
 	}
+	
+	export enum SFX {
+		Leave = 'rbxassetid://9117880715',
+		HammerHit = 'rbxassetid://3417831369',
+		GrassHit = 'rbxassetid://116425333836106',
+		SandHit = 'rbxassetid://9119310338',
+		DirtHit = 'rbxassetid://9114109951',
+		StoneHit = 'rbxassetid://3581383408',
+		PlasticHit = 'rbxassetid://9119636789',
+		WoodHit = 'rbxassetid://8394333801',
+		FabricHit = 'rbxassetid://9113819689',
+		Explosion = 'rbxassetid://5801257793',
+	}
+	
+	export enum Music {
+		Menu = 'rbxassetid://93015601442719',
+	}
 }
