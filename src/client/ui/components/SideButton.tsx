@@ -126,6 +126,10 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 	useEffect(() => {
 		const button = buttonRef.current;
 		if (button === undefined || inputType !== InputType.Value.Controller) {
+			if (inputType !== InputType.Value.Controller) {
+				GuiService.SelectedObject = undefined;
+			}
+			
 			return;
 		}
 		
@@ -136,7 +140,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 		} else if (GuiService.SelectedObject === button) {
 			GuiService.SelectedObject = undefined;
 		}
-	}, [autoSelect, selectable]);
+	}, [autoSelect, selectable, inputType]);
 	
 	useEffect(() => {
 		if (!canAnimate) {
@@ -183,9 +187,8 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 				ScaleType={Enum.ScaleType.Slice}
 				SliceCenter={new Rect(256, 256, 256, 256)}
 				SliceScale={1}
-				AutoButtonColor={false}
 				SelectionImageObject={selectionImageObjectRef.current}
-				Selectable
+				AutoButtonColor={false}
 				Event={{
 					MouseEnter: () => onHover(true),
 					MouseLeave: () => onHover(false),
