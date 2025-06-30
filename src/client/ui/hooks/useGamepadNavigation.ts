@@ -7,12 +7,12 @@ import { Controller } from 'shared/controller';
 import { InputType } from 'client/inputType';
 
 // TODO: fix x position not working properly
-export function useGamepadNavigation(points: Array<Vector2>, onSelect?: (index: number) => void): LuaTuple<[number | undefined, (index: number) => void]> {
-	const inputType = useAtom(InputType.stateAtom);
-	
-	const [focusedIndex, setFocusedId] = useState<number>(-1);
+export function useGamepadNavigation(points: Array<Vector2>): LuaTuple<[number | undefined, (index: number) => void]> {
+	const [focusedIndex, setFocusedIndex] = useState<number>(-1);
 	
 	const directionRef = useRef<Controller.Direction>(Controller.Direction.None);
+	
+	const inputType = useAtom(InputType.stateAtom);
 	
 	const findNextPoint = (current: Vector2, index: number, direction: Controller.Direction): number => {
 		const possiblePoints = points.filter((_, i) => i !== index);
@@ -69,13 +69,12 @@ export function useGamepadNavigation(points: Array<Vector2>, onSelect?: (index: 
 			return;
 		}
 		
-		const nextId = findNextPoint(current, focusedIndex, direction);
-		if (nextId === -1) {
+		const nextIndex = findNextPoint(current, focusedIndex, direction);
+		if (nextIndex === -1) {
 			return;
 		}
 		
-		setFocusedId(nextId);
-		onSelect?.(nextId);
+		setFocusedIndex(nextIndex);
 		directionRef.current = Controller.Direction.None;
 	});
 	
@@ -99,5 +98,5 @@ export function useGamepadNavigation(points: Array<Vector2>, onSelect?: (index: 
 		}
 	});
 	
-	return $tuple(inputType === InputType.Value.Controller ? focusedIndex : undefined, (key) => setFocusedId(key));
+	return $tuple(inputType === InputType.Value.Controller ? focusedIndex : undefined, (key) => setFocusedIndex(key));
 }
