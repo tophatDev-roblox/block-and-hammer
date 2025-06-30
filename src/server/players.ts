@@ -16,7 +16,7 @@ const playerResetDebounces = new Set<Player>();
 
 const joinLeaveRichText = new RichText({ bold: true, italic: true, font: { size: 14 } });
 
-function respawn(player: Player): void {
+async function respawn(player: Player): Promise<void> {
 	const existingCharacter = Workspace.FindFirstChild(player.Name) ?? player.Character;
 	if (existingCharacter?.IsA('Model') && existingCharacter.Parent !== undefined) {
 		existingCharacter.Destroy();
@@ -45,12 +45,17 @@ function respawn(player: Player): void {
 	});
 	
 	character.Parent = Workspace;
+	player.Character = character;
 	
 	const body = character.FindFirstChild('Body') as Part;
-	body.Color = player.GetAttribute('color') as Color3;
 	body.SetNetworkOwner(player);
 	
-	player.Character = character;
+	const color = player.GetAttribute('color');
+	if (typeIs(color, 'Color3')) {
+		body.Color = color;
+	} else {
+		body.Color = computeNameColor(player.Name);
+	}
 }
 
 function onFullReset(player: Player): boolean {
@@ -83,6 +88,25 @@ async function onPlayerAdded(player: Player): Promise<void> {
 	if (profile === undefined) {
 		return;
 	}
+	
+	
+	player.AttributeChanged.Connect((attribute) => {
+		if (attribute === 'color') {
+			const color = player.GetAttribute(attribute);
+			if (!typeIs(color, 'Color3')) {
+				return;
+			}
+			
+			const character = player.Character;
+			const body = character?.FindFirstChild('Body');
+			if (!body?.IsA('Part')) {
+				return;
+			}
+			
+			body.Color = color;
+			profile.Data.color = color;
+		}
+	});
 	
 	profile.Data.color = profile.Data.color ?? computeNameColor(player.Name);
 	player.SetAttribute('dollars', profile.Data.dollars);
