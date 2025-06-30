@@ -44,11 +44,14 @@ export namespace Character {
 		
 		const target = new CFrame(0, 3, 0);
 		characterParts.model.PivotTo(target);
-		previousCameraCFrame = CFrame.lookAlong(
-			target.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
-			Vector3.yAxis.mul(-1),
-			Vector3.zAxis,
-		);
+		
+		if (!GuiService.ReducedMotionEnabled) {
+			previousCameraCFrame = CFrame.lookAlong(
+				target.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
+				Vector3.yAxis.mul(-1),
+				Vector3.zAxis,
+			);
+		}
 		
 		characterParts.targetAttachment.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
 		characterParts.hammer.model.PivotTo(target);
@@ -251,7 +254,10 @@ function onCharacterAdded(newCharacter: Model): void {
 	const body = newCharacter.FindFirstChild('Body') as Part;
 	const hammer = newCharacter.FindFirstChild('Hammer') as Model;
 	const head = hammer.FindFirstChild('Head') as Part;
-	previousCameraCFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)), Vector3.yAxis.mul(-1), Vector3.zAxis);
+	
+	if (!GuiService.ReducedMotionEnabled) {
+		previousCameraCFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)), Vector3.yAxis.mul(-1), Vector3.zAxis);
+	}
 	
 	CharacterState.partsAtom({
 		model: newCharacter,
