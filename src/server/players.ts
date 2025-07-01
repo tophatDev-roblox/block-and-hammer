@@ -2,13 +2,13 @@ import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/servic
 
 import computeNameColor from 'shared/NameColor';
 import { Remotes } from 'shared/remotes';
-import { Leaderstats } from './leaderstats';
-import { PlayerData } from './playerData';
-import { Badge } from './badge';
 import { RichText } from 'shared/richText';
 import { setTimeout } from 'shared/timeout';
 import { Number } from 'shared/number';
 import { MaxDollars, MinDollars } from 'shared/constants';
+import { Leaderstats } from './leaderstats';
+import { PlayerData } from './playerData';
+import { Badge } from './badge';
 
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
 const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
