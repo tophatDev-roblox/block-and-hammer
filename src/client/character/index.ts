@@ -14,6 +14,7 @@ import { SideMenuState } from 'client/sideMenuState';
 import { camera } from 'client/camera';
 import { ModalState } from 'client/modalState';
 import { CharacterState } from './state';
+import { AreaManager } from 'shared/areaManager';
 
 const client = Players.LocalPlayer;
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
@@ -39,9 +40,9 @@ export namespace Character {
 		let spawnCFrame = new CFrame(0, 3, 0);
 		
 		switch (area) {
-			case CharacterState.Area.Unknown:
-			case CharacterState.Area.Level1: {
-				CharacterState.areaAtom(CharacterState.Area.Level1);
+			case AreaManager.Area.Unknown:
+			case AreaManager.Area.Level1: {
+				CharacterState.areaAtom(AreaManager.Area.Level1);
 				break;
 			}
 		}

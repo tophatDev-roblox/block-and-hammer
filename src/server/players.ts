@@ -1,27 +1,78 @@
 import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/services';
-import { throttle } from '@rbxts/set-timeout';
+import { setInterval, throttle } from '@rbxts/set-timeout';
 
 import computeNameColor from 'shared/NameColor';
 import { Remotes } from 'shared/remotes';
 import { RichText } from 'shared/richText';
 import { Number } from 'shared/number';
 import { MaxDollars, MinDollars } from 'shared/constants';
+import { AreaManager } from 'shared/areaManager';
+import { Units } from 'shared/units';
 import { Leaderstats } from './leaderstats';
 import { PlayerData } from './playerData';
 import { Badge } from './badge';
 
+interface CharacterData {
+	body: Part;
+	area: AreaManager.Area;
+	region?: AreaManager.Region2;
+	leaderstats: {
+		area: StringValue;
+		altitude: IntValue;
+	};
+}
+
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
 const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
-
-const createdCharacters = new Set<Model>();
+const areasFolder = Workspace.WaitForChild('Areas') as Folder;
 
 const joinLeaveRichText = new RichText({ bold: true, italic: true, font: { size: 14 } });
+const characterData = new Map<Model, CharacterData>();
+
+const areaManager = new AreaManager();
+for (const area of areasFolder.GetChildren()) {
+	areaManager.processArea(area);
+}
+
+setInterval(() => {
+	for (const [, data] of characterData) {
+		const body = data.body;
+		
+		if (data.region !== undefined && areaManager.isInArea(body, data.region)) {
+			continue;
+		}
+		
+		let didFindArea = false;
+		for (const [area, region] of areaManager.areas) {
+			if (areaManager.isInArea(body, region)) {
+				data.region = region;
+				data.area = area;
+				didFindArea = true;
+				break;
+			}
+		}
+		
+		if (!didFindArea) {
+			data.area = AreaManager.Area.Unknown;
+			data.region = undefined;
+		}
+		
+		data.leaderstats.area.Value = data.area;
+	}
+}, 1);
 
 async function respawn(player: Player): Promise<void> {
+	const leaderstats = player.WaitForChild('leaderstats');
+	const altitudeValue = leaderstats.FindFirstChild('Altitude');
+	const areaValue = leaderstats.FindFirstChild('Area');
+	if (!areaValue?.IsA('StringValue') || !altitudeValue?.IsA('IntValue')) {
+		throw 'failed to respawn player because Area leaderstat is not a StringValue or Altitude leaderstat is not an IntValue';
+	}
+	
 	const existingCharacter = Workspace.FindFirstChild(player.Name) ?? player.Character;
 	if (existingCharacter?.IsA('Model') && existingCharacter.Parent !== undefined) {
 		existingCharacter.Destroy();
-		createdCharacters.delete(existingCharacter);
+		characterData.delete(existingCharacter);
 		player.Character = undefined;
 		return;
 	}
@@ -29,16 +80,28 @@ async function respawn(player: Player): Promise<void> {
 	const character = baseCharacter.Clone();
 	character.Name = player.Name;
 	
+	const body = character.FindFirstChild('Body');
+	if (!body?.IsA('Part')) {
+		throw 'failed to respawn player because Body is not a Part';
+	}
+	
+	characterData.set(character, {
+		body: body,
+		area: AreaManager.Area.Unknown,
+		leaderstats: {
+			altitude: altitudeValue,
+			area: areaValue,
+		},
+	});
+	
 	// TODO: better system for billboard gui (+ make size responsive)
 	const billboardGui = character.FindFirstChildWhichIsA('BillboardGui', true)!;
 	billboardGui.PlayerToHideFrom = player;
 	(billboardGui.FindFirstChild('DisplayName') as TextLabel).Text = player.DisplayName;
 	(billboardGui.FindFirstChild('Username') as TextLabel).Text = `@${player.Name}`;
 	
-	createdCharacters.add(character);
-	
 	character.Destroying.Once(() => {
-		createdCharacters.delete(character);
+		characterData.delete(character);
 		
 		if (character.GetAttribute('unloading') !== true) {
 			respawn(player);
@@ -47,8 +110,6 @@ async function respawn(player: Player): Promise<void> {
 	
 	character.Parent = Workspace;
 	player.Character = character;
-	
-	const body = character.FindFirstChild('Body') as Part;
 	body.SetNetworkOwner(player);
 	
 	const color = player.GetAttribute('color');
@@ -128,7 +189,13 @@ async function onPlayerAdded(player: Player): Promise<void> {
 }
 
 function onPlayerRemoving(player: Player): void {
-	player.Character?.Destroy();
+	const character = player.Character;
+	if (character !== undefined) {
+		characterData.delete(character);
+		character.SetAttribute('unloading', true);
+		character.Destroy();
+	}
+	
 	PlayerData.unload(player);
 	
 	const playerRichText = new RichText({ font: { color: player.GetAttribute('color') as Color3 } });
@@ -136,15 +203,21 @@ function onPlayerRemoving(player: Player): void {
 }
 
 function onStepped(_time: number, _dt: number): void {
-	for (const character of createdCharacters) {
+	for (const [character, data] of characterData) {
 		const body = character.PrimaryPart;
 		if (body === undefined) {
 			continue;
 		}
 		
 		if (body.Position.Y < -1e3) {
-			createdCharacters.delete(character);
+			characterData.delete(character);
 			character.Destroy();
+			continue;
+		}
+		
+		const altitude = math.floor(math.max(Units.studsToMeters(body.Position.Y - body.Size.Y / 2), 0));
+		if (data.leaderstats.altitude.Value !== altitude) {
+			data.leaderstats.altitude.Value = altitude;
 		}
 	}
 }

@@ -1,5 +1,7 @@
 import { atom } from '@rbxts/charm';
 
+import { AreaManager } from 'shared/areaManager';
+
 export namespace CharacterState {
 	export interface Parts {
 		model: Model;
@@ -16,13 +18,8 @@ export namespace CharacterState {
 		};
 	}
 	
-	export const enum Area {
-		Unknown = '--',
-		Level1 = 'Level 1',
-	}
-	
 	export const partsAtom = atom<CharacterState.Parts>();
-	export const areaAtom = atom<Area>(Area.Unknown);
+	export const areaAtom = atom<AreaManager.Area>(AreaManager.Area.Unknown);
 	export const timeStartAtom = atom<number>();
 	export const hammerDistanceAtom = atom<number>(13);
 	export const cameraZOffsetAtom = atom<number>(-36);
