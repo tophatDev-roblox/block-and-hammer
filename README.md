@@ -10,7 +10,7 @@
 
 ![Weekly commity activity](https://img.shields.io/github/commit-activity/w/tophatDev-roblox/block-and-hammer)
 [![MIT License](https://img.shields.io/badge/license-MIT-3da638)](https://github.com/tophatDev-roblox/block-and-hammer/blob/main/LICENSE)
-[![Discord server](https://discordapp.com/api/guilds/1383751640800034877/widget.png)](https://discord.gg/fN4sVUngdS)
+[![Discord server](https://discordapp.com/api/guilds/1383751640800034877/widget.png)](https://www.top-hat.net/discord)
 
 </div>
 
