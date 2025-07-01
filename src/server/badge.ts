@@ -16,7 +16,7 @@ export namespace Badge {
 			if (badgeId !== -1) {
 				await awardBadge(player.UserId, badgeId);
 			} else {
-				warn('[server::badge] placeholder');
+				warn('[server::badge] placeholder badge');
 			}
 			
 			return;
