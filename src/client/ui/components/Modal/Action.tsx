@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from '@rbxts/react';
-import { useMotion } from '@rbxts/pretty-react-hooks';
+import { GuiService } from '@rbxts/services';
+import React, { useEffect, useRef, useState } from '@rbxts/react';
+import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
+import { useAtom } from '@rbxts/react-charm';
 
 import { usePx } from 'client/ui/hooks/usePx';
+import { InputType } from 'client/inputType';
 import { StyleParse, Styles } from 'client/styles';
 import UIPadding from '../UIPadding';
 import Outline from '../Outline';
@@ -10,10 +13,12 @@ import Text from '../Text';
 interface ActionProps {
 	styles: Styles.ButtonWithInteraction;
 	action: string;
+	autoSelect: boolean;
+	selectable: boolean;
 	onClick: () => void;
 }
 
-const Action: React.FC<ActionProps> = ({ styles, action, onClick }) => {
+const Action: React.FC<ActionProps> = ({ styles, action, autoSelect, selectable, onClick }) => {
 	const {
 		background,
 		outline,
@@ -23,11 +28,15 @@ const Action: React.FC<ActionProps> = ({ styles, action, onClick }) => {
 		pressed,
 	} = styles;
 	
+	const [isHovered, setHovered] = useState<boolean>(false);
+	const [isPressed, setPressed] = useState<boolean>(false);
+	
+	const buttonRef = useRef<TextButton>();
+	
 	const [backgroundColor, backgroundColorMotion] = useMotion<Color3>(StyleParse.color(background));
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion<number>(1 - background.alpha);
 	
-	const [isHovered, setHovered] = useState<boolean>(false);
-	const [isPressed, setPressed] = useState<boolean>(false);
+	const inputType = useAtom(InputType.stateAtom);
 	
 	const px = usePx();
 	
@@ -55,8 +64,42 @@ const Action: React.FC<ActionProps> = ({ styles, action, onClick }) => {
 		});
 	}, [hover, pressed, isHovered, isPressed]);
 	
+	useEffect(() => {
+		const button = buttonRef.current;
+		if (inputType !== InputType.Value.Controller || button === undefined || !selectable) {
+			if (!selectable && GuiService.SelectedObject === button) {
+				GuiService.SelectedObject = undefined;
+			}
+			
+			return;
+		}
+		
+		if (autoSelect) {
+			GuiService.SelectedObject = button;
+		}
+	}, [autoSelect, selectable]);
+	
+	useEffect(() => {
+		if (GuiService.SelectedObject === buttonRef.current) {
+			setHovered(true);
+		}
+	}, []);
+	
+	useEventListener(GuiService.GetPropertyChangedSignal('SelectedObject'), () => {
+		if (inputType !== InputType.Value.Controller) {
+			return;
+		}
+		
+		if (GuiService.SelectedObject === buttonRef.current) {
+			setHovered(true);
+		} else {
+			setHovered(false);
+		}
+	});
+	
 	return (
 		<textbutton
+			ref={buttonRef}
 			BackgroundColor3={backgroundColor}
 			BackgroundTransparency={backgroundTransparency}
 			Size={UDim2.fromScale(1, 0)}
@@ -68,7 +111,7 @@ const Action: React.FC<ActionProps> = ({ styles, action, onClick }) => {
 				MouseLeave: () => setHovered(false),
 				MouseButton1Down: () => setPressed(true),
 				MouseButton1Up: () => setPressed(false),
-				MouseButton1Click: () => onClick(),
+				MouseButton1Click: onClick,
 			}}
 		>
 			{outline !== false && (

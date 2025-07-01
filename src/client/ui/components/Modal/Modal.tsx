@@ -18,6 +18,7 @@ interface ModalProps<T extends Array<string>> {
 	onDismiss?: () => void;
 }
 
+// TODO: improve ui navigation for controllers
 const Modal: React.FC<ModalProps<Array<string>>> = ({ title, body, dismissable, actions, onAction, onDismiss }) => {
 	const styles = useAtom(Styles.stateAtom);
 	
@@ -66,9 +67,7 @@ const Modal: React.FC<ModalProps<Array<string>>> = ({ title, body, dismissable, 
 								Image={Assets.Icons.CloseIcon}
 								AutoButtonColor={false}
 								Event={{
-									MouseButton1Click: () => {
-										onDismiss?.();
-									},
+									MouseButton1Click: onDismiss,
 								}}
 							/>
 						)}
@@ -108,13 +107,13 @@ const Modal: React.FC<ModalProps<Array<string>>> = ({ title, body, dismissable, 
 								FillDirection={Enum.FillDirection.Horizontal}
 								Padding={new UDim(0, px(12))}
 							/>
-							{actions.map((action) => (
+							{actions.map((action, i) => (
 								<Action
 									styles={styles.modal.actionButton}
 									action={action}
-									onClick={() => {
-										onAction?.(action);
-									}}
+									autoSelect={i === 0}
+									selectable
+									onClick={() => onAction?.(action)}
 								/>
 							))}
 						</frame>
