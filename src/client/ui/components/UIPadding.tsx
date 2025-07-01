@@ -14,7 +14,7 @@ const UIPadding: React.FC<UIPaddingProps> = ({ padding }) => {
 				PaddingLeft={new UDim(0, padding)}
 			/>
 		);
-	} else if (padding.length === 2) {
+	} else if (padding.size() === 2) {
 		return (
 			<uipadding
 				PaddingTop={new UDim(0, padding[0])}
