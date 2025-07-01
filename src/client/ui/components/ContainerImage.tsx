@@ -25,7 +25,7 @@ const ContainerImage = forwardRef<ImageLabel, ContainerImageProps>((props, ref) 
 		children,
 	} = props;
 	
-	const isRGBA = 'red' in background;
+	const isRGBA = StyleParse.isRGBA(background);
 	
 	const automaticSize = getAutomaticSize(automaticWidth, automaticHeight);
 	

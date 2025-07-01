@@ -47,7 +47,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 	const px = usePx();
 	
 	const automaticSize = getAutomaticSize(automaticWidth, automaticHeight);
-	const isRGBA = 'red' in color;
+	const isRGBA = StyleParse.isRGBA(color);
 	
 	let labelSize =
 		automaticHeight && automaticWidth ? new UDim2(0, 0, 0, 0)

@@ -57,48 +57,6 @@ const data: Styles.Data = {
 			},
 		},
 	},
-	centurion: {
-		text: {
-			bold: { fontId, weight: 700, italics: false },
-			medium: { fontId, weight: 500, italics: false },
-			regular: { fontId, weight: 400, italics: false },
-		},
-	},
-	world: {
-		nameplate: {
-			displayName: {
-				font: { fontId, weight: 700, italics: false },
-				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 25,
-				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
-			},
-			username: {
-				font: { fontId, weight: 700, italics: false },
-				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 15,
-				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
-			},
-		},
-	},
-	controller: {
-		selectionOutline: {
-			color: {
-				rotation: {
-					rotationsPerSecond: 0.3,
-				},
-				colors: [
-					{ position: 0, color: { red: 74, green: 136, blue: 237 } },
-					{ position: 1, color: { red: 14, green: 64, blue: 144 } },
-				],
-				transparency: [
-					{ position: 0, transparency: 0 },
-					{ position: 1, transparency: 0 },
-				],
-			},
-			thickness: 4,
-			joinMode: 'round',
-		},
-	},
 	sideMenu: {
 		container: {
 			background: {
@@ -171,6 +129,48 @@ const data: Styles.Data = {
 				size: 40,
 				outline: false,
 			},
+		},
+	},
+	world: {
+		nameplate: {
+			displayName: {
+				font: { fontId, weight: 700, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 25,
+				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
+			},
+			username: {
+				font: { fontId, weight: 700, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 15,
+				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
+			},
+		},
+	},
+	centurion: {
+		text: {
+			bold: { fontId, weight: 700, italics: false },
+			medium: { fontId, weight: 500, italics: false },
+			regular: { fontId, weight: 400, italics: false },
+		},
+	},
+	controller: {
+		selectionOutline: {
+			color: {
+				rotation: {
+					rotationsPerSecond: 0.3,
+				},
+				colors: [
+					{ position: 0, color: { red: 74, green: 136, blue: 237 } },
+					{ position: 1, color: { red: 14, green: 64, blue: 144 } },
+				],
+				transparency: [
+					{ position: 0, transparency: 0 },
+					{ position: 1, transparency: 0 },
+				],
+			},
+			thickness: 4,
+			joinMode: 'round',
 		},
 	},
 	misc: {

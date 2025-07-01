@@ -62,12 +62,15 @@ export namespace Styles {
 	
 	export interface Button {
 		text: Text;
+		background: ColorWithAlpha | Gradient;
+		outline: Outline | false;
+	}
+	
+	export interface ButtonWithIcon extends Button {
 		icon: {
 			color: ColorWithAlpha | Gradient;
 			background: ColorWithAlpha | Gradient;
 		};
-		background: ColorWithAlpha | Gradient;
-		outline: Outline | false;
 	}
 	
 	export interface Container {
@@ -77,13 +80,6 @@ export namespace Styles {
 	
 	export interface Data {
 		version: 1;
-		centurion: {
-			text: {
-				bold: Font;
-				medium: Font;
-				regular: Font;
-			};
-		};
 		hud: {
 			text: {
 				altitude: Text & FloatDisplay;
@@ -101,24 +97,31 @@ export namespace Styles {
 				};
 			};
 		};
+		sideMenu: {
+			container: Container;
+			button: ButtonWithIcon;
+		};
+		startScreen: {
+			logo: Text;
+			button: ButtonWithIcon;
+			loading: {
+				background: Color | GradientWithoutTransparency;
+				logo: Text;
+				status: Text;
+				percentage: Text;
+			};
+		};
 		world: {
 			nameplate: {
 				displayName: Text;
 				username: Text;
 			};
 		};
-		sideMenu: {
-			container: Container;
-			button: Button;
-		}
-		startScreen: {
-			logo: Text;
-			button: Button;
-			loading: {
-				background: Color | GradientWithoutTransparency;
-				logo: Text;
-				status: Text;
-				percentage: Text;
+		centurion: {
+			text: {
+				bold: Font;
+				medium: Font;
+				regular: Font;
 			};
 		};
 		controller: {
@@ -140,6 +143,10 @@ export namespace StyleParse {
 	
 	export function areSequenceKeypointsValid(keypoints: Array<{ Time: number }>): boolean {
 		return keypoints.size() >= 2 && keypoints[0].Time === 0 && keypoints[keypoints.size() - 1].Time === 1;
+	}
+	
+	export function isRGBA<T extends Styles.Color | Styles.ColorWithAlpha>(color: T | Styles.Gradient): color is T {
+		return StyleParse.isRGBA(color);
 	}
 	
 	export function outlineJoinMode(joinMode: Styles.Outline['joinMode']): Enum.LineJoinMode {

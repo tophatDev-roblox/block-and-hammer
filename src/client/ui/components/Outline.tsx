@@ -16,7 +16,7 @@ const Outline: React.FC<OutlineProps> = ({ styles: { color, thickness, joinMode,
 	const px = usePx();
 	const [thicknessValue, thicknessMotion] = useMotion(0);
 	
-	const isRGBA = 'red' in color;
+	const isRGBA = StyleParse.isRGBA(color);
 	
 	useEffect(() => {
 		const value = overwriteThickness ?? (autoScale ? px(thickness, false) : thickness);
