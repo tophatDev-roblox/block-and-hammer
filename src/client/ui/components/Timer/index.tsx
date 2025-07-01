@@ -21,8 +21,20 @@ const Timer: React.FC = () => {
 	const px = usePx();
 	
 	const millisecondsRichText = useMemo(() => {
-		return new RichText({ font: { size: px(styles.text.timer.display.millisecondsFontSize) } });
-	}, [styles.text.timer.display.millisecondsFontSize]);
+		if (styles.timer.text.display.milliseconds.autoScale === false) {
+			return new RichText({
+				font: {
+					size: styles.timer.text.display.milliseconds.fontSize,
+				},
+			});
+		}
+		
+		return new RichText({
+			font: {
+				size: px(styles.timer.text.display.milliseconds.fontSize),
+			},
+		});
+	}, [styles.timer.text.display.milliseconds.fontSize, styles.timer.text.display.milliseconds.autoScale]);
 	
 	useEventListener(RunService.Stepped, (time) => {
 		if (timeStart === undefined) {
@@ -71,7 +83,7 @@ const Timer: React.FC = () => {
 				AutomaticSize={Enum.AutomaticSize.XY}
 			>
 				<Text
-					styles={styles.text.timer}
+					styles={styles.timer.text}
 					text={text}
 					alignX={Enum.TextXAlignment.Left}
 					rotation={rotation}

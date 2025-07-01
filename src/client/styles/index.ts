@@ -77,16 +77,28 @@ export namespace Styles {
 	
 	export interface Data {
 		version: 1;
-		text: {
-			version: Text;
-			timer: Text & { display: { millisecondsFontSize: number } };
-			moveHint: Text;
-			hudPrimary: Text & FloatDisplay;
-			hudSecondary: Text & FloatDisplay;
-			centurion: {
+		centurion: {
+			text: {
 				bold: Font;
 				medium: Font;
 				regular: Font;
+			};
+		};
+		hud: {
+			text: {
+				altitude: Text & FloatDisplay;
+				speedometer: Text & FloatDisplay;
+				moveHint: Text;
+			};
+		};
+		timer: {
+			text: Text & {
+				display: {
+					milliseconds: {
+						fontSize: number;
+						autoScale?: false;
+					};
+				};
 			};
 		};
 		world: {
@@ -95,15 +107,10 @@ export namespace Styles {
 				username: Text;
 			};
 		};
-		controller: {
-			selectionOutline: Outline;
-		};
-		containers: {
-			sideMenu: Container;
-		};
-		buttons: {
-			sideMenu: Button;
-		};
+		sideMenu: {
+			container: Container;
+			button: Button;
+		}
 		startScreen: {
 			logo: Text;
 			button: Button;
@@ -112,6 +119,14 @@ export namespace Styles {
 				logo: Text;
 				status: Text;
 				percentage: Text;
+			};
+		};
+		controller: {
+			selectionOutline: Outline;
+		};
+		misc: {
+			text: {
+				version: Text;
 			};
 		};
 		layout: {}; // TODO: ui layout

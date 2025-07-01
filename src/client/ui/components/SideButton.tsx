@@ -5,6 +5,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { Styles, StyleParse } from 'client/styles';
 import { Controller } from 'shared/controller';
+import { Assets } from 'shared/assets';
 import { InputType } from 'client/inputType';
 import { usePx } from '../hooks/usePx';
 import Text from './Text';
@@ -181,7 +182,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 				Size={size}
 				Position={new UDim2(1, 0, 0, 0)}
 				AnchorPoint={new Vector2(1, 0)}
-				Image={'rbxassetid://116917521691205'}
+				Image={Assets.Images.ButtonBackground}
 				ImageColor3={isBackgroundRGBA ? StyleParse.color(background) : Color3.fromRGB(255, 255, 255)}
 				ImageTransparency={isBackgroundRGBA ? 1 - background.alpha : 0}
 				ScaleType={Enum.ScaleType.Slice}

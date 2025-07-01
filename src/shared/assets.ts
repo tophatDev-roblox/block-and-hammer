@@ -10,6 +10,7 @@ export namespace Assets {
 	
 	export enum Images {
 		SideMenuBackground = 'rbxassetid://93722965597146',
+		ButtonBackground = 'rbxassetid://116917521691205',
 	}
 	
 	export enum SFX {

@@ -17,7 +17,7 @@ const Speedometer: React.FC = () => {
 	const characterParts = useAtom(CharacterState.partsAtom);
 	const styles = useAtom(Styles.stateAtom);
 	
-	const labelFormat = useMemo(() => `%.${styles.text.hudSecondary.display.decimals}fm/s`, [styles.text.hudSecondary.display.decimals]);
+	const labelFormat = useMemo(() => `%.${styles.hud.text.speedometer.display.decimals}fm/s`, [styles.hud.text.speedometer.display.decimals]);
 	
 	useEventListener(RunService.Stepped, (time) => {
 		if (characterParts === undefined) {
@@ -38,7 +38,7 @@ const Speedometer: React.FC = () => {
 			AutomaticSize={Enum.AutomaticSize.XY}
 		>
 			<Text
-				styles={styles.text.hudSecondary}
+				styles={styles.hud.text.speedometer}
 				text={text}
 				order={1}
 				rotation={rotation}

@@ -16,48 +16,49 @@ const textOutlineGradient: Styles.Gradient = {
 
 const data: Styles.Data = {
 	version: 1,
-	text: {
-		version: {
-			font: { fontId, weight: 700, italics: false },
-			color: { red: 255, green: 255, blue: 255, alpha: 0.7 },
-			size: 16,
-			outline: { color: textOutlineGradient, thickness: 1, joinMode: 'miter', autoScale: false },
-			autoScale: false,
+	hud: {
+		text: {
+			altitude: {
+				font: { fontId, weight: 900, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 60,
+				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
+				display: {
+					decimals: 1,
+				},
+			},
+			speedometer: {
+				font: { fontId, weight: 900, italics: false },
+				color: { red: 200, green: 200, blue: 200, alpha: 1 },
+				size: 35,
+				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
+				display: {
+					decimals: 1,
+				},
+			},
+			moveHint: {
+				font: { fontId, weight: 700, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 0.7 },
+				size: 25,
+				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
+			},
 		},
-		timer: {
+	},
+	timer: {
+		text: {
 			font: { fontId, weight: 900, italics: false },
 			color: { red: 255, green: 255, blue: 255, alpha: 1 },
 			size: 60,
 			outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
 			display: {
-				millisecondsFontSize: 35,
+				milliseconds: {
+					fontSize: 35,
+				},
 			},
 		},
-		moveHint: {
-			font: { fontId, weight: 700, italics: false },
-			color: { red: 255, green: 255, blue: 255, alpha: 0.7 },
-			size: 25,
-			outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
-		},
-		hudPrimary: {
-			font: { fontId, weight: 900, italics: false },
-			color: { red: 255, green: 255, blue: 255, alpha: 1 },
-			size: 60,
-			outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
-			display: {
-				decimals: 1,
-			},
-		},
-		hudSecondary: {
-			font: { fontId, weight: 900, italics: false },
-			color: { red: 200, green: 200, blue: 200, alpha: 1 },
-			size: 35,
-			outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
-			display: {
-				decimals: 1,
-			},
-		},
-		centurion: {
+	},
+	centurion: {
+		text: {
 			bold: { fontId, weight: 700, italics: false },
 			medium: { fontId, weight: 500, italics: false },
 			regular: { fontId, weight: 400, italics: false },
@@ -98,8 +99,8 @@ const data: Styles.Data = {
 			joinMode: 'round',
 		},
 	},
-	containers: {
-		sideMenu: {
+	sideMenu: {
+		container: {
 			background: {
 				colors: [
 					{ position: 0, color: { red: 34, green: 34, blue: 34 } },
@@ -114,9 +115,7 @@ const data: Styles.Data = {
 			},
 			outline: false,
 		},
-	},
-	buttons: {
-		sideMenu: {
+		button: {
 			text: {
 				font: { fontId, weight: 700, italics: false },
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
@@ -171,6 +170,17 @@ const data: Styles.Data = {
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
 				size: 40,
 				outline: false,
+			},
+		},
+	},
+	misc: {
+		text: {
+			version: {
+				font: { fontId, weight: 700, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 0.7 },
+				size: 16,
+				outline: { color: textOutlineGradient, thickness: 1, joinMode: 'miter', autoScale: false },
+				autoScale: false,
 			},
 		},
 	},

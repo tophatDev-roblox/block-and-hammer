@@ -34,7 +34,7 @@ const Version: React.FC = () => {
 					PaddingRight={new UDim(0, 4)}
 				/>
 				<Text
-					styles={styles.text.version}
+					styles={styles.misc.text.version}
 					text={versionString}
 					alignX={Enum.TextXAlignment.Right}
 					automaticHeight

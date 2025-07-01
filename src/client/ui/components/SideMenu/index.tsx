@@ -83,7 +83,7 @@ const SideMenu: React.FC = () => {
 					AspectRatio={containerWidth / 1080}
 				/>
 				<Container
-					styles={styles.containers.sideMenu}
+					styles={styles.sideMenu.container}
 					width={new UDim(1.5, 0)}
 					height={new UDim(1, 0)}
 					imageProps={{
@@ -116,7 +116,7 @@ const SideMenu: React.FC = () => {
 								PaddingLeft={new UDim(0, px(12))}
 							/>
 							<MenuButton
-								styles={styles.buttons.sideMenu}
+								styles={styles.sideMenu.button}
 								text={'Inventory'}
 								iconId={Assets.Icons.InventoryIcon}
 								index={0}
@@ -125,7 +125,7 @@ const SideMenu: React.FC = () => {
 								autoSelect
 							/>
 							<MenuButton
-								styles={styles.buttons.sideMenu}
+								styles={styles.sideMenu.button}
 								text={'Badges'}
 								iconId={Assets.Icons.BadgesIcon}
 								widthScale={buttonGapOffset}
@@ -134,7 +134,7 @@ const SideMenu: React.FC = () => {
 								selectable={selectable}
 							/>
 							<MenuButton
-								styles={styles.buttons.sideMenu}
+								styles={styles.sideMenu.button}
 								text={'Settings'}
 								iconId={Assets.Icons.SettingsIcon}
 								widthScale={buttonGapOffset * 2}
@@ -143,7 +143,7 @@ const SideMenu: React.FC = () => {
 								selectable={selectable}
 							/>
 							<MenuButton
-								styles={styles.buttons.sideMenu}
+								styles={styles.sideMenu.button}
 								text={'Customize'}
 								iconId={Assets.Icons.CustomizeIcon}
 								widthScale={buttonGapOffset * 3}
@@ -152,7 +152,7 @@ const SideMenu: React.FC = () => {
 								selectable={selectable}
 							/>
 							<MenuButton
-								styles={styles.buttons.sideMenu}
+								styles={styles.sideMenu.button}
 								text={'Spectate'}
 								iconId={Assets.Icons.SpectateIcon}
 								widthScale={buttonGapOffset * 4}
@@ -161,7 +161,7 @@ const SideMenu: React.FC = () => {
 								selectable={selectable}
 							/>
 							<MenuButton
-								styles={styles.buttons.sideMenu}
+								styles={styles.sideMenu.button}
 								text={'Start Screen'}
 								iconId={Assets.Icons.StartMenuIcon}
 								widthScale={buttonGapOffset * 5}

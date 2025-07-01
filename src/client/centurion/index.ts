@@ -23,9 +23,9 @@ client.start()
 			position: new UDim2(0.5, 0, 0.5, -88),
 			anchor: new Vector2(0.5, 0),
 			font: {
-				bold: StyleParse.font(defaultStyles.text.centurion.bold),
-				medium: StyleParse.font(defaultStyles.text.centurion.medium),
-				regular: StyleParse.font(defaultStyles.text.centurion.regular),
+				bold: StyleParse.font(defaultStyles.centurion.text.bold),
+				medium: StyleParse.font(defaultStyles.centurion.text.medium),
+				regular: StyleParse.font(defaultStyles.centurion.text.regular),
 			},
 		});
 		

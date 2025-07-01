@@ -17,7 +17,7 @@ const Altitude: React.FC = () => {
 	const characterParts = useAtom(CharacterState.partsAtom);
 	const styles = useAtom(Styles.stateAtom);
 	
-	const labelFormat = useMemo(() => `%.${styles.text.hudPrimary.display.decimals}fm`, [styles.text.hudPrimary.display.decimals]);
+	const labelFormat = useMemo(() => `%.${styles.hud.text.altitude.display.decimals}fm`, [styles.hud.text.altitude.display.decimals]);
 	
 	useEventListener(RunService.Stepped, (time) => {
 		if (characterParts === undefined) {
@@ -38,7 +38,7 @@ const Altitude: React.FC = () => {
 			AutomaticSize={Enum.AutomaticSize.XY}
 		>
 			<Text
-				styles={styles.text.hudPrimary}
+				styles={styles.hud.text.altitude}
 				text={text}
 				order={2}
 				rotation={rotation}
