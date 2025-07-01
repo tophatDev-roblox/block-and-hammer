@@ -146,7 +146,7 @@ export namespace StyleParse {
 	}
 	
 	export function isRGBA<T extends Styles.Color | Styles.ColorWithAlpha>(color: T | Styles.Gradient): color is T {
-		return StyleParse.isRGBA(color);
+		return 'red' in color;
 	}
 	
 	export function outlineJoinMode(joinMode: Styles.Outline['joinMode']): Enum.LineJoinMode {
