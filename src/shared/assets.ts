@@ -1,12 +1,13 @@
 export namespace Assets {
 	export enum Icons {
-		BadgesIcon = 'rbxassetid://117939573736699',
+		BadgesIcon = 'rbxassetid://140461719134109',
 		CustomizeIcon = 'rbxassetid://126178460891242',
 		InventoryIcon = 'rbxassetid://124956783435550',
 		SettingsIcon = 'rbxassetid://132520229981046',
 		SpectateIcon = 'rbxassetid://102925807754269',
 		StartMenuIcon = 'rbxassetid://136761769714294',
 		CloseIcon = 'rbxassetid://70441562491259',
+		SwitchLevelIcon = 'rbxassetid://106272588290568',
 	}
 	
 	export enum Images {

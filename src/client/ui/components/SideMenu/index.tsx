@@ -165,7 +165,7 @@ const SideMenuGUI: React.FC = () => {
 							<MenuButton
 								styles={styles.sideMenu.button}
 								text={'Switch Level'}
-								iconId={''}
+								iconId={Assets.Icons.SwitchLevelIcon}
 								widthScale={buttonGapOffset * 5}
 								index={5}
 								totalButtons={totalButtons}
