@@ -5,7 +5,7 @@ import { Styles, StyleParse } from 'client/styles';
 import Gradient from './Gradient';
 import Outline from './Outline';
 
-interface ContainerProps extends React.PropsWithChildren {
+interface ContainerImageProps extends React.PropsWithChildren {
 	styles: Styles.Container;
 	imageProps?: Partial<ExtractMembers<ImageLabel, any>>;
 	width?: UDim;
@@ -14,7 +14,7 @@ interface ContainerProps extends React.PropsWithChildren {
 	automaticHeight?: boolean;
 }
 
-const ContainerImage = forwardRef<ImageLabel, ContainerProps>((props, ref) => {
+const ContainerImage = forwardRef<ImageLabel, ContainerImageProps>((props, ref) => {
 	const {
 		styles: { background, outline },
 		imageProps,
