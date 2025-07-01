@@ -1,5 +1,5 @@
 import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/services';
-import { setTimeout } from '@rbxts/set-timeout';
+import { throttle } from '@rbxts/set-timeout';
 
 import computeNameColor from 'shared/NameColor';
 import { Remotes } from 'shared/remotes';
@@ -14,7 +14,6 @@ const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
 const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
 
 const createdCharacters = new Set<Model>();
-const playerResetDebounces = new Set<Player>();
 
 const joinLeaveRichText = new RichText({ bold: true, italic: true, font: { size: 14 } });
 
@@ -61,14 +60,7 @@ async function respawn(player: Player): Promise<void> {
 }
 
 function onFullReset(player: Player): boolean {
-	if (playerResetDebounces.has(player)) {
-		return false;
-	}
-	
 	respawn(player);
-	
-	playerResetDebounces.add(player);
-	setTimeout(() => playerResetDebounces.delete(player), 0.1);
 	
 	return true;
 }
@@ -161,7 +153,7 @@ for (const player of Players.GetPlayers()) {
 	onPlayerAdded(player);
 }
 
-Remotes.fullReset.onRequest(onFullReset);
+Remotes.fullReset.onRequest(throttle(onFullReset, 0.2));
 Remotes.unloadCharacter.connect(onUnloadCharacter);
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);
