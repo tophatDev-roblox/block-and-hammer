@@ -4,7 +4,7 @@ import Speedometer from './Speedometer';
 import Altitude from './Altitude';
 import MoveHint from './MoveHint';
 
-const HUD: React.FC = () => {
+const HudGUI: React.FC = () => {
 	return (
 		<screengui
 			DisplayOrder={2}
@@ -29,4 +29,4 @@ const HUD: React.FC = () => {
 	);
 };
 
-export default HUD;
+export default HudGUI;

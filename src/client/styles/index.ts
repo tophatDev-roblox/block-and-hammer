@@ -39,10 +39,15 @@ export namespace Styles {
 		italics: boolean;
 	}
 	
+	export type JoinMode =
+		| 'miter'
+		| 'round'
+		| 'bevel';
+	
 	export interface Outline {
 		color: ColorWithAlpha | Gradient;
 		thickness: number;
-		joinMode: 'miter' | 'round' | 'bevel';
+		joinMode: JoinMode;
 		autoScale?: false;
 	}
 	
@@ -73,6 +78,29 @@ export namespace Styles {
 		};
 	}
 	
+	export type TweenStyle =
+		| 'linear'
+		| 'sine'
+		| 'back'
+		| 'exponential';
+	
+	export type TweenDirection = 'in' | 'out';
+	
+	export interface ButtonWithInteraction extends Omit<Button, 'background'> {
+		background: ColorWithAlpha;
+		tween: {
+			style: TweenStyle;
+			direction: TweenDirection;
+			time: number;
+		};
+		hover: {
+			background?: ColorWithAlpha;
+		};
+		pressed: {
+			background?: ColorWithAlpha;
+		};
+	}
+	
 	export interface Container {
 		background: ColorWithAlpha | Gradient;
 		outline: Outline | false;
@@ -96,6 +124,17 @@ export namespace Styles {
 					};
 				};
 			};
+		};
+		modal: {
+			container: Container;
+			text: {
+				title: Text;
+				body: {
+					header: Text;
+					paragraph: Text;
+				};
+			};
+			actionButton: ButtonWithInteraction;
 		};
 		sideMenu: {
 			container: Container;
@@ -140,6 +179,13 @@ export namespace Styles {
 
 export namespace StyleParse {
 	export const fallbackColor = Color3.fromRGB(255, 255, 255);
+	
+	export const TweenStyleMap: Record<Styles.TweenStyle, Enum.EasingStyle> = {
+		linear: Enum.EasingStyle.Linear,
+		sine: Enum.EasingStyle.Sine,
+		back: Enum.EasingStyle.Back,
+		exponential: Enum.EasingStyle.Exponential,
+	};
 	
 	export function areSequenceKeypointsValid(keypoints: Array<{ Time: number }>): boolean {
 		return keypoints.size() >= 2 && keypoints[0].Time === 0 && keypoints[keypoints.size() - 1].Time === 1;

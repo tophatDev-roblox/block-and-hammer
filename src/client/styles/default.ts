@@ -57,6 +57,66 @@ const data: Styles.Data = {
 			},
 		},
 	},
+	modal: {
+		container: {
+			background: {
+				colors: [
+					{ position: 0, color: { red: 34, green: 34, blue: 34 } },
+					{ position: 0.6, color: { red: 0, green: 0, blue: 0 } },
+					{ position: 1, color: { red: 0, green: 0, blue: 0 } },
+				],
+				transparency: [
+					{ position: 0, transparency: 0.4 },
+					{ position: 1, transparency: 0.4 },
+				],
+				rotation: 60,
+			},
+			outline: false,
+		},
+		text: {
+			title: {
+				font: { fontId, weight: 900, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 80,
+				outline: false,
+			},
+			body: {
+				header: {
+					font: { fontId, weight: 700, italics: false },
+					color: { red: 255, green: 255, blue: 255, alpha: 1 },
+					size: 50,
+					outline: false,
+				},
+				paragraph: {
+					font: { fontId, weight: 700, italics: false },
+					color: { red: 255, green: 255, blue: 255, alpha: 1 },
+					size: 40,
+					outline: false,
+				},
+			},
+		},
+		actionButton: {
+			text: {
+				font: { fontId, weight: 700, italics: false },
+				color: { red: 255, green: 255, blue: 255, alpha: 1 },
+				size: 60,
+				outline: false,
+			},
+			background: { red: 0, green: 0, blue: 0, alpha: 0.3 },
+			outline: false,
+			tween: {
+				style: 'linear',
+				direction: 'out',
+				time: 0.2,
+			},
+			hover: {
+				background: { red: 255, green: 255, blue: 255, alpha: 0.1 },
+			},
+			pressed: {
+				background: { red: 255, green: 255, blue: 255, alpha: 0.2 },
+			},
+		},
+	},
 	sideMenu: {
 		container: {
 			background: {

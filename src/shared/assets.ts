@@ -6,6 +6,7 @@ export namespace Assets {
 		SettingsIcon = 'rbxassetid://132520229981046',
 		SpectateIcon = 'rbxassetid://102925807754269',
 		StartMenuIcon = 'rbxassetid://136761769714294',
+		CloseIcon = 'rbxassetid://70441562491259',
 	}
 	
 	export enum Images {

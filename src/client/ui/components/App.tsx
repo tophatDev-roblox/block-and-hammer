@@ -3,11 +3,12 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { StartScreenState } from 'client/startScreenState';
 import StartScreen from './StartScreen';
-import SpeedEffect from './SpeedEffect';
-import Version from './Version';
-import HUD from './HUD';
-import Timer from './Timer';
-import SideMenu from './SideMenu';
+import SpeedEffectGUI from './SpeedEffect';
+import VersionGUI from './Version';
+import HudGUI from './HUD';
+import TimerGUI from './Timer';
+import ModalGUI from './Modal';
+import SideMenuGUI from './SideMenu';
 
 const App: React.FC = () => {
 	const isInStartScreen = useAtom(StartScreenState.isVisibleAtom);
@@ -15,18 +16,19 @@ const App: React.FC = () => {
 		return (
 			<>
 				<StartScreen />
-				<Version />
+				<VersionGUI />
 			</>
 		);
 	}
 	
 	return (
 		<>
-			<SpeedEffect />
-			<Version />
-			<HUD />
-			<Timer />
-			<SideMenu />
+			<SpeedEffectGUI />
+			<VersionGUI />
+			<HudGUI />
+			<TimerGUI />
+			<SideMenuGUI />
+			<ModalGUI />
 		</>
 	);
 };

@@ -13,7 +13,7 @@ const imageIds = [
 	'rbxassetid://13484710536',
 ];
 
-const SpeedEffect: React.FC = () => {
+const SpeedEffectGUI: React.FC = () => {
 	const [imageId, setImageId] = useBinding<string>(imageIds[0]);
 	const [imageTransparency, setImageTransparency] = useBinding<number>(1);
 	const [size, setSize] = useBinding<UDim2>(new UDim2(6, 0, 6, 0));
@@ -63,4 +63,4 @@ const SpeedEffect: React.FC = () => {
 	);
 };
 
-export default SpeedEffect;
+export default SpeedEffectGUI;

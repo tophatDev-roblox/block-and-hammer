@@ -2,7 +2,7 @@ import { CreateReactStory } from '@rbxts/ui-labs';
 import React from '@rbxts/react';
 import ReactRoblox from '@rbxts/react-roblox';
 
-import SideMenu from '../components/SideMenu';
+import SideMenuGUI from '../components/SideMenu';
 
 export = CreateReactStory({
 	react: React,
@@ -10,6 +10,6 @@ export = CreateReactStory({
 	controls: {},
 }, ({ controls: {} }) => {
 	return (
-		<SideMenu />
+		<SideMenuGUI />
 	);
 });

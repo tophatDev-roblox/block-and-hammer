@@ -11,8 +11,9 @@ import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/startScreenState';
 import ContainerImage from '../ContainerImage';
 import MenuButton from './MenuButton';
+import { ModalState } from 'client/modalState';
 
-const SideMenu: React.FC = () => {
+const SideMenuGUI: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);
 	
 	const styles = useAtom(Styles.stateAtom);
@@ -168,8 +169,25 @@ const SideMenu: React.FC = () => {
 								index={5}
 								totalButtons={totalButtons}
 								selectable={selectable}
-								onClick={() => {
+								onClick={async () => {
 									SideMenuState.isOpenAtom(false);
+									
+									const action = await ModalState.create({
+										title: 'Start Screen',
+										body: [
+											'Are you sure you want to go to the start screen?',
+											'Your progress will be reset and is not recoverable.',
+											'TODO: make progress actually save lol',
+										].join('\n'),
+										dismissable: true,
+										actions: ['Yes', 'Nevermind'] as const,
+									});
+									
+									if (action !== 'Yes') {
+										SideMenuState.isOpenAtom(true);
+										return;
+									}
+									
 									StartScreenState.isVisibleAtom(true);
 								}}
 							/>
@@ -181,4 +199,4 @@ const SideMenu: React.FC = () => {
 	);
 };
 
-export default SideMenu;
+export default SideMenuGUI;

@@ -17,6 +17,7 @@ interface TextProps extends React.PropsWithChildren {
 	alignX?: Enum.TextXAlignment;
 	alignY?: Enum.TextYAlignment;
 	richText?: boolean;
+	wrapped?: boolean;
 	rotation?: React.Binding<number> | number;
 }
 
@@ -38,6 +39,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 		alignX = Enum.TextXAlignment.Center,
 		alignY = Enum.TextYAlignment.Center,
 		richText = false,
+		wrapped = false,
 		rotation = 0,
 		children,
 	} = props;
@@ -74,6 +76,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 			TextXAlignment={alignX}
 			TextYAlignment={alignY}
 			Text={text}
+			TextWrapped={wrapped}
 			RichText={richText}
 		>
 			{!isRGBA && (

@@ -12,7 +12,7 @@ import { Styles } from 'client/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 
-const Timer: React.FC = () => {
+const TimerGUI: React.FC = () => {
 	const [text, setText] = useBinding<string>('--');
 	const [rotation, setRotation] = useBinding<number>(0);
 	
@@ -96,4 +96,4 @@ const Timer: React.FC = () => {
 	);
 };
 
-export default Timer;
+export default TimerGUI;

@@ -6,7 +6,7 @@ import { TestingPlaceId } from 'shared/constants';
 import { Styles } from 'client/styles';
 import Text from '../Text';
 
-const Version: React.FC = () => {
+const VersionGUI: React.FC = () => {
 	const styles = useAtom(Styles.stateAtom);
 	
 	let versionString = `block and hammer v${game.PlaceVersion}`;
@@ -44,4 +44,4 @@ const Version: React.FC = () => {
 	);
 };
 
-export default Version;
+export default VersionGUI;

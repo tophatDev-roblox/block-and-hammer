@@ -13,7 +13,7 @@ import Gradient from './Gradient';
 import Outline from './Outline';
 
 interface SideButtonProps {
-	styles: Styles.Button;
+	styles: Styles.ButtonWithIcon;
 	text: string;
 	iconId: string;
 	size: React.Binding<UDim2>;
@@ -33,7 +33,7 @@ interface SideButtonProps {
 }
 
 export interface InheritedProps {
-	styles: Styles.Button;
+	styles: Styles.ButtonWithIcon;
 	text: string;
 	iconId: string;
 	index: number;
@@ -85,9 +85,9 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 	
 	const px = usePx();
 	
-	const isBackgroundRGBA = 'red' in background;
-	const isIconBackgroundRGBA = 'red' in iconBackground;
-	const isIconColorRGBA = 'red' in iconColor;
+	const isBackgroundRGBA = StyleParse.isRGBA(background);
+	const isIconBackgroundRGBA = StyleParse.isRGBA(iconBackground);
+	const isIconColorRGBA = StyleParse.isRGBA(iconColor);
 	const iconSize = textStyles.autoScale === false ? textStyles.size : px(textStyles.size);
 	
 	useEventListener(UserInputService.InputBegan, (input, processed) => {
