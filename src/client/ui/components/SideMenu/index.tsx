@@ -184,7 +184,6 @@ const SideMenuGUI: React.FC = () => {
 									});
 									
 									if (action !== 'Yes') {
-										SideMenuState.isOpenAtom(true);
 										return;
 									}
 									
