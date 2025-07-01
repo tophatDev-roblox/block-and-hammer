@@ -6,6 +6,7 @@ import { useAtom } from '@rbxts/react-charm';
 import { SideMenuState } from 'client/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
 import SideButton, { InheritedProps } from '../SideButton';
+import { InputType } from 'client/inputType';
 
 interface MenuButtonProps extends InheritedProps {
 	totalButtons: number;
@@ -32,11 +33,16 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 	const [isPressed, setPressed] = useState<boolean>(false);
 	
 	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
+	const inputType = useAtom(InputType.stateAtom);
 	
 	const px = usePx();
 	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
 	
 	useEventListener(GuiService.GetPropertyChangedSignal('SelectedObject'), () => {
+		if (inputType !== InputType.Value.Controller) {
+			return;
+		}
+		
 		if (GuiService.SelectedObject === undefined) {
 			SideMenuState.isOpenAtom(false);
 		}
