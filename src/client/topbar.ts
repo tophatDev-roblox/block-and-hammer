@@ -113,6 +113,15 @@ if (IsDebugPanelEnabled) {
 		}
 	});
 	
+	effect(() => {
+		const isVisible = StartScreenState.isVisibleAtom();
+		if (isVisible) {
+			debugIcon.lock();
+		} else {
+			debugIcon.unlock();
+		}
+	});
+	
 	debugIcon.selected.Connect(() => {
 		DebugPanel.isOpenAtom(true);
 	});
