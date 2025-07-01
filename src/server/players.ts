@@ -7,6 +7,8 @@ import { PlayerData } from './playerData';
 import { Badge } from './badge';
 import { RichText } from 'shared/richText';
 import { setTimeout } from 'shared/timeout';
+import { Number } from 'shared/number';
+import { MaxDollars, MinDollars } from 'shared/constants';
 
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
 const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
@@ -89,22 +91,36 @@ async function onPlayerAdded(player: Player): Promise<void> {
 		return;
 	}
 	
-	
 	player.AttributeChanged.Connect((attribute) => {
-		if (attribute === 'color') {
-			const color = player.GetAttribute(attribute);
-			if (!typeIs(color, 'Color3')) {
-				return;
+		switch (attribute) {
+			case 'color': {
+				const color = player.GetAttribute(attribute);
+				if (!typeIs(color, 'Color3')) {
+					player.SetAttribute(attribute, profile.Data.color);
+					return;
+				}
+				
+				const body = player.Character?.FindFirstChild('Body');
+				if (!body?.IsA('Part')) {
+					return;
+				}
+				
+				body.Color = color;
+				profile.Data.color = color;
+				
+				break;
 			}
-			
-			const character = player.Character;
-			const body = character?.FindFirstChild('Body');
-			if (!body?.IsA('Part')) {
-				return;
+			case 'dollars': {
+				const dollars = tonumber(player.GetAttribute(attribute));
+				if (!typeIs(dollars, 'number') || Number.isNaN(dollars)) {
+					player.SetAttribute(attribute, profile.Data.dollars);
+					return;
+				}
+				
+				profile.Data.dollars = math.clamp(dollars, MinDollars, MaxDollars);
+				
+				break;
 			}
-			
-			body.Color = color;
-			profile.Data.color = color;
 		}
 	});
 	

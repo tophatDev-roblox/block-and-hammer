@@ -1,8 +1,7 @@
 import { Players, RunService } from '@rbxts/services';
 
 import ProfileStore, { Profile } from 'shared/ProfileStore';
-import { MaxDollars, MinDollars, TestingPlaceId } from 'shared/constants';
-import { Number } from 'shared/number';
+import { TestingPlaceId } from 'shared/constants';
 
 interface DataTemplate {
 	color: Color3 | undefined;
@@ -50,17 +49,6 @@ export namespace PlayerData {
 			profile.EndSession();
 			return undefined;
 		}
-		
-		player.AttributeChanged.Connect((attribute) => {
-			if (attribute === 'dollars') {
-				const dollars = tonumber(player.GetAttribute('dollars'));
-				if (dollars === undefined || Number.isNaN(dollars)) {
-					return;
-				}
-				
-				profile.Data.dollars = math.clamp(dollars, MinDollars, MaxDollars);
-			}
-		});
 		
 		loadedProfiles.set(player, profile);
 		return profile;
