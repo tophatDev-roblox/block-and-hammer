@@ -16,7 +16,13 @@ export namespace CharacterState {
 		};
 	}
 	
+	export const enum Area {
+		Unknown = '--',
+		Level1 = 'Level 1',
+	}
+	
 	export const partsAtom = atom<CharacterState.Parts>();
+	export const areaAtom = atom<Area>(Area.Unknown);
 	export const timeStartAtom = atom<number>();
 	export const hammerDistanceAtom = atom<number>(13);
 	export const cameraZOffsetAtom = atom<number>(-36);

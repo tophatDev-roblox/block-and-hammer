@@ -28,11 +28,22 @@ let previousCameraCFrame: CFrame | undefined = undefined;
 export namespace Character {
 	export function quickReset(): void {
 		const characterParts = peek(CharacterState.partsAtom);
+		const area = CharacterState.areaAtom();
 		if (characterParts === undefined || peek(CharacterState.forcePauseGameplayAtom)) {
 			return;
 		}
 		
 		print('[client::character] running quick reset');
+		
+		let spawnCFrame = new CFrame(0, 3, 0);
+		
+		switch (area) {
+			case CharacterState.Area.Unknown:
+			case CharacterState.Area.Level1: {
+				CharacterState.areaAtom(CharacterState.Area.Level1);
+				break;
+			}
+		}
 		
 		endRagdoll();
 		effectsFolder.ClearAllChildren();
@@ -42,19 +53,18 @@ export namespace Character {
 		characterParts.model.SetAttribute('justReset', true);
 		mouseCursorPart.Position = new Vector3(0, -500, 0);
 		
-		const target = new CFrame(0, 3, 0);
-		characterParts.model.PivotTo(target);
+		characterParts.model.PivotTo(spawnCFrame);
 		
 		if (!GuiService.ReducedMotionEnabled) {
 			previousCameraCFrame = CFrame.lookAlong(
-				target.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
+				spawnCFrame.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
 				Vector3.yAxis.mul(-1),
 				Vector3.zAxis,
 			);
 		}
 		
 		characterParts.targetAttachment.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
-		characterParts.hammer.model.PivotTo(target);
+		characterParts.hammer.model.PivotTo(spawnCFrame);
 		characterParts.body.AssemblyLinearVelocity = Vector3.zero;
 		characterParts.body.AssemblyAngularVelocity = Vector3.zero;
 		characterParts.hammer.head.AssemblyLinearVelocity = Vector3.zero;

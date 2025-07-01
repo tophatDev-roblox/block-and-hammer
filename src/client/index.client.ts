@@ -3,6 +3,7 @@ print('[client::index] initializing');
 import './coreGuis';
 import './ui';
 import './character';
+import './area';
 import './effects';
 import './topbar';
 import './chat';
