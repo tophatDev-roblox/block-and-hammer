@@ -59,20 +59,16 @@ menuIcon.toggled.Connect((toggled) => {
 	SideMenuState.isOpenAtom(toggled);
 });
 
+effect(() => {
+	const isVisible = StartScreenState.isVisibleAtom();
+	Icon.setTopbarEnabled(!isVisible);
+});
+
 subscribe(SideMenuState.isOpenAtom, (isOpen) => {
 	if (isOpen) {
 		menuIcon.select();
 	} else {
 		menuIcon.deselect();
-	}
-});
-
-effect(() => {
-	const isVisible = StartScreenState.isVisibleAtom();
-	if (isVisible) {
-		menuIcon.lock();
-	} else {
-		menuIcon.unlock();
 	}
 });
 
@@ -110,15 +106,6 @@ if (IsDebugPanelEnabled) {
 			debugIcon.select();
 		} else {
 			debugIcon.deselect();
-		}
-	});
-	
-	effect(() => {
-		const isVisible = StartScreenState.isVisibleAtom();
-		if (isVisible) {
-			debugIcon.lock();
-		} else {
-			debugIcon.unlock();
 		}
 	});
 	
