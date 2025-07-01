@@ -1,9 +1,9 @@
 import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/services';
+import { setTimeout } from '@rbxts/set-timeout';
 
 import computeNameColor from 'shared/NameColor';
 import { Remotes } from 'shared/remotes';
 import { RichText } from 'shared/richText';
-import { setTimeout } from 'shared/timeout';
 import { Number } from 'shared/number';
 import { MaxDollars, MinDollars } from 'shared/constants';
 import { Leaderstats } from './leaderstats';

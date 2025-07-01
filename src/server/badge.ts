@@ -1,5 +1,6 @@
 import { BadgeService } from '@rbxts/services';
-import { setTimeout } from 'shared/timeout';
+import { setTimeout } from '@rbxts/set-timeout';
+
 import { TimeSpan } from 'shared/timeSpan';
 
 const awardBadge = Promise.promisify((userId: number, badgeId: number) => BadgeService.AwardBadge(userId, badgeId));
@@ -22,7 +23,7 @@ export namespace Badge {
 			return;
 		} catch (err) {
 			warn(`[server::badge] failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
-			setTimeout(Badge.award, 0.5, badgeId, player);
+			setTimeout(() => Badge.award(badgeId, player), 0.5);
 		}
 	}
 	

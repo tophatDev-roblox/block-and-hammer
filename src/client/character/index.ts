@@ -1,18 +1,18 @@
 import { GuiService, Players, ReplicatedStorage, RunService, StarterGui, TweenService, UserInputService, Workspace } from '@rbxts/services';
+import { setTimeout } from '@rbxts/set-timeout';
 import { effect, peek, subscribe } from '@rbxts/charm';
 
 import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
 import { Shake } from 'shared/shake';
 import { Controller } from 'shared/controller';
-import { DebugPanel } from 'client/debugPanel';
 import { IsDebugPanelEnabled } from 'shared/constants';
+import { DebugPanel } from 'client/debugPanel';
 import { UserSettings } from 'client/settings';
 import { InputType } from 'client/inputType';
 import { SideMenuState } from 'client/sideMenuState';
 import { camera } from 'client/camera';
 import { CharacterState } from './state';
-import { setTimeout } from 'shared/timeout';
 
 const client = Players.LocalPlayer;
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
@@ -366,7 +366,7 @@ function bindResetButtonCallback(resetEvent: BindableEvent): void {
 	try {
 		StarterGui.SetCore('ResetButtonCallback', resetEvent);
 	} catch (err) {
-		setTimeout(bindResetButtonCallback, 1, resetEvent);
+		setTimeout(() => bindResetButtonCallback(resetEvent), 1);
 	}
 }
 

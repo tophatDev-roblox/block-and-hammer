@@ -1,9 +1,9 @@
 import { GuiService } from '@rbxts/services';
+import { setTimeout } from '@rbxts/set-timeout';
 import { atom, effect } from '@rbxts/charm';
 
 import { StartScreenState } from './startScreenState';
 import { CoreGuis } from './coreGuis';
-import { clearTimeout, setTimeout } from 'shared/timeout';
 
 export namespace SideMenuState {
 	export const isOpenAtom = atom<boolean>(false);
@@ -20,12 +20,12 @@ effect(() => {
 		CoreGuis.playerListAtom(false);
 	} else {
 		if (!GuiService.ReducedMotionEnabled) {
-			const timeout = setTimeout(() => {
+			const clearTimeout = setTimeout(() => {
 				CoreGuis.playerListAtom(true);
 			}, 0.6);
 			
 			return () => {
-				clearTimeout(timeout);
+				clearTimeout();
 			};
 		} else {
 			CoreGuis.playerListAtom(true);

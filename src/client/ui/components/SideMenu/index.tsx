@@ -1,10 +1,10 @@
 import { GuiService } from '@rbxts/services';
+import { setTimeout } from '@rbxts/set-timeout';
 import React, { useEffect, useState } from '@rbxts/react';
-import { useAtom } from '@rbxts/react-charm';
 import { useMotion } from '@rbxts/pretty-react-hooks';
+import { useAtom } from '@rbxts/react-charm';
 
 import { Assets } from 'shared/assets';
-import { clearTimeout, setTimeout } from 'shared/timeout';
 import { Styles } from 'client/styles';
 import { SideMenuState } from 'client/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
@@ -36,10 +36,10 @@ const SideMenu: React.FC = () => {
 					direction: Enum.EasingDirection.Out,
 				});
 				
-				const timeout = setTimeout(setSelectable, 0.3, true);
+				const clearTimeout = setTimeout(() => setSelectable(true), 0.3);
 				
 				return () => {
-					clearTimeout(timeout);
+					clearTimeout();
 				};
 			} else {
 				positionMotion.tween(closePosition, {
@@ -54,10 +54,10 @@ const SideMenu: React.FC = () => {
 			if (sideMenuOpened) {
 				positionMotion.immediate(openPosition);
 				
-				const timeout = setTimeout(setSelectable, 0.05, true);
+				const clearTimeout = setTimeout(() => setSelectable(true), 0.05);
 				
 				return () => {
-					clearTimeout(timeout);
+					clearTimeout();
 				};
 			} else {
 				positionMotion.immediate(closePosition);

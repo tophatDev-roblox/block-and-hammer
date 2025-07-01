@@ -1,10 +1,10 @@
 import { GuiService, RunService, TweenService, Workspace } from '@rbxts/services';
+import { setTimeout } from '@rbxts/set-timeout';
 import React, { useEffect, useState } from '@rbxts/react';
-import { useAtom } from '@rbxts/react-charm';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
+import { useAtom } from '@rbxts/react-charm';
 import Ripple from '@rbxts/ripple';
 
-import { clearTimeout, setTimeout } from 'shared/timeout';
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/startScreenState';
 import { Styles } from 'client/styles';
@@ -51,7 +51,7 @@ const StartScreen: React.FC = () => {
 		setSelectable(false);
 		pivot.CFrame = startPivot.CFrame;
 		
-		const timeout = setTimeout(() => {
+		const clearTimeout = setTimeout(() => {
 			const hammerTween = TweenService.Create(pivot, new TweenInfo(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {
 				CFrame: endPivot.CFrame,
 			});
@@ -87,18 +87,18 @@ const StartScreen: React.FC = () => {
 					direction: Enum.EasingDirection.Out,
 				});
 				
-				setTimeout(setSelectable, 0.4, true);
+				setTimeout(() => setSelectable(true), 0.4);
 			} else {
 				logoAnchorPointMotion.immediate(logoAnchorPoint);
 				buttonsAnchorPointMotion.immediate(buttonsAnchorPoint);
 				
-				setTimeout(setSelectable, 0.05, true);
+				setTimeout(() => setSelectable(true), 0.05);
 			}
 		}, 0.5);
 		
 		return () => {
 			pivot.CFrame = startPivot.CFrame;
-			clearTimeout(timeout);
+			clearTimeout();
 		};
 	}, [isLoadingFinished]);
 	

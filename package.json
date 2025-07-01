@@ -24,6 +24,7 @@
     "@rbxts/remo": "^1.5.2",
     "@rbxts/ripple": "^0.9.3",
     "@rbxts/services": "^1.5.5",
+    "@rbxts/set-timeout": "^1.1.2",
     "@rbxts/types": "^1.0.858",
     "@rbxts/ui-labs": "^2.4.0",
     "roblox-ts": "^3.0.0",

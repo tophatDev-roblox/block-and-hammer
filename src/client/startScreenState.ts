@@ -1,7 +1,7 @@
-import { atom, batch, effect } from '@rbxts/charm';
 import { ContentProvider, RunService } from '@rbxts/services';
+import { setTimeout } from '@rbxts/set-timeout';
+import { atom, batch, effect } from '@rbxts/charm';
 
-import { setTimeout } from 'shared/timeout';
 import { Remotes } from 'shared/remotes';
 import { Assets } from 'shared/assets';
 import { CharacterState } from './character/state';
