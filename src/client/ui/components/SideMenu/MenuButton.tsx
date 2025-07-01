@@ -1,6 +1,6 @@
 import { GuiService } from '@rbxts/services';
 import React, { useEffect, useState } from '@rbxts/react';
-import { useMotion } from '@rbxts/pretty-react-hooks';
+import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { SideMenuState } from 'client/sideMenuState';
@@ -35,6 +35,12 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 	
 	const px = usePx();
 	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
+	
+	useEventListener(GuiService.GetPropertyChangedSignal('SelectedObject'), () => {
+		if (GuiService.SelectedObject === undefined) {
+			SideMenuState.isOpenAtom(false);
+		}
+	});
 	
 	useEffect(() => {
 		const openSize = new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0);

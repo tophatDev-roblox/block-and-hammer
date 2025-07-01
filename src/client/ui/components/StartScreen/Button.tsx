@@ -1,10 +1,10 @@
 import React, { useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
+import { useAtom } from '@rbxts/react-charm';
 
 import { usePx } from 'client/ui/hooks/usePx';
-import SideButton, { InheritedProps } from '../SideButton';
-import { useAtom } from '@rbxts/react-charm';
 import { StartScreenState } from 'client/startScreenState';
+import SideButton, { InheritedProps } from '../SideButton';
 
 const Button: React.FC<InheritedProps> = (props) => {
 	const {
