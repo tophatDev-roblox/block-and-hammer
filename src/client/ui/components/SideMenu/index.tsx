@@ -9,7 +9,7 @@ import { Styles } from 'client/styles';
 import { SideMenuState } from 'client/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/startScreenState';
-import Container from '../Container';
+import ContainerImage from '../ContainerImage';
 import MenuButton from './MenuButton';
 
 const SideMenu: React.FC = () => {
@@ -82,7 +82,7 @@ const SideMenu: React.FC = () => {
 				<uiaspectratioconstraint
 					AspectRatio={containerWidth / 1080}
 				/>
-				<Container
+				<ContainerImage
 					styles={styles.sideMenu.container}
 					width={new UDim(1.5, 0)}
 					height={new UDim(1, 0)}
@@ -175,7 +175,7 @@ const SideMenu: React.FC = () => {
 							/>
 						</frame>
 					</>
-				</Container>
+				</ContainerImage>
 			</frame>
 		</screengui>
 	);
