@@ -1,10 +1,9 @@
-import { GuiService, UserInputService } from '@rbxts/services';
+import { GuiService } from '@rbxts/services';
 import React, { useEffect, useRef, useState } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { Styles, StyleParse } from 'client/styles';
-import { Controller } from 'shared/controller';
 import { Assets } from 'shared/assets';
 import { InputType } from 'client/inputType';
 import { usePx } from '../hooks/usePx';
@@ -89,30 +88,6 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 	const isIconBackgroundRGBA = StyleParse.isRGBA(iconBackground);
 	const isIconColorRGBA = StyleParse.isRGBA(iconColor);
 	const iconSize = textStyles.autoScale === false ? textStyles.size : px(textStyles.size);
-	
-	useEventListener(UserInputService.InputBegan, (input, processed) => {
-		if (processed || inputType !== InputType.Value.Controller) {
-			return;
-		}
-		
-		if (input.KeyCode === Controller.UINavigationSelect && isHovered) {
-			onPress(true);
-		}
-	});
-	
-	useEventListener(UserInputService.InputEnded, (input) => {
-		if (inputType !== InputType.Value.Controller) {
-			return;
-		}
-		
-		if (input.KeyCode === Controller.UINavigationSelect && isPressed) {
-			onPress(false);
-			
-			if (isFocused) {
-				onClick();
-			}
-		}
-	});
 	
 	useEventListener(GuiService.GetPropertyChangedSignal('SelectedObject'), () => {
 		if (GuiService.SelectedObject === buttonRef.current) {
