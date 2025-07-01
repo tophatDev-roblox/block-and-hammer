@@ -72,7 +72,7 @@ const LoadingScreen: React.FC= () => {
 			</frame>
 			<frame
 				BackgroundTransparency={1}
-				Size={new UDim2(1, 0, 0, px(60))}
+				Size={new UDim2(1, 0, 0, px(30))}
 				Position={new UDim2(0, 0, 1, 0)}
 				AnchorPoint={new Vector2(0, 1)}
 			>
