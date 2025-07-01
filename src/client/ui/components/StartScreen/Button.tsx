@@ -11,6 +11,7 @@ const Button: React.FC<InheritedProps> = (props) => {
 		styles,
 		text,
 		iconId,
+		index,
 		autoSelect,
 		selectable,
 		widthScale = 0,
@@ -35,6 +36,7 @@ const Button: React.FC<InheritedProps> = (props) => {
 			iconId={iconId}
 			size={size}
 			sizeMotion={sizeMotion}
+			order={index}
 			isHovered={isHovered}
 			isPressed={isPressed}
 			selectable={selectable}

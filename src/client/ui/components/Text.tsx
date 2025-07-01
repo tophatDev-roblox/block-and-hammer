@@ -52,10 +52,10 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 	const isRGBA = StyleParse.isRGBA(color);
 	
 	let labelSize =
-		automaticHeight && automaticWidth ? new UDim2(0, 0, 0, 0)
-		: automaticHeight ? new UDim2(1, 0, 0, 0)
-		: automaticWidth ? new UDim2(0, 0, 1, 0)
-		: new UDim2(1, 0, 1, 0);
+		automaticHeight && automaticWidth ? UDim2.fromScale(0, 0)
+		: automaticHeight ? UDim2.fromScale(1, 0)
+		: automaticWidth ? UDim2.fromScale(0, 1)
+		: UDim2.fromScale(1, 1);
 	
 	if (width !== undefined || height !== undefined) {
 		labelSize = new UDim2(width ?? labelSize.X, height ?? labelSize.Y);

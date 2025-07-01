@@ -56,17 +56,17 @@ const Spinner: React.FC<SpinnerProps> = ({ size = 180 }) => {
 	return (
 		<frame
 			BackgroundTransparency={1}
-			Size={new UDim2(0, px(size), 0, px(size))}
+			Size={UDim2.fromOffset(px(size), px(size))}
 		>
 			<frame
 				BackgroundTransparency={1}
-				Size={new UDim2(0.5, 0, 1, 0)}
+				Size={UDim2.fromScale(0.5, 1)}
 				ClipsDescendants
 			>
 				<frame
 					BackgroundColor3={Color3.fromRGB(255, 255, 255)}
 					BorderSizePixel={0}
-					Size={new UDim2(2, 0, 1, 0)}
+					Size={UDim2.fromScale(2, 1)}
 				>
 					<uigradient
 						Transparency={transparencySequence}
@@ -79,15 +79,15 @@ const Spinner: React.FC<SpinnerProps> = ({ size = 180 }) => {
 			</frame>
 			<frame
 				BackgroundTransparency={1}
-				Position={new UDim2(0.5, 0, 0, 0)}
-				Size={new UDim2(0.5, 0, 1, 0)}
+				Position={UDim2.fromScale(0.5, 0)}
+				Size={UDim2.fromScale(0.5, 1)}
 				ClipsDescendants
 			>
 				<frame
 					BackgroundColor3={Color3.fromRGB(255, 255, 255)}
 					BorderSizePixel={0}
-					Position={new UDim2(-1, 0, 0, 0)}
-					Size={new UDim2(2, 0, 1, 0)}
+					Position={UDim2.fromScale(-1, 0)}
+					Size={UDim2.fromScale(2, 1)}
 				>
 					<uigradient
 						Transparency={transparencySequence}

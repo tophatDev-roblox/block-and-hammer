@@ -30,10 +30,10 @@ const ContainerImage = forwardRef<ImageLabel, ContainerImageProps>((props, ref) 
 	const automaticSize = getAutomaticSize(automaticWidth, automaticHeight);
 	
 	let containerSize =
-		automaticHeight && automaticWidth ? new UDim2(0, 0, 0, 0)
-		: automaticHeight ? new UDim2(1, 0, 0, 0)
-		: automaticWidth ? new UDim2(0, 0, 1, 0)
-		: new UDim2(1, 0, 1, 0);
+		automaticHeight && automaticWidth ? UDim2.fromScale(0, 0)
+		: automaticHeight ? UDim2.fromScale(1, 0)
+		: automaticWidth ? UDim2.fromScale(0, 1)
+		: UDim2.fromScale(1, 1);
 	
 	if (width !== undefined || height !== undefined) {
 		containerSize = new UDim2(width ?? containerSize.X, height ?? containerSize.Y);

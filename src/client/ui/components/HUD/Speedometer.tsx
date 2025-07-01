@@ -34,13 +34,13 @@ const Speedometer: React.FC = () => {
 	return (
 		<frame
 			BackgroundTransparency={1}
-			Size={new UDim2(0, 0, 0, 0)}
+			Size={UDim2.fromScale(0, 0)}
 			AutomaticSize={Enum.AutomaticSize.XY}
+			LayoutOrder={1}
 		>
 			<Text
 				styles={styles.hud.text.speedometer}
 				text={text}
-				order={1}
 				rotation={rotation}
 				automaticWidth
 				automaticHeight

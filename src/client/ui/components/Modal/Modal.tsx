@@ -4,8 +4,9 @@ import { useAtom } from '@rbxts/react-charm';
 import { Assets } from 'shared/assets';
 import { usePx } from 'client/ui/hooks/usePx';
 import { Styles } from 'client/styles';
-import Container from '../Container';
+import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
+import Container from '../Container';
 import Text from '../Text';
 import Action from './Action';
 
@@ -38,12 +39,12 @@ const Modal: React.FC<ModalProps<Array<string>>> = ({ title, body, dismissable, 
 			>
 				<>
 					{/* wrapping in fragment for workaround: https://github.com/jsdotlua/react-lua/issues/42 */}
-					<uilistlayout
-						FillDirection={Enum.FillDirection.Vertical}
-						Padding={new UDim(0, px(12))}
-					/>
 					<uicorner
 						CornerRadius={new UDim(0, px(40))}
+					/>
+					<UIListLayout
+						fillDirection={Enum.FillDirection.Vertical}
+						padding={px(12)}
 					/>
 					<UIPadding
 						padding={px(15)}
@@ -52,6 +53,7 @@ const Modal: React.FC<ModalProps<Array<string>>> = ({ title, body, dismissable, 
 						BackgroundTransparency={1}
 						Size={UDim2.fromScale(1, 0)}
 						AutomaticSize={Enum.AutomaticSize.Y}
+						LayoutOrder={0}
 					>
 						<Text
 							styles={styles.modal.text.title}
@@ -80,6 +82,7 @@ const Modal: React.FC<ModalProps<Array<string>>> = ({ title, body, dismissable, 
 						ScrollBarThickness={px(15)}
 						AutomaticCanvasSize={Enum.AutomaticSize.Y}
 						ScrollingDirection={Enum.ScrollingDirection.Y}
+						LayoutOrder={1}
 					>
 						<uiflexitem
 							FlexMode={Enum.UIFlexMode.Grow}
@@ -102,15 +105,17 @@ const Modal: React.FC<ModalProps<Array<string>>> = ({ title, body, dismissable, 
 							BackgroundTransparency={1}
 							Size={UDim2.fromScale(1, 0)}
 							AutomaticSize={Enum.AutomaticSize.Y}
+							LayoutOrder={2}
 						>
-							<uilistlayout
-								FillDirection={Enum.FillDirection.Horizontal}
-								Padding={new UDim(0, px(12))}
+							<UIListLayout
+								fillDirection={Enum.FillDirection.Horizontal}
+								padding={px(12)}
 							/>
 							{actions.map((action, i) => (
 								<Action
 									styles={styles.modal.actionButton}
 									action={action}
+									index={i}
 									autoSelect={i === 0}
 									selectable
 									onClick={() => onAction?.(action)}

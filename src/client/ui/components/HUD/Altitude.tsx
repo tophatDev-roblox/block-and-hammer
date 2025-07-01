@@ -34,13 +34,13 @@ const Altitude: React.FC = () => {
 	return (
 		<frame
 			BackgroundTransparency={1}
-			Size={new UDim2(0, 0, 0, 0)}
+			Size={UDim2.fromScale(0, 0)}
 			AutomaticSize={Enum.AutomaticSize.XY}
+			LayoutOrder={2}
 		>
 			<Text
 				styles={styles.hud.text.altitude}
 				text={text}
-				order={2}
 				rotation={rotation}
 				automaticWidth
 				automaticHeight

@@ -16,7 +16,7 @@ const imageIds = [
 const SpeedEffectGUI: React.FC = () => {
 	const [imageId, setImageId] = useBinding<string>(imageIds[0]);
 	const [imageTransparency, setImageTransparency] = useBinding<number>(1);
-	const [size, setSize] = useBinding<UDim2>(new UDim2(6, 0, 6, 0));
+	const [size, setSize] = useBinding<UDim2>(UDim2.fromScale(6, 6));
 	
 	const currentIndexRef = useRef<number>(0);
 	
@@ -25,7 +25,7 @@ const SpeedEffectGUI: React.FC = () => {
 	useEventListener(RunService.RenderStepped, () => {
 		if (characterParts === undefined) {
 			setImageTransparency(1);
-			setSize(new UDim2(6, 0, 6, 0));
+			setSize(UDim2.fromScale(6, 6));
 			return;
 		}
 		
@@ -42,7 +42,7 @@ const SpeedEffectGUI: React.FC = () => {
 		const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
 		const size = math.clamp((110 - fieldOfView) / 10, 1.4, 6);
 		setImageTransparency(1 - (6 - size) / 4.6);
-		setSize(new UDim2(size, 0, size, 0));
+		setSize(UDim2.fromScale(size, size));
 	});
 	
 	return (
@@ -56,8 +56,8 @@ const SpeedEffectGUI: React.FC = () => {
 				ImageTransparency={imageTransparency}
 				Image={imageId}
 				Size={size}
+				Position={UDim2.fromScale(0.5, 0.5)}
 				AnchorPoint={new Vector2(0.5, 0.5)}
-				Position={new UDim2(0.5, 0, 0.5, 0)}
 			/>
 		</screengui>
 	);

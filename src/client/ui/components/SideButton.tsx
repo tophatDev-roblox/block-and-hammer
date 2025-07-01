@@ -10,6 +10,8 @@ import { usePx } from '../hooks/usePx';
 import Text from './Text';
 import Gradient from './Gradient';
 import Outline from './Outline';
+import UIListLayout from './UIListLayout';
+import UIPadding from './UIPadding';
 
 interface SideButtonProps {
 	styles: Styles.ButtonWithIcon;
@@ -17,6 +19,7 @@ interface SideButtonProps {
 	iconId: string;
 	size: React.Binding<UDim2>;
 	sizeMotion: Ripple.Motion<UDim2>;
+	order: number;
 	canAnimate: boolean;
 	isHovered: boolean;
 	isPressed: boolean;
@@ -60,6 +63,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 		iconId,
 		size,
 		sizeMotion,
+		order,
 		canAnimate,
 		selectable,
 		autoSelect,
@@ -150,12 +154,13 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 		<frame
 			BackgroundTransparency={1}
 			Size={new UDim2(1, 0, 0, iconSize + px(padding) * 2)}
+			LayoutOrder={order}
 		>
 			<imagebutton
 				ref={buttonRef}
 				BackgroundTransparency={1}
 				Size={size}
-				Position={new UDim2(1, 0, 0, 0)}
+				Position={UDim2.fromScale(1, 0)}
 				AnchorPoint={new Vector2(1, 0)}
 				Image={Assets.Images.ButtonBackground}
 				ImageColor3={isBackgroundRGBA ? StyleParse.color(background) : Color3.fromRGB(255, 255, 255)}
@@ -180,12 +185,12 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 				)}
 				<frame
 					BackgroundTransparency={1}
-					Size={new UDim2(1, 0, 1, 0)}
+					Size={UDim2.fromScale(1, 1)}
 				>
 					<frame
 						ref={selectionImageObjectRef}
 						BackgroundTransparency={1}
-						Size={new UDim2(1, 0, 1, 0)}
+						Size={UDim2.fromScale(1, 1)}
 					>
 						<uicorner
 							CornerRadius={new UDim(1, 0)}
@@ -199,32 +204,30 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 					</frame>
 					<frame
 						BackgroundTransparency={1}
-						Size={new UDim2(1, 0, 1, 0)}
+						Size={UDim2.fromScale(1, 1)}
 					>
+						<uicorner
+							CornerRadius={new UDim(1, 0)}
+						/>
 						{outline !== false && (
 							<Outline
 								styles={outline}
 								applyStrokeMode={Enum.ApplyStrokeMode.Border}
 							/>
 						)}
-						<uilistlayout
-							FillDirection={Enum.FillDirection.Horizontal}
-							Padding={new UDim(0, px(padding))}
+						<UIListLayout
+							fillDirection={Enum.FillDirection.Horizontal}
+							padding={px(padding)}
 						/>
-						<uipadding
-							PaddingTop={new UDim(0, px(padding))}
-							PaddingRight={new UDim(0, px(padding))}
-							PaddingBottom={new UDim(0, px(padding))}
-							PaddingLeft={new UDim(0, px(padding))}
-						/>
-						<uicorner
-							CornerRadius={new UDim(1, 0)}
+						<UIPadding
+							padding={px(padding)}
 						/>
 						<frame
 							BackgroundColor3={isIconBackgroundRGBA ? StyleParse.color(iconBackground) : Color3.fromRGB(255, 255, 255)}
 							BackgroundTransparency={isIconBackgroundRGBA ? 1 - iconBackground.alpha : 0}
 							BorderSizePixel={0}
-							Size={new UDim2(0, iconSize, 0, iconSize)}
+							Size={UDim2.fromOffset(iconSize, iconSize)}
+							LayoutOrder={0}
 						>
 							{!isIconBackgroundRGBA && (
 								<Gradient
@@ -239,8 +242,8 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 							/>
 							<imagelabel
 								BackgroundTransparency={1}
-								Size={new UDim2(iconScale, 0, iconScale, 0)}
-								Position={new UDim2(0.5, 0, 0.5, 0)}
+								Size={UDim2.fromScale(iconScale, iconScale)}
+								Position={UDim2.fromScale(0.5, 0.5)}
 								AnchorPoint={new Vector2(0.5, 0.5)}
 								Image={iconId}
 								ImageColor3={isIconColorRGBA ? StyleParse.color(iconColor) : Color3.fromRGB(255, 255, 255)}
@@ -256,6 +259,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 						<Text
 							styles={textStyles}
 							text={text}
+							order={1}
 							automaticWidth
 							automaticHeight
 						/>

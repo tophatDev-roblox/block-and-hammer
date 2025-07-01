@@ -1,26 +1,27 @@
 import React from '@rbxts/react';
 
+import { usePx } from 'client/ui/hooks/usePx';
+import UIListLayout from '../UIListLayout';
+import UIPadding from '../UIPadding';
 import Speedometer from './Speedometer';
 import Altitude from './Altitude';
 import MoveHint from './MoveHint';
 
 const HudGUI: React.FC = () => {
+	const px = usePx();
+	
 	return (
 		<screengui
 			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>
-			<uilistlayout
-				FillDirection={Enum.FillDirection.Vertical}
-				HorizontalAlignment={Enum.HorizontalAlignment.Center}
-				VerticalAlignment={Enum.VerticalAlignment.Bottom}
-				Padding={new UDim(0, 0)}
+			<UIListLayout
+				fillDirection={Enum.FillDirection.Vertical}
+				alignX={Enum.HorizontalAlignment.Center}
+				alignY={Enum.VerticalAlignment.Bottom}
 			/>
-			<uipadding
-				PaddingTop={new UDim(0, 8)}
-				PaddingRight={new UDim(0, 8)}
-				PaddingBottom={new UDim(0, 8)}
-				PaddingLeft={new UDim(0, 8)}
+			<UIPadding
+				padding={px(8)}
 			/>
 			<MoveHint />
 			<Speedometer />

@@ -12,14 +12,26 @@ interface OutlineProps {
 	animateThickness?: true;
 }
 
-const Outline: React.FC<OutlineProps> = ({ styles: { color, thickness, joinMode, autoScale = true }, applyStrokeMode, overwriteThickness, animateThickness }) => {
+const Outline: React.FC<OutlineProps> = (props) => {
+	const {
+		styles: {
+			color,
+			thickness,
+			joinMode,
+			autoScale = true,
+		},
+		applyStrokeMode,
+		overwriteThickness,
+		animateThickness,
+	} = props;
+	
 	const px = usePx();
 	const [thicknessValue, thicknessMotion] = useMotion(0);
 	
 	const isRGBA = StyleParse.isRGBA(color);
 	
 	useEffect(() => {
-		const value = overwriteThickness ?? (autoScale ? px(thickness, false) : thickness);
+		const value = overwriteThickness ?? StyleParse.px(px, thickness, autoScale, false);
 		if (animateThickness) {
 			thicknessMotion.tween(value, {
 				time: 0.2,

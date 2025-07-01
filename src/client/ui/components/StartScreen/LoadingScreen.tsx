@@ -9,16 +9,17 @@ import { Styles } from 'client/styles';
 import { usePx } from 'client/ui/hooks/usePx';
 import Text from '../Text';
 import { GuiService } from '@rbxts/services';
+import UIListLayout from '../UIListLayout';
 
 const LoadingScreen: React.FC= () => {
 	const styles = useAtom(Styles.stateAtom);
 	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinished);
 	
 	const loadingStatus = useAtomBinding(StartScreenState.loadingStatusAtom);
-	const percentageSize = useAtomBinding(computed(() => new UDim2(StartScreenState.loadingPercentage(), 0, 1, 0)));
+	const percentageSize = useAtomBinding(computed(() => UDim2.fromScale(StartScreenState.loadingPercentage(), 1)));
 	const percentageText = useAtomBinding(computed(() => '%.1f%%'.format(StartScreenState.loadingPercentage() * 100)));
 	
-	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? new UDim2(0, 0, -1, 0) : new UDim2(0, 0, 0, 0));
+	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? UDim2.fromScale(0, -1) : UDim2.fromScale(0, 0));
 	
 	const px = usePx();
 	
@@ -27,7 +28,7 @@ const LoadingScreen: React.FC= () => {
 			return;
 		}
 		
-		const position = new UDim2(0, 0, -1, 0);
+		const position = UDim2.fromScale(0, -1);
 		if (!GuiService.ReducedMotionEnabled) {
 			positionMotion.tween(position, {
 				time: 0.5,
@@ -43,29 +44,31 @@ const LoadingScreen: React.FC= () => {
 		<frame
 			BackgroundColor3={Color3.fromRGB(0, 0, 0)}
 			BorderSizePixel={0}
-			Size={new UDim2(1, 0, 1, 0)}
+			Size={UDim2.fromScale(1, 1)}
 			Position={position}
 			ZIndex={2}
 		>
 			<frame
 				BackgroundTransparency={1}
-				Size={new UDim2(1, 0, 1, 0)}
+				Size={UDim2.fromScale(1, 1)}
 			>
-				<uilistlayout
-					FillDirection={Enum.FillDirection.Vertical}
-					Padding={new UDim(0, px(12))}
-					HorizontalAlignment={Enum.HorizontalAlignment.Center}
-					VerticalAlignment={Enum.VerticalAlignment.Center}
+				<UIListLayout
+					fillDirection={Enum.FillDirection.Vertical}
+					padding={px(12)}
+					alignX={Enum.HorizontalAlignment.Center}
+					alignY={Enum.VerticalAlignment.Center}
 				/>
 				<Text
 					styles={styles.startScreen.loading.logo}
 					text={'block and hammer'}
+					order={0}
 					automaticWidth
 					automaticHeight
 				/>
 				<Text
 					styles={styles.startScreen.loading.status}
 					text={loadingStatus}
+					order={1}
 					automaticWidth
 					automaticHeight
 				/>
@@ -73,7 +76,7 @@ const LoadingScreen: React.FC= () => {
 			<frame
 				BackgroundTransparency={1}
 				Size={new UDim2(1, 0, 0, px(30))}
-				Position={new UDim2(0, 0, 1, 0)}
+				Position={UDim2.fromScale(0, 1)}
 				AnchorPoint={new Vector2(0, 1)}
 			>
 				<frame
@@ -84,9 +87,9 @@ const LoadingScreen: React.FC= () => {
 				/>
 				<frame
 					BackgroundTransparency={1}
-					Size={new UDim2(1, 0, 0, 0)}
+					Size={UDim2.fromScale(1, 0)}
 					AutomaticSize={Enum.AutomaticSize.Y}
-					Position={new UDim2(0, 0, 0, px(-10))}
+					Position={UDim2.fromOffset(0, px(-10))}
 					AnchorPoint={new Vector2(0, 1)}
 				>
 					<Text

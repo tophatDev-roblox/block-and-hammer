@@ -11,6 +11,8 @@ import { usePx } from 'client/ui/hooks/usePx';
 import { Styles } from 'client/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
+import UIListLayout from '../UIListLayout';
+import UIPadding from '../UIPadding';
 
 const TimerGUI: React.FC = () => {
 	const [text, setText] = useBinding<string>('--');
@@ -66,21 +68,19 @@ const TimerGUI: React.FC = () => {
 			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>
-			<uipadding
-				PaddingTop={new UDim(0, 8)}
-				PaddingRight={new UDim(0, 12)}
-				PaddingBottom={new UDim(0, 8)}
-				PaddingLeft={new UDim(0, 12)}
+			<UIListLayout
+				fillDirection={Enum.FillDirection.Horizontal}
+				alignX={Enum.HorizontalAlignment.Left}
+				alignY={Enum.VerticalAlignment.Bottom}
 			/>
-			<uilistlayout
-				FillDirection={Enum.FillDirection.Horizontal}
-				HorizontalAlignment={Enum.HorizontalAlignment.Left}
-				VerticalAlignment={Enum.VerticalAlignment.Bottom}
+			<UIPadding
+				padding={[px(8), px(12)]}
 			/>
 			<frame
 				BackgroundTransparency={1}
-				Size={new UDim2(0, 0, 0, 0)}
+				Size={UDim2.fromScale(0, 0)}
 				AutomaticSize={Enum.AutomaticSize.XY}
+				LayoutOrder={0}
 			>
 				<Text
 					styles={styles.timer.text}

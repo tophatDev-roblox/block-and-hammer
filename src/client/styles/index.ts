@@ -195,6 +195,14 @@ export namespace StyleParse {
 		return 'red' in color;
 	}
 	
+	export function px(px: (px: number, rounded?: boolean) => number, value: number, autoScale?: boolean, rounded?: boolean): number {
+		if (autoScale === false) {
+			return value;
+		}
+		
+		return px(value, rounded);
+	}
+	
 	export function outlineJoinMode(joinMode: Styles.Outline['joinMode']): Enum.LineJoinMode {
 		return joinMode === 'miter' ? Enum.LineJoinMode.Miter : joinMode === 'round' ? Enum.LineJoinMode.Round : Enum.LineJoinMode.Bevel;
 	}

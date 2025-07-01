@@ -104,6 +104,7 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 			iconId={iconId}
 			size={size}
 			sizeMotion={sizeMotion}
+			order={index}
 			isHovered={isHovered}
 			isPressed={isPressed}
 			canAnimate={canAnimate}

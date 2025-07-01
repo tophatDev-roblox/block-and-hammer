@@ -3,11 +3,15 @@ import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { TestingPlaceId } from 'shared/constants';
+import { usePx } from 'client/ui/hooks/usePx';
 import { Styles } from 'client/styles';
+import UIPadding from '../UIPadding';
 import Text from '../Text';
 
 const VersionGUI: React.FC = () => {
 	const styles = useAtom(Styles.stateAtom);
+	
+	const px = usePx();
 	
 	let versionString = `block and hammer v${game.PlaceVersion}`;
 	if (RunService.IsStudio()) {
@@ -25,13 +29,12 @@ const VersionGUI: React.FC = () => {
 			<frame
 				BackgroundTransparency={1}
 				AnchorPoint={new Vector2(0, 0)}
-				Position={new UDim2(0, 0, 0, 0)}
-				Size={new UDim2(1, 0, 0, 0)}
+				Position={UDim2.fromScale(0, 0)}
+				Size={UDim2.fromScale(1, 0)}
 				AutomaticSize={Enum.AutomaticSize.Y}
 			>
-				<uipadding
-					PaddingTop={new UDim(0, 4)}
-					PaddingRight={new UDim(0, 4)}
+				<UIPadding
+					padding={[px(4), px(4), 0, 0]}
 				/>
 				<Text
 					styles={styles.misc.text.version}

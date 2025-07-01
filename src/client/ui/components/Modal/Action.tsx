@@ -13,12 +13,13 @@ import Text from '../Text';
 interface ActionProps {
 	styles: Styles.ButtonWithInteraction;
 	action: string;
+	index: number;
 	autoSelect: boolean;
 	selectable: boolean;
 	onClick: () => void;
 }
 
-const Action: React.FC<ActionProps> = ({ styles, action, autoSelect, selectable, onClick }) => {
+const Action: React.FC<ActionProps> = ({ styles, action, index, autoSelect, selectable, onClick }) => {
 	const {
 		background,
 		outline,
@@ -105,6 +106,7 @@ const Action: React.FC<ActionProps> = ({ styles, action, autoSelect, selectable,
 			Size={UDim2.fromScale(1, 0)}
 			AutomaticSize={Enum.AutomaticSize.Y}
 			Text={''}
+			LayoutOrder={index}
 			AutoButtonColor={false}
 			Event={{
 				MouseEnter: () => setHovered(true),

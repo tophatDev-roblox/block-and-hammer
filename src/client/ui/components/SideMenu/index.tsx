@@ -12,6 +12,8 @@ import { StartScreenState } from 'client/startScreenState';
 import ContainerImage from '../ContainerImage';
 import MenuButton from './MenuButton';
 import { ModalState } from 'client/modalState';
+import UIListLayout from '../UIListLayout';
+import UIPadding from '../UIPadding';
 
 const SideMenuGUI: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);
@@ -20,15 +22,15 @@ const SideMenuGUI: React.FC = () => {
 	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
 	
 	const px = usePx();
-	const [position, positionMotion] = useMotion<UDim2>(new UDim2(1.5, 0, 0, 0));
+	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromScale(1.5, 0));
 	
 	const containerWidth = 750;
-	const buttonGapOffset = -10 / containerWidth;
+	const buttonGapOffset = -9 / containerWidth;
 	const totalButtons = 6;
 	
 	useEffect(() => {
-		const openPosition = new UDim2(1, 0, 0, 0);
-		const closePosition = new UDim2(1.5, 0, 0, 0);
+		const openPosition = UDim2.fromScale(1, 0);
+		const closePosition = UDim2.fromScale(1.5, 0);
 		if (!GuiService.ReducedMotionEnabled) {
 			if (sideMenuOpened) {
 				positionMotion.tween(openPosition, {
@@ -76,7 +78,7 @@ const SideMenuGUI: React.FC = () => {
 		>
 			<frame
 				BackgroundTransparency={1}
-				Size={new UDim2(1, 0, 1, 0)}
+				Size={UDim2.fromScale(1, 1)}
 				Position={position}
 				AnchorPoint={new Vector2(1, 0)}
 			>
@@ -93,28 +95,27 @@ const SideMenuGUI: React.FC = () => {
 				>
 					<>
 						{/* wrapping in fragment for workaround: https://github.com/jsdotlua/react-lua/issues/42 */}
-						<uilistlayout
-							FillDirection={Enum.FillDirection.Vertical}
+						<UIListLayout
+							fillDirection={Enum.FillDirection.Vertical}
 						/>
-						<uipadding
-							PaddingLeft={new UDim(0, px(80))}
+						<UIPadding
+							padding={[0, 0, 0, px(80)]}
 						/>
 						<frame
 							BackgroundTransparency={1}
-							Size={new UDim2(1, 0, 0, 0)}
+							Size={UDim2.fromScale(1, 0)}
+							LayoutOrder={0}
 						>
 							<uiflexitem
 								FlexMode={Enum.UIFlexMode.Grow}
 							/>
-							<uilistlayout
-								FillDirection={Enum.FillDirection.Vertical}
-								VerticalAlignment={Enum.VerticalAlignment.Bottom}
-								Padding={new UDim(0, px(12))}
+							<UIListLayout
+								fillDirection={Enum.FillDirection.Vertical}
+								alignY={Enum.VerticalAlignment.Bottom}
+								padding={px(12)}
 							/>
-							<uipadding
-								PaddingTop={new UDim(0, px(12))}
-								PaddingBottom={new UDim(0, px(42))}
-								PaddingLeft={new UDim(0, px(12))}
+							<UIPadding
+								padding={[px(12), 0, px(42), px(12)]}
 							/>
 							<MenuButton
 								styles={styles.sideMenu.button}
@@ -163,10 +164,19 @@ const SideMenuGUI: React.FC = () => {
 							/>
 							<MenuButton
 								styles={styles.sideMenu.button}
-								text={'Start Screen'}
-								iconId={Assets.Icons.StartMenuIcon}
+								text={'Switch Level'}
+								iconId={''}
 								widthScale={buttonGapOffset * 5}
 								index={5}
+								totalButtons={totalButtons}
+								selectable={selectable}
+							/>
+							<MenuButton
+								styles={styles.sideMenu.button}
+								text={'Start Screen'}
+								iconId={Assets.Icons.StartMenuIcon}
+								widthScale={buttonGapOffset * 6}
+								index={6}
 								totalButtons={totalButtons}
 								selectable={selectable}
 								onClick={async () => {

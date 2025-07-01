@@ -7,12 +7,14 @@ import Ripple from '@rbxts/ripple';
 
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/startScreenState';
-import { Styles } from 'client/styles';
+import { StyleParse, Styles } from 'client/styles';
 import { camera } from 'client/camera';
 import { Effects } from 'client/effects';
 import Text from '../Text';
 import Button from './Button';
 import LoadingScreen from './LoadingScreen';
+import UIListLayout from '../UIListLayout';
+import UIPadding from '../UIPadding';
 
 const startScreen = Workspace.WaitForChild('StartScreen') as Model;
 const prop = startScreen.WaitForChild('Prop') as Model;
@@ -104,9 +106,7 @@ const StartScreen: React.FC = () => {
 	
 	const logoOutline = styles.startScreen.logo.outline;
 	
-	const logoPadding = logoOutline !== false
-		? new UDim(0, logoOutline.autoScale ? px(logoOutline.thickness) : logoOutline.thickness)
-		: new UDim(0, 0);
+	const logoPadding = logoOutline !== false ? StyleParse.px(px, logoOutline.thickness, logoOutline.autoScale) : 0;
 	
 	return (
 		<screengui
@@ -119,17 +119,14 @@ const StartScreen: React.FC = () => {
 			<LoadingScreen />
 			<canvasgroup
 				BackgroundTransparency={1}
-				Size={new UDim2(0, 0, 0, 0)}
+				Size={UDim2.fromScale(0, 0)}
 				AutomaticSize={Enum.AutomaticSize.XY}
 				Position={new UDim2(1, px(-30), 0, px(300))}
 				AnchorPoint={logoAnchorPoint}
 				GroupTransparency={logoTransparency}
 			>
-				<uipadding
-					PaddingTop={logoPadding}
-					PaddingRight={logoPadding}
-					PaddingBottom={logoPadding}
-					PaddingLeft={logoPadding}
+				<UIPadding
+					padding={logoPadding}
 				/>
 				<Text
 					styles={styles.startScreen.logo}
@@ -140,15 +137,15 @@ const StartScreen: React.FC = () => {
 			</canvasgroup>
 			<frame
 				BackgroundTransparency={1}
-				Size={new UDim2(0, px(600), 0, 0)}
+				Size={UDim2.fromOffset(px(600), 0)}
 				AutomaticSize={Enum.AutomaticSize.Y}
 				Position={new UDim2(1, 0, 1, px(-80))}
 				AnchorPoint={buttonsAnchorPoint}
 			>
-				<uilistlayout
-					FillDirection={Enum.FillDirection.Vertical}
-					HorizontalAlignment={Enum.HorizontalAlignment.Right}
-					Padding={new UDim(0, px(20))}
+				<UIListLayout
+					fillDirection={Enum.FillDirection.Vertical}
+					padding={px(20)}
+					alignX={Enum.HorizontalAlignment.Right}
 				/>
 				<Button
 					styles={styles.startScreen.button}
