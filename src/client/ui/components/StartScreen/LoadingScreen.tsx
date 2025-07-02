@@ -3,7 +3,7 @@ import { useMotion } from '@rbxts/pretty-react-hooks';
 import { computed } from '@rbxts/charm';
 import { useAtom } from '@rbxts/react-charm';
 
-import { StartScreenState } from 'client/startScreenState';
+import { StartScreenState } from 'client/ui/startScreenState';
 import { useAtomBinding } from 'client/ui/hooks/useAtomBinding';
 import { Styles } from 'client/styles';
 import { usePx } from 'client/ui/hooks/usePx';
@@ -13,11 +13,11 @@ import UIListLayout from '../UIListLayout';
 
 const LoadingScreen: React.FC= () => {
 	const styles = useAtom(Styles.stateAtom);
-	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinished);
+	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinishedAtom);
 	
 	const loadingStatus = useAtomBinding(StartScreenState.loadingStatusAtom);
-	const percentageSize = useAtomBinding(computed(() => UDim2.fromScale(StartScreenState.loadingPercentage(), 1)));
-	const percentageText = useAtomBinding(computed(() => '%.1f%%'.format(StartScreenState.loadingPercentage() * 100)));
+	const percentageSize = useAtomBinding(computed(() => UDim2.fromScale(StartScreenState.loadingPercentageAtom(), 1)));
+	const percentageText = useAtomBinding(computed(() => '%.1f%%'.format(StartScreenState.loadingPercentageAtom() * 100)));
 	
 	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? UDim2.fromScale(0, -1) : UDim2.fromScale(0, 0));
 	

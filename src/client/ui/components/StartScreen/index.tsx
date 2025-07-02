@@ -6,7 +6,7 @@ import { useAtom } from '@rbxts/react-charm';
 import Ripple from '@rbxts/ripple';
 
 import { usePx } from 'client/ui/hooks/usePx';
-import { StartScreenState } from 'client/startScreenState';
+import { StartScreenState } from 'client/ui/startScreenState';
 import { StyleParse, Styles } from 'client/styles';
 import { camera } from 'client/camera';
 import { Effects } from 'client/effects';
@@ -31,7 +31,7 @@ const StartScreen: React.FC = () => {
 	
 	const isVisible = useAtom(StartScreenState.isVisibleAtom);
 	const styles = useAtom(Styles.stateAtom);
-	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinished);
+	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinishedAtom);
 	
 	const [logoTransparency, logoTransparencyMotion] = useMotion<number>(1);
 	const [logoAnchorPoint, logoAnchorPointMotion] = useMotion<Vector2>(new Vector2(1, 0));

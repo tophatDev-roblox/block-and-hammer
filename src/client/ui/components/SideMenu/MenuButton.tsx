@@ -3,7 +3,7 @@ import React, { useEffect, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { SideMenuState } from 'client/sideMenuState';
+import { SideMenuState } from 'client/ui/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
 import SideButton, { InheritedProps } from '../SideButton';
 import { InputType } from 'client/inputType';

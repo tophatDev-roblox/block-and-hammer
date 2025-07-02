@@ -10,9 +10,9 @@ import { IsDebugPanelEnabled } from 'shared/constants';
 import { DebugPanel } from 'client/debugPanel';
 import { UserSettings } from 'client/settings';
 import { InputType } from 'client/inputType';
-import { SideMenuState } from 'client/sideMenuState';
+import { SideMenuState } from 'client/ui/sideMenuState';
 import { camera } from 'client/camera';
-import { ModalState } from 'client/modalState';
+import { ModalState } from 'client/ui/modalState';
 import { CharacterState } from './state';
 import { AreaManager } from 'shared/areaManager';
 

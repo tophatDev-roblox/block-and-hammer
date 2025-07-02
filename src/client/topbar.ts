@@ -7,8 +7,8 @@ import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
 import { Styles } from 'client/styles';
 import { InputType } from 'client/inputType';
 import { DebugPanel } from 'client/debugPanel';
-import { SideMenuState } from 'client/sideMenuState';
-import { StartScreenState } from './startScreenState';
+import { SideMenuState } from 'client/ui/sideMenuState';
+import { StartScreenState } from 'client/ui/startScreenState';
 import defaultStyles from 'client/styles/default';
 
 const client = Players.LocalPlayer;

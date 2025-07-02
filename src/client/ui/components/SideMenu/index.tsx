@@ -6,12 +6,12 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { Assets } from 'shared/assets';
 import { Styles } from 'client/styles';
-import { SideMenuState } from 'client/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
-import { StartScreenState } from 'client/startScreenState';
+import { SideMenuState } from 'client/ui/sideMenuState';
+import { StartScreenState } from 'client/ui/startScreenState';
 import ContainerImage from '../ContainerImage';
 import MenuButton from './MenuButton';
-import { ModalState } from 'client/modalState';
+import { ModalState } from 'client/ui/modalState';
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
 
