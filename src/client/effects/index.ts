@@ -5,10 +5,11 @@ import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
 import { Character } from 'client/character';
 import { CharacterState } from 'client/character/state';
-import { MaterialConfig, materialConfiguration } from './materials';
+import { materialConfiguration } from './materials';
 import { UserSettings } from 'client/settings';
 import { createMotion } from '@rbxts/ripple';
 import { waitForChild } from 'shared/waitForChild';
+import { SFX } from 'client/sfx';
 
 const RNG = new Random();
 
@@ -41,24 +42,6 @@ export namespace Effects {
 		const U = normal.Cross(A).Unit;
 		const V = normal.Cross(U);
 		return center.add(U.mul(math.cos(theta)).add(V.mul(math.sin(theta))).mul(radius));
-	}
-	
-	export function playSound(configuration: NonNullable<MaterialConfig['sound']>): void {
-		const sound = configuration.instance.Clone();
-		sound.TimePosition = configuration.startTime;
-		sound.Volume = configuration.volume;
-		sound.PlaybackSpeed = configuration.speed;
-		
-		if (configuration.volumeVariation !== undefined) {
-			sound.Volume += RNG.NextNumber(-configuration.volumeVariation, configuration.volumeVariation);
-		}
-		
-		if (configuration.speedVariation !== undefined) {
-			sound.PlaybackSpeed += RNG.NextNumber(-configuration.speedVariation, configuration.speedVariation);
-		}
-		
-		sound.Parent = Workspace;
-		sound.Destroy();
 	}
 	
 	export function createBaseParticle(part: BasePart): BasePart {
@@ -121,7 +104,7 @@ export namespace Effects {
 		}
 		
 		if (material.sound !== undefined) {
-			Effects.playSound(material.sound);
+			SFX.play(material.sound.instance, material.sound);
 		}
 		
 		particleMotion.onComplete(() => {
@@ -176,11 +159,10 @@ export namespace Effects {
 			}
 		});
 		
-		const sound = hammerHitSound.Clone();
-		sound.TimePosition = 0.1;
-		sound.PlaybackSpeed = RNG.NextNumber(0.95, 1.05);
-		sound.Parent = Workspace;
-		sound.Destroy();
+		SFX.play(hammerHitSound, {
+			startTime: 0.1,
+			speedVariation: 0.05,
+		});
 	}
 }
 
@@ -259,10 +241,7 @@ effect(() => {
 				});
 			}
 			
-			const sound = explosionSound.Clone() as Sound;
-			sound.PlaybackSpeed = RNG.NextNumber(0.97, 1.03);
-			sound.Parent = Workspace;
-			sound.Destroy();
+			SFX.play(explosionSound);
 			
 			const explosion = new Instance('Explosion');
 			explosion.Position = characterParts.body.Position;

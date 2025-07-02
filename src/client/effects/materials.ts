@@ -1,6 +1,7 @@
 import { SoundService } from '@rbxts/services';
 
 import { waitForChild } from 'shared/waitForChild';
+import { SFX } from 'client/sfx';
 
 export interface ParticleData {
 	totalParticles: number;
@@ -9,13 +10,8 @@ export interface ParticleData {
 }
 
 export interface MaterialConfig {
-	sound?: {
+	sound?: SFX.Configuration & {
 		instance: Sound;
-		startTime: number;
-		volume: number;
-		speed: number;
-		volumeVariation?: number;
-		speedVariation?: number;
 	};
 	getData: () => ParticleData;
 	style: (particle: BasePart) => void;
