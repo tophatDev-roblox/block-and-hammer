@@ -28,11 +28,6 @@ const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.Mou
 const RNG = new Random();
 let ragdollTimeEnd: number | undefined = undefined;
 
-const thumbstickMotion = createMotion<Vector3>(Vector3.zero, {
-	heartbeat: RunService.PreRender,
-	start: true,
-});
-
 export namespace Character {
 	export function quickReset(): void {
 		const characterParts = peek(CharacterState.partsAtom);
@@ -226,20 +221,20 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
-	if (input.UserInputState === Enum.UserInputState.Begin && input.UserInputType !== Enum.UserInputType.Touch || peek(CharacterState.forcePauseGameplayAtom)) {
+	if (peek(CharacterState.forcePauseGameplayAtom)) {
 		return;
 	}
 	
 	const characterParts = peek(CharacterState.partsAtom);
-	const inputType = peek(InputType.stateAtom);
-	const userSettings = peek(UserSettings.stateAtom);
-	const hammerDistance = peek(CharacterState.hammerDistanceAtom);
 	const sideMenuOpen = peek(SideMenuState.isOpenAtom);
 	const modal = peek(ModalState.stateAtom);
 	if (characterParts === undefined || sideMenuOpen || modal !== undefined) {
 		return;
 	}
 	
+	const userSettings = peek(UserSettings.stateAtom);
+	const hammerDistance = peek(CharacterState.hammerDistanceAtom);
+	const inputType = peek(InputType.stateAtom);
 	if (positionalInputTypes.has(input.UserInputType)) {
 		CharacterState.mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
 	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Value.Controller) {
@@ -253,10 +248,7 @@ function processInput(input: InputObject): void {
 			
 			const position = characterParts.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
 			const [screenPosition] = Camera.instance.WorldToScreenPoint(position);
-			thumbstickMotion.spring(screenPosition, {
-				tension: 500,
-				friction: 60,
-			});
+			CharacterState.mousePositionAtom(new Vector2(screenPosition.X, screenPosition.Y));
 		}
 	}
 }
@@ -344,23 +336,16 @@ function onPreRender(): void {
 	}
 	
 	const currentTime = TimeSpan.now();
-	const userSettings = peek(UserSettings.stateAtom);
-	const inputType = peek(InputType.stateAtom);
 	const mousePosition = peek(CharacterState.mousePositionAtom);
 	if (mousePosition !== undefined) {
 		const ray = Camera.instance.ScreenPointToRay(mousePosition.X, mousePosition.Y);
 		const position = rayIntersectXYPlane(ray);
-		
-		if (inputType === InputType.Value.Controller && userSettings.controllerSmoothingEnabled) {
-			mouseCursorPart.Position = thumbstickMotion.get();
-		} else {
-			mouseCursorPart.Position = position;
-		}
-		
-		moveTargetAttachment(mouseCursorPart.Position);
-	} else if (inputType === InputType.Value.Controller) {
-		mouseCursorPart.Position = characterParts.body.Position;
+		mouseCursorPart.Position = position;
+	} else {
+		mouseCursorPart.Position = characterParts.body.Position.add(new Vector3(0, 0.001, 0));
 	}
+	
+	moveTargetAttachment(mouseCursorPart.Position);
 	
 	const disableCamera = peek(CharacterState.disableCameraAtom);
 	if (!disableCamera) {

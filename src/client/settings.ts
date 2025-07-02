@@ -6,8 +6,6 @@ export namespace UserSettings {
 		disableHaptics: boolean;
 		controllerDetectionType: ControllerDetection;
 		controllerDeadzone: number;
-		controllerSmoothingEnabled: boolean;
-		controllerSmoothingFactor: number;
 	}
 	
 	export enum ControllerDetection {
@@ -21,7 +19,5 @@ export namespace UserSettings {
 		disableHaptics: false,
 		controllerDetectionType: ControllerDetection.OnInput,
 		controllerDeadzone: 0.1,
-		controllerSmoothingEnabled: true,
-		controllerSmoothingFactor: 15,
 	});
 }
