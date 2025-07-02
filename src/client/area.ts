@@ -1,14 +1,12 @@
-import { Players, Workspace } from '@rbxts/services';
+import { Workspace } from '@rbxts/services';
 import { setInterval } from '@rbxts/set-timeout';
 import { effect } from '@rbxts/charm';
 
 import { AreaManager } from 'shared/areaManager';
 import { CharacterState } from 'client/character/state';
 import { UserSettings } from './settings';
+import { Leaderstats } from './leaderstats';
 
-const client = Players.LocalPlayer;
-const leaderstats = client.WaitForChild('leaderstats') as Folder;
-const areaValue = leaderstats.WaitForChild('Area') as StringValue;
 const areasFolder = Workspace.WaitForChild('Areas') as Folder;
 
 const areaManager = new AreaManager();
@@ -19,8 +17,13 @@ for (const area of areasFolder.GetChildren()) {
 areasFolder.ChildAdded.Connect((area) => areaManager.processArea(area));
 
 effect(() => {
+	const leaderstats = Leaderstats.stateAtom();
+	if (leaderstats === undefined) {
+		return;
+	}
+	
 	const area = CharacterState.areaAtom();
-	areaValue.Value = area;
+	leaderstats.area.Value = area;
 	
 	print('[client::area] area changed to', area);
 });

@@ -7,14 +7,16 @@ import { Raycast } from 'shared/raycast';
 import { Shake } from 'shared/shake';
 import { Controller } from 'shared/controller';
 import { IsDebugPanelEnabled } from 'shared/constants';
+import { AreaManager } from 'shared/areaManager';
+import { Units } from 'shared/units';
 import { DebugPanel } from 'client/debugPanel';
 import { UserSettings } from 'client/settings';
 import { InputType } from 'client/inputType';
-import { SideMenuState } from 'client/ui/sideMenuState';
 import { camera } from 'client/camera';
+import { Leaderstats } from 'client/leaderstats';
+import { SideMenuState } from 'client/ui/sideMenuState';
 import { ModalState } from 'client/ui/modalState';
 import { CharacterState } from './state';
-import { AreaManager } from 'shared/areaManager';
 
 const client = Players.LocalPlayer;
 const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
@@ -372,6 +374,11 @@ function onRenderStepped(dt: number): void {
 			const windCFrame = Shake.camera(windStrength, currentTime, true, 2);
 			camera.CFrame = camera.CFrame.mul(windCFrame);
 		}
+	}
+	
+	const leaderstats = peek(Leaderstats.stateAtom);
+	if (leaderstats !== undefined) {
+		leaderstats.altitude.Value = math.round(math.max(Units.studsToMeters(characterParts.body.Position.Y - characterParts.body.Size.Y / 2), 0));
 	}
 }
 
