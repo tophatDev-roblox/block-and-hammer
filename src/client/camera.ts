@@ -1,14 +1,15 @@
 import { GuiService, RunService, Workspace } from '@rbxts/services';
 import { createMotion } from '@rbxts/ripple';
-import { peek } from '@rbxts/charm';
+import { atom, peek } from '@rbxts/charm';
 
+import { waitForChild } from 'shared/waitForChild';
 import { TimeSpan } from 'shared/timeSpan';
 import { Shake } from 'shared/shake';
 import { CharacterState } from './character/state';
 import { StartScreenState } from './ui/startScreenState';
 
 export namespace Camera {
-	export const instance = Workspace.WaitForChild('Camera') as Camera;
+	export const instanceAtom = atom<Camera>();
 	
 	export const cframeMotion = createMotion<CFrame>(CFrame.identity, {
 		heartbeat: RunService.PreRender,
@@ -16,47 +17,57 @@ export namespace Camera {
 	});
 }
 
-function onCameraTypeChange(): void {
-	Camera.instance.CameraType = Enum.CameraType.Scriptable;
-}
-
-Camera.cframeMotion.onStep((cameraCFrame, dt) => {
-	const disableCamera = peek(CharacterState.disableCameraAtom);
-	const characterParts = peek(CharacterState.partsAtom);
-	if (!disableCamera && characterParts !== undefined) {
-		const currentTime = TimeSpan.now();
-		const shakeStrength = peek(CharacterState.shakeStrengthAtom);
-		if (shakeStrength > 0) {
-			const shakeCFrame = Shake.camera(shakeStrength, currentTime, false);
-			cameraCFrame = cameraCFrame.mul(shakeCFrame);
-			
-			CharacterState.shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
-		}
-		
-		const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
-		if (velocity > 300) {
-			const windStrength = math.min((velocity - 250) / 50, 6)
-			const windCFrame = Shake.camera(windStrength, currentTime, true, 2);
-			cameraCFrame = cameraCFrame.mul(windCFrame);
-		}
-		
-		const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
-		Camera.instance.FieldOfView = fieldOfView;
-		
-		if (GuiService.ReducedMotionEnabled) {
-			Camera.instance.FieldOfView = math.min(Camera.instance.FieldOfView, 80);
-		}
-	} else {
-		const isInStartScreen = peek(StartScreenState.isVisibleAtom);
-		if (isInStartScreen) {
-			Camera.instance.FieldOfView = 45;
-		} else {
-			Camera.instance.FieldOfView = 70;
-		}
+function onCameraTypeChangeAtom(): void {
+	const camera = Camera.instanceAtom();
+	if (camera === undefined) {
+		return;
 	}
 	
-	Camera.instance.CFrame = cameraCFrame;
-});
+	camera.CameraType = Enum.CameraType.Scriptable;
+}
 
-onCameraTypeChange();
-Camera.instance.GetPropertyChangedSignal('CameraType').Connect(onCameraTypeChange);
+(async () => {
+	const camera = await waitForChild(Workspace, 'Camera', 'Camera');
+	Camera.instanceAtom(camera);
+	
+	onCameraTypeChangeAtom();
+	camera.GetPropertyChangedSignal('CameraType').Connect(onCameraTypeChangeAtom);
+	
+	Camera.cframeMotion.onStep((cameraCFrame, dt) => {
+		const disableCamera = peek(CharacterState.disableCameraAtom);
+		const characterParts = peek(CharacterState.partsAtom);
+		if (!disableCamera && characterParts !== undefined) {
+			const currentTime = TimeSpan.now();
+			const shakeStrength = peek(CharacterState.shakeStrengthAtom);
+			if (shakeStrength > 0) {
+				const shakeCFrame = Shake.camera(shakeStrength, currentTime, false);
+				cameraCFrame = cameraCFrame.mul(shakeCFrame);
+				
+				CharacterState.shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
+			}
+			
+			const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
+			if (velocity > 300) {
+				const windStrength = math.min((velocity - 250) / 50, 6)
+				const windCFrame = Shake.camera(windStrength, currentTime, true, 2);
+				cameraCFrame = cameraCFrame.mul(windCFrame);
+			}
+			
+			const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
+			camera.FieldOfView = fieldOfView;
+			
+			if (GuiService.ReducedMotionEnabled) {
+				camera.FieldOfView = math.min(camera.FieldOfView, 80);
+			}
+		} else {
+			const isInStartScreen = peek(StartScreenState.isVisibleAtom);
+			if (isInStartScreen) {
+				camera.FieldOfView = 45;
+			} else {
+				camera.FieldOfView = 70;
+			}
+		}
+		
+		camera.CFrame = cameraCFrame;
+	});
+})();

@@ -2,6 +2,7 @@ import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/servic
 import { setInterval, throttle } from '@rbxts/set-timeout';
 
 import computeNameColor from 'shared/NameColor';
+import { waitForChild } from 'shared/waitForChild';
 import { Remotes } from 'shared/remotes';
 import { RichText } from 'shared/richText';
 import { Number } from 'shared/number';
@@ -22,17 +23,22 @@ interface CharacterData {
 	};
 }
 
-const assetsFolder = ReplicatedStorage.WaitForChild('Assets');
-const baseCharacter = assetsFolder.WaitForChild('BaseCharacter') as Model;
-const areasFolder = Workspace.WaitForChild('Areas') as Folder;
+let baseCharacter: Model;
+let areasFolder: Folder;
 
+const areaManager = new AreaManager();
 const joinLeaveRichText = new RichText({ bold: true, italic: true, font: { size: 14 } });
 const characterData = new Map<Model, CharacterData>();
 
-const areaManager = new AreaManager();
-for (const area of areasFolder.GetChildren()) {
-	areaManager.processArea(area);
-}
+(async () => {
+	const assetsFolder = await waitForChild(ReplicatedStorage, 'Assets', 'Folder');
+	baseCharacter = await waitForChild(assetsFolder, 'BaseCharacter', 'Model');
+	areasFolder = await waitForChild(Workspace, 'Areas', 'Folder');
+	
+	for (const area of areasFolder.GetChildren()) {
+		areaManager.processArea(area);
+	}
+})();
 
 setInterval(() => {
 	for (const [, data] of characterData) {
@@ -62,12 +68,9 @@ setInterval(() => {
 }, 1);
 
 async function respawn(player: Player): Promise<void> {
-	const leaderstats = player.WaitForChild('leaderstats');
-	const altitudeValue = leaderstats.FindFirstChild('Altitude');
-	const areaValue = leaderstats.FindFirstChild('Area');
-	if (!areaValue?.IsA('StringValue') || !altitudeValue?.IsA('IntValue')) {
-		throw '[server::players] failed to respawn player because Area leaderstat is not a StringValue or Altitude leaderstat is not an IntValue';
-	}
+	const leaderstats = await waitForChild(player, 'leaderstats', 'Folder');
+	const altitudeValue = await waitForChild(leaderstats, 'Altitude', 'IntValue');
+	const areaValue = await waitForChild(leaderstats, 'Area', 'StringValue');
 	
 	const existingCharacter = Workspace.FindFirstChild(player.Name) ?? player.Character;
 	if (existingCharacter?.IsA('Model') && existingCharacter.Parent !== undefined) {

@@ -17,16 +17,17 @@ import { Leaderstats } from 'client/leaderstats';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { ModalState } from 'client/ui/modalState';
 import { CharacterState } from './state';
+import { waitForChild } from 'shared/waitForChild';
 
 const client = Players.LocalPlayer;
-const assetsFolder = ReplicatedStorage.WaitForChild('Assets') as Folder;
-const baseStunParticles = assetsFolder.WaitForChild('StunParticles') as Part;
-const mouseCursorPart = Workspace.WaitForChild('MouseCursor') as Part;
-const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
-const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 const RNG = new Random();
 let ragdollTimeEnd: number | undefined = undefined;
+
+let baseStunParticles: Part;
+let mouseCursorPart: Part;
+let effectsFolder: Folder;
+let mapFolder: Folder;
 
 export namespace Character {
 	export function quickReset(): void {
@@ -225,10 +226,11 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
+	const camera = peek(Camera.instanceAtom);
 	const characterParts = peek(CharacterState.partsAtom);
 	const sideMenuOpen = peek(SideMenuState.isOpenAtom);
 	const modal = peek(ModalState.stateAtom);
-	if (characterParts === undefined || sideMenuOpen || modal !== undefined) {
+	if (camera === undefined || characterParts === undefined || sideMenuOpen || modal !== undefined) {
 		return;
 	}
 	
@@ -247,7 +249,7 @@ function processInput(input: InputObject): void {
 			}
 			
 			const position = characterParts.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
-			const [screenPosition] = Camera.instance.WorldToScreenPoint(position);
+			const [screenPosition] = camera.WorldToScreenPoint(position);
 			CharacterState.mousePositionAtom(new Vector2(screenPosition.X, screenPosition.Y));
 		}
 	}
@@ -270,7 +272,7 @@ function onResetButton(): void {
 	Character.quickReset();
 }
 
-function onCharacterAdded(newCharacter: Model): void {
+async function onCharacterAdded(newCharacter: Model): Promise<void> {
 	print('[client::character] character added');
 	
 	ragdollTimeEnd = undefined;
@@ -280,7 +282,8 @@ function onCharacterAdded(newCharacter: Model): void {
 	CharacterState.shakeStrengthAtom(0);
 	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
-	const characterParts = CharacterState.createParts(newCharacter);
+	const characterParts = await CharacterState.createParts(newCharacter);
+	CharacterState.partsAtom(characterParts);
 	
 	Camera.cframeMotion.immediate(CFrame.lookAlong(
 		characterParts.body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
@@ -313,15 +316,16 @@ function onCharacterRemoving(): void {
 }
 
 function onPreRender(): void {
+	const camera = peek(Camera.instanceAtom);
 	const characterParts = peek(CharacterState.partsAtom);
-	if (characterParts === undefined) {
+	if (camera === undefined || characterParts === undefined) {
 		return;
 	}
 	
 	const currentTime = TimeSpan.now();
 	const mousePosition = peek(CharacterState.mousePositionAtom);
 	if (mousePosition !== undefined) {
-		const ray = Camera.instance.ScreenPointToRay(mousePosition.X, mousePosition.Y);
+		const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
 		const position = rayIntersectXYPlane(ray);
 		mouseCursorPart.Position = position;
 	} else {
@@ -359,15 +363,17 @@ function bindResetButtonCallback(resetEvent: BindableEvent): void {
 	}
 }
 
+(async () => {
+	const assetsFolder = await waitForChild(ReplicatedStorage, 'Assets', 'Folder');
+	baseStunParticles = await waitForChild(assetsFolder, 'StunParticles', 'Part');
+	mouseCursorPart = await waitForChild(Workspace, 'MouseCursor', 'Part');
+	effectsFolder = await waitForChild(Workspace, 'Effects', 'Folder');
+	mapFolder = await waitForChild(Workspace, 'Map', 'Folder');
+})();
+
 const resetEvent = new Instance('BindableEvent');
 resetEvent.Event.Connect(onResetButton);
 bindResetButtonCallback(resetEvent);
-
-subscribe(CharacterState.disableCameraAtom, (disableCamera) => {
-	if (disableCamera) {
-		Camera.instance.FieldOfView = 70;
-	}
-});
 
 subscribe(() => {
 	CharacterState.partsAtom();

@@ -8,20 +8,32 @@ import { CharacterState } from 'client/character/state';
 import { MaterialConfig, materialConfiguration } from './materials';
 import { UserSettings } from 'client/settings';
 import { createMotion } from '@rbxts/ripple';
-
-const mapFolder = Workspace.WaitForChild('Map') as Folder;
-const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
-const hapticsFolder = Workspace.WaitForChild('Haptics') as Folder;
-const hammerHitSound = SoundService.WaitForChild('HammerHit') as Sound;
-const explosionSound = SoundService.WaitForChild('Explosion') as Sound;
-const windSound = SoundService.WaitForChild('Wind') as Sound;
+import { waitForChild } from 'shared/waitForChild';
 
 const RNG = new Random();
 
-const explosionHaptics = new Instance('HapticEffect');
-explosionHaptics.Type = Enum.HapticEffectType.GameplayExplosion;
-explosionHaptics.Name = 'CharacterExplosion';
-explosionHaptics.Parent = hapticsFolder;
+let mapFolder: Folder;
+let effectsFolder: Folder;
+let hapticsFolder: Folder;
+let hammerHitSound: Sound;
+let explosionSound: Sound;
+let windSound: Sound;
+
+let explosionHaptics: HapticEffect;
+
+(async () => {
+	mapFolder = await waitForChild(Workspace, 'Map', 'Folder');
+	effectsFolder = await waitForChild(Workspace, 'Effects', 'Folder');
+	hapticsFolder = await waitForChild(Workspace, 'Haptics', 'Folder');
+	hammerHitSound = await waitForChild(SoundService, 'HammerHit', 'Sound');
+	explosionSound = await waitForChild(SoundService, 'Explosion', 'Sound');
+	windSound = await waitForChild(SoundService, 'Wind', 'Sound');
+	
+	explosionHaptics = new Instance('HapticEffect');
+	explosionHaptics.Type = Enum.HapticEffectType.GameplayExplosion;
+	explosionHaptics.Name = 'CharacterExplosion';
+	explosionHaptics.Parent = hapticsFolder;
+})();
 
 export namespace Effects {
 	export function getPointOn3dCircle(center: Vector3, normal: Vector3, radius: number, theta: number): Vector3 {

@@ -2,19 +2,23 @@ import { Workspace } from '@rbxts/services';
 import { setInterval } from '@rbxts/set-timeout';
 import { effect } from '@rbxts/charm';
 
+import { waitForChild } from 'shared/waitForChild';
 import { AreaManager } from 'shared/areaManager';
 import { CharacterState } from 'client/character/state';
 import { UserSettings } from './settings';
 import { Leaderstats } from './leaderstats';
 
-const areasFolder = Workspace.WaitForChild('Areas') as Folder;
-
 const areaManager = new AreaManager();
-for (const area of areasFolder.GetChildren()) {
-	areaManager.processArea(area);
-}
 
-areasFolder.ChildAdded.Connect((area) => areaManager.processArea(area));
+(async () => {
+	const areasFolder = await waitForChild(Workspace, 'Areas', 'Folder');
+	
+	for (const area of areasFolder.GetChildren()) {
+		areaManager.processArea(area);
+	}
+	
+	areasFolder.ChildAdded.Connect((area) => areaManager.processArea(area));
+})();
 
 effect(() => {
 	const leaderstats = Leaderstats.stateAtom();

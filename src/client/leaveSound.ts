@@ -1,15 +1,18 @@
 import { SoundService } from '@rbxts/services';
 
-const sound = SoundService.WaitForChild('Leave') as Sound;
+import { waitForChild } from 'shared/waitForChild';
 
-game.OnClose = () => {
-	for (const sound of SoundService.GetChildren()) {
-		if (sound.IsA('Sound')) {
-			sound.Stop();
+(async () => {
+	const sound = await waitForChild(SoundService, 'Leave', 'Sound');
+	
+	game.OnClose = () => {
+		for (const sound of SoundService.GetChildren()) {
+			if (sound.IsA('Sound')) {
+				sound.Stop();
+			}
 		}
-	}
-	
-	SoundService.PlayLocalSound(sound);
-	
-	task.wait(sound.TimeLength);
-};
+		
+		SoundService.PlayLocalSound(sound);
+		task.wait(sound.TimeLength);
+	};
+})();

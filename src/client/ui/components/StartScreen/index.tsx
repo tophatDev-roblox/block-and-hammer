@@ -5,6 +5,7 @@ import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 import Ripple, { createMotion } from '@rbxts/ripple';
 
+import { waitForChild } from 'shared/waitForChild';
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/ui/startScreenState';
 import { StyleParse, Styles } from 'client/styles';
@@ -16,15 +17,25 @@ import LoadingScreen from './LoadingScreen';
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
 
-const startScreen = Workspace.WaitForChild('StartScreen') as Model;
-const prop = startScreen.WaitForChild('Prop') as Model;
-const hitPart = prop.PrimaryPart!;
-const hammer = startScreen.WaitForChild('Hammer') as Model;
-const head = hammer.WaitForChild('Head') as Part;
-const pivot = hammer.WaitForChild('Pivot') as Part;
-const startPivot = startScreen.WaitForChild('StartPivot') as Part;
-const endPivot = startScreen.WaitForChild('EndPivot') as Part;
-const cameraPart = startScreen.WaitForChild('Camera') as Part;
+let hitPart: BasePart;
+let head: Part;
+let pivot: Part;
+let startPivot: Part;
+let endPivot: Part;
+let cameraPart: Part;
+
+(async () => {
+	const startScreen = await waitForChild(Workspace, 'StartScreen', 'Model');
+	const prop = await waitForChild(startScreen, 'Prop', 'Model');
+	const hammer = await waitForChild(startScreen, 'Hammer', 'Model');
+	
+	hitPart = prop.PrimaryPart!;
+	head = await waitForChild(hammer, 'Head', 'Part');
+	pivot = await waitForChild(hammer, 'Pivot', 'Part');
+	startPivot = await waitForChild(startScreen, 'StartPivot', 'Part');
+	endPivot = await waitForChild(startScreen, 'EndPivot', 'Part');
+	cameraPart = await waitForChild(startScreen, 'Camera', 'Part');
+})();
 
 const StartScreen: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);

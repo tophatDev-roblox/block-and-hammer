@@ -1,6 +1,7 @@
 import { atom } from '@rbxts/charm';
 
 import { AreaManager } from 'shared/areaManager';
+import { waitForChild } from 'shared/waitForChild';
 
 export namespace CharacterState {
 	export interface Parts {
@@ -18,23 +19,23 @@ export namespace CharacterState {
 		};
 	}
 	
-	export function createParts(character: Model): Parts {
-		const body = character.FindFirstChild('Body') as Part;
-		const hammer = character.FindFirstChild('Hammer') as Model;
-		const head = hammer.FindFirstChild('Head') as Part;
+	export async function createParts(character: Model): Promise<Parts> {
+		const body = await waitForChild(character, 'Body', 'Part');
+		const hammer = await waitForChild(character, 'Hammer', 'Model');
+		const head = await waitForChild(hammer, 'Head', 'Part');
 		
 		return {
 			model: character,
 			body: body,
-			centerAttachment: body.FindFirstChild('Center.0') as Attachment,
-			targetAttachment: body.FindFirstChild('Target.1') as Attachment,
-			rotationLock: body.FindFirstChild('AlignOrientation') as AlignOrientation,
+			centerAttachment: await waitForChild(body, 'Center.0', 'Attachment'),
+			targetAttachment: await waitForChild(body, 'Target.1', 'Attachment'),
+			rotationLock: await waitForChild(body, 'AlignOrientation', 'AlignOrientation'),
 			hammer: {
 				model: hammer,
-				handle: hammer.FindFirstChild('Handle') as Part,
+				handle: await waitForChild(hammer, 'Handle', 'Part'),
 				head: head,
-				alignPosition: head.FindFirstChild('AlignPosition') as AlignPosition,
-				alignOrientation: head.FindFirstChild('AlignOrientation') as AlignOrientation,
+				alignPosition: await waitForChild(head, 'AlignPosition', 'AlignPosition'),
+				alignOrientation: await waitForChild(head, 'AlignOrientation', 'AlignOrientation'),
 			},
 		};
 	}
