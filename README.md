@@ -32,6 +32,8 @@
 
 ---
 
+## latest version
+
 1. clone this repository
 ```bash
 git clone https://github.com/tophatDev-roblox/block-and-hammer
@@ -51,4 +53,9 @@ rojo serve
 4. download the place file from the [latest release](https://github.com/tophatDev-roblox/block-and-hammer/releases/latest) then open it in Roblox Studio
 5. once in the place, connect the Rojo plugin and you should be able to play the game
 
-**note:** not all files are included, which means that you cannot access some in-game features (e.g. replays)
+## specific version
+
+1. go to to the release of which version you want to build
+2. download the `Source code (zip)` from the Assets section of the release
+3. extract the `.zip` file to a folder
+4. continue to step 2 of [latest version](#latest-version)
