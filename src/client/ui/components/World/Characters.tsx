@@ -24,15 +24,14 @@ const Characters: React.FC = () => {
 			
 			const otherCharacterParts = OtherCharacters.partsAtoms();
 			for (const [player, characterPartsAtom] of otherCharacterParts) {
-				if (player === client) {
+				const characterParts = characterPartsAtom();
+				if (player === client || characterParts === undefined) {
 					continue;
 				}
 				
-				const characterParts = characterPartsAtom();
-				
 				guis.push((
 					<billboardgui
-						Adornee={characterParts?.body}
+						Adornee={characterParts.body}
 						Size={UDim2.fromOffset(px(600), px(150))}
 						StudsOffsetWorldSpace={new Vector3(0, 5, 0)}
 					>
