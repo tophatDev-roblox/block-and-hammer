@@ -1,9 +1,9 @@
-import { GuiService, RunService, TweenService, Workspace } from '@rbxts/services';
+import { GuiService, RunService, Workspace } from '@rbxts/services';
 import { setTimeout } from '@rbxts/set-timeout';
 import React, { useEffect, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
-import Ripple from '@rbxts/ripple';
+import Ripple, { createMotion } from '@rbxts/ripple';
 
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/ui/startScreenState';
@@ -54,13 +54,24 @@ const StartScreen: React.FC = () => {
 		pivot.CFrame = startPivot.CFrame;
 		
 		const clearTimeout = setTimeout(() => {
-			const hammerTween = TweenService.Create(pivot, new TweenInfo(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {
-				CFrame: endPivot.CFrame,
+			const hammerMotion = createMotion<number>(0, {
+				heartbeat: RunService.PreRender,
+				start: true,
 			});
 			
-			hammerTween.Play();
+			hammerMotion.tween(1, {
+				style: Enum.EasingStyle.Sine,
+				direction: Enum.EasingDirection.In,
+				time: 0.3,
+			});
 			
-			hammerTween.Completed.Connect(() => {
+			hammerMotion.onStep((alpha) => {
+				pivot.CFrame = startPivot.CFrame.Lerp(endPivot.CFrame, alpha);
+			});
+			
+			hammerMotion.onComplete(() => {
+				hammerMotion.destroy();
+				
 				Effects.makeHitParticles(
 					hitPart.Material,
 					Effects.createBaseParticle(hitPart),

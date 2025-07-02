@@ -1,6 +1,7 @@
-import { GuiService, Players, ReplicatedStorage, RunService, StarterGui, TweenService, UserInputService, Workspace } from '@rbxts/services';
+import { GuiService, Players, ReplicatedStorage, RunService, StarterGui, UserInputService, Workspace } from '@rbxts/services';
 import { setTimeout } from '@rbxts/set-timeout';
 import { effect, peek, subscribe } from '@rbxts/charm';
+import { createMotion } from '@rbxts/ripple';
 
 import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
@@ -27,7 +28,11 @@ const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 const RNG = new Random();
 let ragdollTimeEnd: number | undefined = undefined;
-let previousCameraCFrame: CFrame | undefined = undefined;
+
+const cameraMotion = createMotion<CFrame>(CFrame.identity, {
+	heartbeat: RunService.PreRender,
+	start: true,
+});
 
 export namespace Character {
 	export function quickReset(): void {
@@ -59,13 +64,11 @@ export namespace Character {
 		
 		characterParts.model.PivotTo(spawnCFrame);
 		
-		if (!GuiService.ReducedMotionEnabled) {
-			previousCameraCFrame = CFrame.lookAlong(
-				spawnCFrame.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
-				Vector3.yAxis.mul(-1),
-				Vector3.zAxis,
-			);
-		}
+		cameraMotion.immediate(CFrame.lookAlong(
+			spawnCFrame.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
+			!GuiService.ReducedMotionEnabled ? Vector3.yAxis.mul(-1) : Vector3.zAxis,
+			Vector3.zAxis,
+		));
 		
 		characterParts.targetAttachment.CFrame = CFrame.lookAt(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
 		characterParts.hammer.model.PivotTo(spawnCFrame);
@@ -101,9 +104,26 @@ export namespace Character {
 			rigidConstraint.Attachment1 = centerAttachment;
 			
 			const rigidAttachment = stunParticles.FindFirstChild('Rigid.0') as Attachment;
-			TweenService.Create(rigidAttachment, new TweenInfo(0.7, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1, false, 0), {
-				CFrame: rigidAttachment.CFrame.mul(CFrame.fromOrientation(0, math.pi, 0)),
-			}).Play();
+			const baseCFrame = rigidAttachment.CFrame;
+			
+			const attachmentMotion = createMotion<number>(0, {
+				heartbeat: RunService.PreRender,
+				start: true,
+			});
+			
+			attachmentMotion.tween(math.pi, {
+				style: Enum.EasingStyle.Linear,
+				time: 0.7,
+				repeatCount: -1,
+			});
+			
+			attachmentMotion.onStep((rotation) => {
+				rigidAttachment.CFrame = baseCFrame.mul(CFrame.fromOrientation(0, rotation, 0));
+			});
+			
+			stunParticles.Destroying.Connect(() => {
+				attachmentMotion.destroy();
+			});
 			
 			stunParticles.Parent = characterParts.model;
 			
@@ -270,9 +290,11 @@ function onCharacterAdded(newCharacter: Model): void {
 	const hammer = newCharacter.FindFirstChild('Hammer') as Model;
 	const head = hammer.FindFirstChild('Head') as Part;
 	
-	if (!GuiService.ReducedMotionEnabled) {
-		previousCameraCFrame = CFrame.lookAlong(body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)), Vector3.yAxis.mul(-1), Vector3.zAxis);
-	}
+	cameraMotion.immediate(CFrame.lookAlong(
+		body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
+		!GuiService.ReducedMotionEnabled ? Vector3.yAxis.mul(-1) : Vector3.zAxis,
+		Vector3.zAxis,
+	));
 	
 	CharacterState.partsAtom({
 		model: newCharacter,
@@ -314,7 +336,6 @@ function onCharacterRemoving(): void {
 }
 
 function onPreRender(dt: number): void {
-	const currentTime = TimeSpan.now();
 	const characterParts = peek(CharacterState.partsAtom);
 	if (characterParts === undefined) {
 		return;
@@ -344,22 +365,11 @@ function onPreRender(dt: number): void {
 	if (!disableCamera) {
 		const targetPosition = new Vector3(characterParts.body.Position.X, characterParts.body.Position.Y, peek(CharacterState.cameraZOffsetAtom));
 		const cameraCFrame = CFrame.lookAlong(targetPosition, Vector3.zAxis, Vector3.yAxis);
-		const finalCameraCFrame = previousCameraCFrame !== undefined ? previousCameraCFrame.Lerp(cameraCFrame, math.min(dt * 15, 1)) : cameraCFrame;
 		
-		camera.CFrame = finalCameraCFrame;
-		previousCameraCFrame = finalCameraCFrame;
-		
-		const shakeStrength = peek(CharacterState.shakeStrengthAtom);
-		if (shakeStrength > 0) {
-			const shakeCFrame = Shake.camera(shakeStrength, currentTime, false);
-			camera.CFrame = camera.CFrame.mul(shakeCFrame);
-			
-			CharacterState.shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
-		}
-		
-		if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
-			endRagdoll();
-		}
+		cameraMotion.spring(cameraCFrame, {
+			tension: 500,
+			friction: 60,
+		});
 		
 		const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
 		const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
@@ -367,12 +377,6 @@ function onPreRender(dt: number): void {
 		
 		if (GuiService.ReducedMotionEnabled) {
 			camera.FieldOfView = math.min(camera.FieldOfView, 80);
-		}
-		
-		if (velocity > 300) {
-			const windStrength = math.min((velocity - 250) / 50, 6)
-			const windCFrame = Shake.camera(windStrength, currentTime, true, 2);
-			camera.CFrame = camera.CFrame.mul(windCFrame);
 		}
 	}
 	
@@ -389,6 +393,37 @@ function bindResetButtonCallback(resetEvent: BindableEvent): void {
 		setTimeout(() => bindResetButtonCallback(resetEvent), 1);
 	}
 }
+
+cameraMotion.onStep((cameraCFrame, dt) => {
+	const disableCamera = peek(CharacterState.disableCameraAtom);
+	const characterParts = peek(CharacterState.partsAtom);
+	if (disableCamera || characterParts === undefined) {
+		return;
+	}
+	
+	const currentTime = TimeSpan.now();
+	
+	const shakeStrength = peek(CharacterState.shakeStrengthAtom);
+	if (shakeStrength > 0) {
+		const shakeCFrame = Shake.camera(shakeStrength, currentTime, false);
+		cameraCFrame = cameraCFrame.mul(shakeCFrame);
+		
+		CharacterState.shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
+	}
+	
+	if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
+		endRagdoll();
+	}
+	
+	const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
+	if (velocity > 300) {
+		const windStrength = math.min((velocity - 250) / 50, 6)
+		const windCFrame = Shake.camera(windStrength, currentTime, true, 2);
+		cameraCFrame = cameraCFrame.mul(windCFrame);
+	}
+	
+	camera.CFrame = cameraCFrame;
+});
 
 const resetEvent = new Instance('BindableEvent');
 resetEvent.Event.Connect(onResetButton);

@@ -1,4 +1,4 @@
-import { RunService, SoundService, TweenService, Workspace } from '@rbxts/services';
+import { RunService, SoundService, Workspace } from '@rbxts/services';
 import { effect, peek } from '@rbxts/charm';
 
 import { TimeSpan } from 'shared/timeSpan';
@@ -7,6 +7,7 @@ import { Character } from 'client/character';
 import { CharacterState } from 'client/character/state';
 import { MaterialConfig, materialConfiguration } from './materials';
 import { UserSettings } from 'client/settings';
+import { createMotion } from '@rbxts/ripple';
 
 const mapFolder = Workspace.WaitForChild('Map') as Folder;
 const effectsFolder = Workspace.WaitForChild('Effects') as Folder;
@@ -67,13 +68,22 @@ export namespace Effects {
 		}
 		
 		const { totalParticles, colorMultiplier, duration } = material.getData();
-		const tweenInfo = new TweenInfo(duration, Enum.EasingStyle.Linear);
 		
 		baseParticle.Color = new Color3(
 			baseParticle.Color.R * colorMultiplier,
 			baseParticle.Color.G * colorMultiplier,
 			baseParticle.Color.B * colorMultiplier,
 		);
+		
+		const particleMotion = createMotion(0, {
+			heartbeat: RunService.PreRender,
+			start: true,
+		});
+		
+		particleMotion.tween(1, {
+			style: Enum.EasingStyle.Linear,
+			time: duration,
+		});
 		
 		const particles = new Set<BasePart>();
 		for (const i of $range(1, totalParticles)) {
@@ -87,12 +97,13 @@ export namespace Effects {
 			particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
 			particle.Parent = effectsFolder;
 			
-			const tween = TweenService.Create(particle, tweenInfo, {
-				Size: Vector3.zero,
-				LocalTransparencyModifier: 1,
-			});
+			const baseSize = particle.Size;
 			
-			tween.Play();
+			particleMotion.onStep((alpha) => {
+				const inverseAlpha = 1 - alpha;
+				particle.Size = baseSize.mul(inverseAlpha);
+				particle.LocalTransparencyModifier = alpha;
+			});
 			
 			particles.add(particle);
 		}
@@ -101,7 +112,8 @@ export namespace Effects {
 			Effects.playSound(material.sound);
 		}
 		
-		task.delay(duration, () => {
+		particleMotion.onComplete(() => {
+			particleMotion.destroy();
 			for (const particle of particles) {
 				particle.Destroy();
 			}
@@ -109,10 +121,18 @@ export namespace Effects {
 	}
 	
 	export function makeSmashParticles(baseParticle: BasePart, magnitude: number, point: Vector3, normalVector: Vector3, inheritedVelocity: Vector3): void {
-		const tweenInfo = new TweenInfo(5, Enum.EasingStyle.Linear);
-		
 		const velocityStrength = math.min((magnitude - 140) / 15, 15);
 		const totalParticles = RNG.NextInteger(10, 20);
+		
+		const particleMotion = createMotion(0, {
+			heartbeat: RunService.PreRender,
+			start: true,
+		});
+		
+		particleMotion.tween(1, {
+			style: Enum.EasingStyle.Linear,
+			time: 5,
+		});
 		
 		const particles = new Set<BasePart>();
 		for (const i of $range(1, totalParticles)) {
@@ -126,17 +146,19 @@ export namespace Effects {
 			particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
 			particle.Parent = effectsFolder;
 			
-			const tween = TweenService.Create(particle, tweenInfo, {
-				Size: Vector3.zero,
-				LocalTransparencyModifier: 1,
-			});
+			const baseSize = particle.Size;
 			
-			tween.Play();
+			particleMotion.onStep((alpha) => {
+				const inverseAlpha = 1 - alpha;
+				particle.Size = baseSize.mul(inverseAlpha);
+				particle.LocalTransparencyModifier = alpha;
+			});
 			
 			particles.add(particle);
 		}
 		
-		task.delay(tweenInfo.Time, () => {
+		particleMotion.onComplete(() => {
+			particleMotion.destroy();
 			for (const particle of particles) {
 				particle.Destroy();
 			}
@@ -245,12 +267,6 @@ effect(() => {
 			
 			const result = Workspace.Raycast(origin, direction, params);
 			if (result !== undefined) {
-				const tweenInfo = new TweenInfo(5, Enum.EasingStyle.Linear);
-				const tweenProperties: Partial<ExtractMembers<BasePart, Tweenable>> = {
-					Size: Vector3.one.mul(2),
-					LocalTransparencyModifier: 1,
-				};
-				
 				const totalParticles = RNG.NextInteger(20, 25);
 				const normalVector = result.Normal;
 				
@@ -260,6 +276,16 @@ effect(() => {
 				baseParticle.CanCollide = true;
 				baseParticle.CastShadow = false;
 				baseParticle.CollisionGroup = 'Particles';
+				
+				const particleMotion = createMotion(0, {
+					heartbeat: RunService.PreRender,
+					start: true,
+				});
+				
+				particleMotion.tween(1, {
+					style: Enum.EasingStyle.Linear,
+					time: 5,
+				});
 				
 				const particles = new Set<BasePart>();
 				for (const i of $range(1, totalParticles)) {
@@ -273,15 +299,21 @@ effect(() => {
 					particle.AssemblyAngularVelocity = RNG.NextUnitVector().mul(4);
 					particle.Parent = effectsFolder;
 					
-					const tween = TweenService.Create(particle, tweenInfo, tweenProperties);
-					tween.Play();
+					const baseSize = particle.Size;
+					
+					particleMotion.onStep((alpha) => {
+						const inverseAlpha = 1 - alpha;
+						particle.Size = baseSize.mul(inverseAlpha);
+						particle.LocalTransparencyModifier = alpha;
+					});
 					
 					particles.add(particle);
 				}
 				
 				baseParticle.Destroy();
 				
-				task.delay(tweenInfo.Time, () => {
+				particleMotion.onComplete(() => {
+					particleMotion.destroy();
 					for (const particle of particles) {
 						particle.Destroy();
 					}
@@ -289,11 +321,20 @@ effect(() => {
 				
 				if (impactMagnitude > 450) {
 					effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 5);
-					const tweenInfo = new TweenInfo(20, Enum.EasingStyle.Linear);
 					
 					const radius = 10 * math.log((impactMagnitude - 300) / 10, 2);
 					const totalParts = math.floor(radius / 2);
 					const randomAngleOffset = math.rad(5);
+					
+					const blockMotion = createMotion(0, {
+						heartbeat: RunService.PreRender,
+						start: true,
+					});
+					
+					blockMotion.tween(1, {
+						style: Enum.EasingStyle.Linear,
+						time: 20,
+					});
 					
 					const blocks = new Set<BasePart>();
 					for (const i of $range(1, totalParts)) {
@@ -318,17 +359,16 @@ effect(() => {
 						block.Size = Vector3.one.mul(RNG.NextNumber(12, 15));
 						block.Parent = effectsFolder;
 						
-						const tween = TweenService.Create(block, tweenInfo, {
-							Position: block.Position.add(subResult.Normal.mul(-block.Size.Y)),
-							LocalTransparencyModifier: 1,
+						blockMotion.onStep((alpha) => {
+							block.Position = subResult.Position.add(subResult.Normal.mul(-block.Size.Y * alpha));
+							block.LocalTransparencyModifier = alpha;
 						});
-						
-						tween.Play();
 						
 						blocks.add(block);
 					}
 					
-					task.delay(tweenInfo.Time, () => {
+					blockMotion.onComplete(() => {
+						blockMotion.destroy();
 						for (const block of blocks) {
 							block.Destroy();
 						}
