@@ -24,7 +24,7 @@ const App: React.FC = () => {
 	
 	return (
 		<>
-		<World />
+			<World />
 			<SpeedEffectGUI />
 			<VersionGUI />
 			<HudGUI />
