@@ -18,6 +18,27 @@ export namespace CharacterState {
 		};
 	}
 	
+	export function createParts(character: Model): Parts {
+		const body = character.FindFirstChild('Body') as Part;
+		const hammer = character.FindFirstChild('Hammer') as Model;
+		const head = hammer.FindFirstChild('Head') as Part;
+		
+		return {
+			model: character,
+			body: body,
+			centerAttachment: body.FindFirstChild('Center.0') as Attachment,
+			targetAttachment: body.FindFirstChild('Target.1') as Attachment,
+			rotationLock: body.FindFirstChild('AlignOrientation') as AlignOrientation,
+			hammer: {
+				model: hammer,
+				handle: hammer.FindFirstChild('Handle') as Part,
+				head: head,
+				alignPosition: head.FindFirstChild('AlignPosition') as AlignPosition,
+				alignOrientation: head.FindFirstChild('AlignOrientation') as AlignOrientation,
+			},
+		};
+	}
+	
 	export const partsAtom = atom<CharacterState.Parts>();
 	export const areaAtom = atom<AreaManager.Area>(AreaManager.Area.Unknown);
 	export const timeStartAtom = atom<number>();

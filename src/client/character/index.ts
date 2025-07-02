@@ -280,30 +280,13 @@ function onCharacterAdded(newCharacter: Model): void {
 	CharacterState.shakeStrengthAtom(0);
 	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
-	const body = newCharacter.FindFirstChild('Body') as Part;
-	const hammer = newCharacter.FindFirstChild('Hammer') as Model;
-	const head = hammer.FindFirstChild('Head') as Part;
+	const characterParts = CharacterState.createParts(newCharacter);
 	
 	Camera.cframeMotion.immediate(CFrame.lookAlong(
-		body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
+		characterParts.body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
 		!GuiService.ReducedMotionEnabled ? Vector3.yAxis.mul(-1) : Vector3.zAxis,
 		Vector3.zAxis,
 	));
-	
-	CharacterState.partsAtom({
-		model: newCharacter,
-		body: body,
-		centerAttachment: body.FindFirstChild('Center.0') as Attachment,
-		targetAttachment: body.FindFirstChild('Target.1') as Attachment,
-		rotationLock: body.FindFirstChild('AlignOrientation') as AlignOrientation,
-		hammer: {
-			model: hammer,
-			handle: hammer.FindFirstChild('Handle') as Part,
-			head: head,
-			alignPosition: head.FindFirstChild('AlignPosition') as AlignPosition,
-			alignOrientation: head.FindFirstChild('AlignOrientation') as AlignOrientation,
-		},
-	});
 	
 	const bubbleChatOrigin = newCharacter.FindFirstChild('BubbleChatOrigin') as Part;
 	const bubbleChatAttachment = bubbleChatOrigin.FindFirstChild('Rigid.0') as Attachment;
