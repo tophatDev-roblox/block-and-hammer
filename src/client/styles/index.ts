@@ -125,6 +125,10 @@ export namespace Styles {
 				};
 			};
 		};
+		subtitles: {
+			text: Text;
+			container: Container;
+		};
 		modal: {
 			container: Container;
 			text: {

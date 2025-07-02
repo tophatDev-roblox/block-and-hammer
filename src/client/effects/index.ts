@@ -18,7 +18,6 @@ let effectsFolder: Folder;
 let hapticsFolder: Folder;
 let hammerHitSound: Sound;
 let explosionSound: Sound;
-let windSound: Sound;
 
 let explosionHaptics: HapticEffect;
 
@@ -28,7 +27,6 @@ let explosionHaptics: HapticEffect;
 	hapticsFolder = await waitForChild(Workspace, 'Haptics', 'Folder');
 	hammerHitSound = await waitForChild(SoundService, 'HammerHit', 'Sound');
 	explosionSound = await waitForChild(SoundService, 'Explosion', 'Sound');
-	windSound = await waitForChild(SoundService, 'Wind', 'Sound');
 	
 	explosionHaptics = new Instance('HapticEffect');
 	explosionHaptics.Type = Enum.HapticEffectType.GameplayExplosion;
@@ -227,7 +225,7 @@ effect(() => {
 			characterParts.model.SetAttribute('justReset', undefined);
 		}
 		
-		windSound.PlaybackSpeed = math.clamp((bodyVelocity.Magnitude - 50) / 150, 0, 2);
+		SFX.windSpeedAtom(math.clamp((bodyVelocity.Magnitude - 50) / 150, 0, 2));
 		
 		const impactMagnitude = math.abs(bodyVelocity.Magnitude - previousBodyVelocity.Magnitude);
 		if (impactMagnitude > 130) {

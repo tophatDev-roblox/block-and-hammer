@@ -43,9 +43,11 @@ const Speedometer: React.FC = () => {
 			<Text
 				styles={styles.hud.text.speedometer}
 				text={text}
-				rotation={rotation}
 				automaticWidth
 				automaticHeight
+				properties={{
+					Rotation: rotation,
+				}}
 			/>
 		</frame>
 	);

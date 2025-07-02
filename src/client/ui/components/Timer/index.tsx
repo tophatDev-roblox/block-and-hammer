@@ -87,10 +87,12 @@ const TimerGUI: React.FC = () => {
 					styles={styles.timer.text}
 					text={text}
 					alignX={Enum.TextXAlignment.Left}
-					rotation={rotation}
 					automaticHeight
 					automaticWidth
 					richText
+					properties={{
+						Rotation: rotation,
+					}}
 				/>
 			</frame>
 		</screengui>

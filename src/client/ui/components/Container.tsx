@@ -9,8 +9,10 @@ interface ContainerProps extends React.PropsWithChildren {
 	styles: Styles.Container;
 	width?: UDim;
 	height?: UDim;
+	order?: number;
 	automaticWidth?: boolean;
 	automaticHeight?: boolean;
+	properties?: React.InstanceProps<Frame>;
 }
 
 const Container: React.FC<ContainerProps> = (props) => {
@@ -18,8 +20,10 @@ const Container: React.FC<ContainerProps> = (props) => {
 		styles: { background, outline },
 		width,
 		height,
+		order,
 		automaticWidth = false,
 		automaticHeight = false,
+		properties,
 		children,
 	} = props;
 	
@@ -43,6 +47,8 @@ const Container: React.FC<ContainerProps> = (props) => {
 			BorderSizePixel={0}
 			Size={containerSize}
 			AutomaticSize={automaticSize}
+			LayoutOrder={order}
+			{...properties}
 		>
 			{!isRGBA && (
 				<Gradient

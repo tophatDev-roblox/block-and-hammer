@@ -43,9 +43,11 @@ const Altitude: React.FC = () => {
 			<Text
 				styles={styles.hud.text.altitude}
 				text={text}
-				rotation={rotation}
 				automaticWidth
 				automaticHeight
+				properties={{
+					Rotation: rotation,
+				}}
 			/>
 		</frame>
 	);

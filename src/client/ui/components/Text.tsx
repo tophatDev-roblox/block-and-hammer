@@ -18,7 +18,7 @@ interface TextProps extends React.PropsWithChildren {
 	alignY?: Enum.TextYAlignment;
 	richText?: boolean;
 	wrapped?: boolean;
-	rotation?: React.Binding<number> | number;
+	properties?: React.InstanceProps<TextLabel>;
 }
 
 const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
@@ -40,7 +40,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 		alignY = Enum.TextYAlignment.Center,
 		richText = false,
 		wrapped = false,
-		rotation = 0,
+		properties,
 		children,
 	} = props;
 	
@@ -66,7 +66,6 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 			ref={ref}
 			BackgroundTransparency={1}
 			Size={labelSize}
-			Rotation={rotation}
 			AutomaticSize={automaticSize}
 			FontFace={fontFace}
 			TextColor3={isRGBA ? Color3.fromRGB(color.red, color.green, color.blue) : Color3.fromRGB(255, 255, 255)}
@@ -78,6 +77,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 			Text={text}
 			TextWrapped={wrapped}
 			RichText={richText}
+			{...properties}
 		>
 			{!isRGBA && (
 				<Gradient

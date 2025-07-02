@@ -10,6 +10,7 @@ import HudGUI from './HUD';
 import TimerGUI from './Timer';
 import ModalGUI from './Modal';
 import SideMenuGUI from './SideMenu';
+import SubtitlesGUI from './Subtitles';
 
 const App: React.FC = () => {
 	const isInStartScreen = useAtom(StartScreenState.isVisibleAtom);
@@ -27,6 +28,7 @@ const App: React.FC = () => {
 			<World />
 			<SpeedEffectGUI />
 			<VersionGUI />
+			<SubtitlesGUI />
 			<HudGUI />
 			<TimerGUI />
 			<SideMenuGUI />

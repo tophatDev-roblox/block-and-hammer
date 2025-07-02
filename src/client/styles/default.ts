@@ -57,6 +57,18 @@ const data: Styles.Data = {
 			},
 		},
 	},
+	subtitles: {
+		text: {
+			font: { fontId, weight: 400, italics: false },
+			color: { red: 255, green: 255, blue: 255, alpha: 1 },
+			size: 30,
+			outline: false,
+		},
+		container: {
+			background: { red: 0, green: 0, blue: 0, alpha: 1 },
+			outline: false,
+		},
+	},
 	modal: {
 		container: {
 			background: {
