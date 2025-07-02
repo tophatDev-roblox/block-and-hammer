@@ -9,11 +9,11 @@ import { Styles } from 'client/styles';
 import { usePx } from 'client/ui/hooks/usePx';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { StartScreenState } from 'client/ui/startScreenState';
-import ContainerImage from '../ContainerImage';
-import MenuButton from './MenuButton';
 import { ModalState } from 'client/ui/modalState';
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
+import ContainerImage from '../ContainerImage';
+import MenuButton from './MenuButton';
 
 const SideMenuGUI: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);

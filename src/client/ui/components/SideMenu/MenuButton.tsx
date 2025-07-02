@@ -5,8 +5,8 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
-import SideButton, { InheritedProps } from '../SideButton';
 import { InputType } from 'client/inputType';
+import SideButton, { InheritedProps } from '../SideButton';
 
 interface MenuButtonProps extends InheritedProps {
 	totalButtons: number;

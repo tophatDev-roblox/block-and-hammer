@@ -10,6 +10,7 @@ import { DebugPanel } from 'client/debugPanel';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { StartScreenState } from 'client/ui/startScreenState';
 import defaultStyles from 'client/styles/default';
+import { ModalState } from './ui/modalState';
 
 const client = Players.LocalPlayer;
 
@@ -62,6 +63,11 @@ menuIcon.toggled.Connect((toggled) => {
 effect(() => {
 	const isVisible = StartScreenState.isVisibleAtom();
 	Icon.setTopbarEnabled(!isVisible);
+	if (isVisible) {
+		menuIcon.lock();
+	} else {
+		menuIcon.unlock();
+	}
 });
 
 subscribe(SideMenuState.isOpenAtom, (isOpen) => {
@@ -69,6 +75,14 @@ subscribe(SideMenuState.isOpenAtom, (isOpen) => {
 		menuIcon.select();
 	} else {
 		menuIcon.deselect();
+	}
+});
+
+subscribe(ModalState.stateAtom, (modal) => {
+	if (modal !== undefined) {
+		menuIcon.lock();
+	} else {
+		menuIcon.unlock();
 	}
 });
 
