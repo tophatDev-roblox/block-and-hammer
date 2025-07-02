@@ -4,6 +4,7 @@ import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 import { peek } from '@rbxts/charm';
 
+import { TimeSpan } from 'shared/timeSpan';
 import { Shake } from 'shared/shake';
 import { Units } from 'shared/units';
 import { Styles } from 'client/styles';
@@ -19,7 +20,8 @@ const Speedometer: React.FC = () => {
 	
 	const labelFormat = useMemo(() => `%.${styles.hud.text.speedometer.display.decimals}fm/s`, [styles.hud.text.speedometer.display.decimals]);
 	
-	useEventListener(RunService.Stepped, (time) => {
+	useEventListener(RunService.PreSimulation, () => {
+		const time = TimeSpan.now();
 		if (characterParts === undefined) {
 			setText('--');
 			setRotation(0);

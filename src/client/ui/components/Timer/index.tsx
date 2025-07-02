@@ -38,7 +38,8 @@ const TimerGUI: React.FC = () => {
 		});
 	}, [styles.timer.text.display.milliseconds.fontSize, styles.timer.text.display.milliseconds.autoScale]);
 	
-	useEventListener(RunService.Stepped, (time) => {
+	useEventListener(RunService.PreSimulation, () => {
+		const time = TimeSpan.now();
 		if (timeStart === undefined) {
 			setText(`0.${millisecondsRichText.apply('00')}`);
 			return;

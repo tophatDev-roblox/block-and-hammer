@@ -201,7 +201,7 @@ function onPlayerRemoving(player: Player): void {
 	Remotes.sendSystemMessage.fireAll(joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} left the server`)));
 }
 
-function onStepped(_time: number, _dt: number): void {
+function onPreSimulation(): void {
 	for (const [character, data] of characterData) {
 		const body = character.PrimaryPart;
 		if (body === undefined) {
@@ -229,4 +229,4 @@ Remotes.fullReset.onRequest(throttle(onFullReset, 0.2));
 Remotes.unloadCharacter.connect(onUnloadCharacter);
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);
-RunService.Stepped.Connect(onStepped);
+RunService.PreSimulation.Connect(onPreSimulation);

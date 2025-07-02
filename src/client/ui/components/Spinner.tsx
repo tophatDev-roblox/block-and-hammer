@@ -2,6 +2,7 @@ import { RunService } from '@rbxts/services';
 import React, { useBinding, useState } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
 
+import { TimeSpan } from 'shared/timeSpan';
 import { usePx } from '../hooks/usePx';
 
 interface SpinnerProps {
@@ -9,7 +10,7 @@ interface SpinnerProps {
 }
 
 const Spinner: React.FC<SpinnerProps> = ({ size = 180 }) => {
-	const [startTime] = useState<number>(os.clock());
+	const [startTime] = useState<number>(TimeSpan.now());
 	
 	const [leftRotation, setLeftRotation] = useBinding<number>(0);
 	const [rightRotation, setRightRotation] = useBinding<number>(0);
@@ -23,8 +24,9 @@ const Spinner: React.FC<SpinnerProps> = ({ size = 180 }) => {
 		new NumberSequenceKeypoint(1, 1),
 	]);
 	
-	useEventListener(RunService.Stepped, () => {
-		const elapsedTime = (os.clock() - startTime) % 2;
+	useEventListener(RunService.PreSimulation, () => {
+		const time = TimeSpan.now();
+		const elapsedTime = (time - startTime) % 2;
 		const phase = math.floor(elapsedTime / 0.5);
 		const value = (elapsedTime % 0.5) / 0.5;
 		const inverseValue = 1 - value;

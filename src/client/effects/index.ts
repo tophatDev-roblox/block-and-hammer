@@ -200,7 +200,7 @@ effect(() => {
 		lastEffectTime = TimeSpan.now();
 	});
 	
-	const steppedEvent = RunService.Stepped.Connect(() => {
+	const preSimulationEvent = RunService.PreSimulation.Connect(() => {
 		hammerVelocity = characterParts.hammer.head.AssemblyLinearVelocity;
 		// i just copied the hit detection from the original block and hammer,
 		// not sure why this works so much better than getting AssemblyLinearVelocity directly
@@ -345,6 +345,6 @@ effect(() => {
 	
 	return () => {
 		touchedEvent.Disconnect();
-		steppedEvent.Disconnect();
+		preSimulationEvent.Disconnect();
 	};
 });

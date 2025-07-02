@@ -4,6 +4,7 @@ import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { CharacterState } from 'client/character/state';
+import { TimeSpan } from 'shared/timeSpan';
 
 const imageIds = [
 	'rbxassetid://13484709347',
@@ -23,6 +24,7 @@ const SpeedEffectGUI: React.FC = () => {
 	const characterParts = useAtom(CharacterState.partsAtom);
 	
 	useEventListener(RunService.PreRender, () => {
+		const time = TimeSpan.now();
 		if (characterParts === undefined) {
 			setImageTransparency(1);
 			setSize(UDim2.fromScale(6, 6));
@@ -32,7 +34,7 @@ const SpeedEffectGUI: React.FC = () => {
 		const currentIndex = currentIndexRef.current;
 		
 		const speed = !GuiService.ReducedMotionEnabled ? 10 : 1;
-		const newIndex = math.floor(os.clock() * speed % 4);
+		const newIndex = math.floor(time * speed % 4);
 		if (newIndex !== currentIndex) {
 			setImageId(imageIds[newIndex]);
 			currentIndexRef.current = newIndex;
