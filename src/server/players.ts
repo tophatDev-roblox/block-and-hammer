@@ -97,12 +97,6 @@ async function respawn(player: Player): Promise<void> {
 		},
 	});
 	
-	// TODO: better system for billboard gui (+ make size responsive)
-	const billboardGui = character.FindFirstChildWhichIsA('BillboardGui', true)!;
-	billboardGui.PlayerToHideFrom = player;
-	(billboardGui.FindFirstChild('DisplayName') as TextLabel).Text = player.DisplayName;
-	(billboardGui.FindFirstChild('Username') as TextLabel).Text = `@${player.Name}`;
-	
 	character.Destroying.Once(() => {
 		characterData.delete(character);
 		

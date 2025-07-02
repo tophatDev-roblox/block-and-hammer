@@ -2,6 +2,7 @@ import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { StartScreenState } from 'client/ui/startScreenState';
+import World from './World';
 import StartScreen from './StartScreen';
 import SpeedEffectGUI from './SpeedEffect';
 import VersionGUI from './Version';
@@ -23,6 +24,7 @@ const App: React.FC = () => {
 	
 	return (
 		<>
+		<World />
 			<SpeedEffectGUI />
 			<VersionGUI />
 			<HudGUI />

@@ -196,13 +196,13 @@ const data: Styles.Data = {
 			displayName: {
 				font: { fontId, weight: 700, italics: false },
 				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 25,
+				size: 30,
 				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
 			},
 			username: {
 				font: { fontId, weight: 700, italics: false },
-				color: { red: 255, green: 255, blue: 255, alpha: 1 },
-				size: 15,
+				color: { red: 200, green: 200, blue: 200, alpha: 1 },
+				size: 20,
 				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter' },
 			},
 		},
