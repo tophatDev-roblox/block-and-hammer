@@ -5,7 +5,6 @@ import { createMotion } from '@rbxts/ripple';
 
 import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
-import { Shake } from 'shared/shake';
 import { Controller } from 'shared/controller';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { AreaManager } from 'shared/areaManager';
@@ -13,7 +12,7 @@ import { Units } from 'shared/units';
 import { DebugPanel } from 'client/debugPanel';
 import { UserSettings } from 'client/settings';
 import { InputType } from 'client/inputType';
-import { camera } from 'client/camera';
+import { Camera } from 'client/camera';
 import { Leaderstats } from 'client/leaderstats';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { ModalState } from 'client/ui/modalState';
@@ -29,7 +28,7 @@ const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.Mou
 const RNG = new Random();
 let ragdollTimeEnd: number | undefined = undefined;
 
-const cameraMotion = createMotion<CFrame>(CFrame.identity, {
+const thumbstickMotion = createMotion<Vector3>(Vector3.zero, {
 	heartbeat: RunService.PreRender,
 	start: true,
 });
@@ -64,7 +63,7 @@ export namespace Character {
 		
 		characterParts.model.PivotTo(spawnCFrame);
 		
-		cameraMotion.immediate(CFrame.lookAlong(
+		Camera.cframeMotion.immediate(CFrame.lookAlong(
 			spawnCFrame.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
 			!GuiService.ReducedMotionEnabled ? Vector3.yAxis.mul(-1) : Vector3.zAxis,
 			Vector3.zAxis,
@@ -253,8 +252,11 @@ function processInput(input: InputObject): void {
 			}
 			
 			const position = characterParts.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
-			const [screenPosition] = camera.WorldToScreenPoint(position);
-			CharacterState.mousePositionAtom(new Vector2(screenPosition.X, screenPosition.Y));
+			const [screenPosition] = Camera.instance.WorldToScreenPoint(position);
+			thumbstickMotion.spring(screenPosition, {
+				tension: 500,
+				friction: 60,
+			});
 		}
 	}
 }
@@ -290,7 +292,7 @@ function onCharacterAdded(newCharacter: Model): void {
 	const hammer = newCharacter.FindFirstChild('Hammer') as Model;
 	const head = hammer.FindFirstChild('Head') as Part;
 	
-	cameraMotion.immediate(CFrame.lookAlong(
+	Camera.cframeMotion.immediate(CFrame.lookAlong(
 		body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
 		!GuiService.ReducedMotionEnabled ? Vector3.yAxis.mul(-1) : Vector3.zAxis,
 		Vector3.zAxis,
@@ -335,23 +337,22 @@ function onCharacterRemoving(): void {
 	mouseCursorPart.Position = new Vector3(0, -500, 0);
 }
 
-function onPreRender(dt: number): void {
+function onPreRender(): void {
 	const characterParts = peek(CharacterState.partsAtom);
 	if (characterParts === undefined) {
 		return;
 	}
 	
-	camera.CameraType = Enum.CameraType.Scriptable;
-	
+	const currentTime = TimeSpan.now();
 	const userSettings = peek(UserSettings.stateAtom);
 	const inputType = peek(InputType.stateAtom);
 	const mousePosition = peek(CharacterState.mousePositionAtom);
 	if (mousePosition !== undefined) {
-		const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
+		const ray = Camera.instance.ScreenPointToRay(mousePosition.X, mousePosition.Y);
 		const position = rayIntersectXYPlane(ray);
 		
 		if (inputType === InputType.Value.Controller && userSettings.controllerSmoothingEnabled) {
-			mouseCursorPart.Position = mouseCursorPart.Position.Lerp(position, dt * userSettings.controllerSmoothingFactor);
+			mouseCursorPart.Position = thumbstickMotion.get();
 		} else {
 			mouseCursorPart.Position = position;
 		}
@@ -366,17 +367,13 @@ function onPreRender(dt: number): void {
 		const targetPosition = new Vector3(characterParts.body.Position.X, characterParts.body.Position.Y, peek(CharacterState.cameraZOffsetAtom));
 		const cameraCFrame = CFrame.lookAlong(targetPosition, Vector3.zAxis, Vector3.yAxis);
 		
-		cameraMotion.spring(cameraCFrame, {
+		Camera.cframeMotion.spring(cameraCFrame, {
 			tension: 500,
 			friction: 60,
 		});
 		
-		const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
-		const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
-		camera.FieldOfView = fieldOfView;
-		
-		if (GuiService.ReducedMotionEnabled) {
-			camera.FieldOfView = math.min(camera.FieldOfView, 80);
+		if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
+			endRagdoll();
 		}
 	}
 	
@@ -394,44 +391,13 @@ function bindResetButtonCallback(resetEvent: BindableEvent): void {
 	}
 }
 
-cameraMotion.onStep((cameraCFrame, dt) => {
-	const disableCamera = peek(CharacterState.disableCameraAtom);
-	const characterParts = peek(CharacterState.partsAtom);
-	if (disableCamera || characterParts === undefined) {
-		return;
-	}
-	
-	const currentTime = TimeSpan.now();
-	
-	const shakeStrength = peek(CharacterState.shakeStrengthAtom);
-	if (shakeStrength > 0) {
-		const shakeCFrame = Shake.camera(shakeStrength, currentTime, false);
-		cameraCFrame = cameraCFrame.mul(shakeCFrame);
-		
-		CharacterState.shakeStrengthAtom(math.max(shakeStrength - dt * 1.5, 0));
-	}
-	
-	if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
-		endRagdoll();
-	}
-	
-	const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
-	if (velocity > 300) {
-		const windStrength = math.min((velocity - 250) / 50, 6)
-		const windCFrame = Shake.camera(windStrength, currentTime, true, 2);
-		cameraCFrame = cameraCFrame.mul(windCFrame);
-	}
-	
-	camera.CFrame = cameraCFrame;
-});
-
 const resetEvent = new Instance('BindableEvent');
 resetEvent.Event.Connect(onResetButton);
 bindResetButtonCallback(resetEvent);
 
 subscribe(CharacterState.disableCameraAtom, (disableCamera) => {
 	if (disableCamera) {
-		camera.FieldOfView = 70;
+		Camera.instance.FieldOfView = 70;
 	}
 });
 

@@ -1,20 +1,20 @@
 import { atom } from '@rbxts/charm';
 import { useAtom } from '@rbxts/react-charm';
 
-import { camera } from 'client/camera';
+import { Camera } from 'client/camera';
 
-const viewportSizeAtom = atom<Vector2>(camera.ViewportSize);
+const viewportSizeAtom = atom<Vector2>(Camera.instance.ViewportSize);
 
 let debounceThread: thread | undefined = undefined;
 
-camera.GetPropertyChangedSignal('ViewportSize').Connect(() => {
+Camera.instance.GetPropertyChangedSignal('ViewportSize').Connect(() => {
 	if (debounceThread !== undefined) {
 		task.cancel(debounceThread);
 	}
 	
 	debounceThread = task.delay(0.1, () => {
 		debounceThread = undefined;
-		viewportSizeAtom(camera.ViewportSize);
+		viewportSizeAtom(Camera.instance.ViewportSize);
 	});
 });
 

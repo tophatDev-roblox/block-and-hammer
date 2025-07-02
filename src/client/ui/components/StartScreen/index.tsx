@@ -1,14 +1,14 @@
 import { GuiService, RunService, Workspace } from '@rbxts/services';
 import { setTimeout } from '@rbxts/set-timeout';
 import React, { useEffect, useState } from '@rbxts/react';
-import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
+import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 import Ripple, { createMotion } from '@rbxts/ripple';
 
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/ui/startScreenState';
 import { StyleParse, Styles } from 'client/styles';
-import { camera } from 'client/camera';
+import { Camera } from 'client/camera';
 import { Effects } from 'client/effects';
 import Text from '../Text';
 import Button from './Button';
@@ -39,11 +39,9 @@ const StartScreen: React.FC = () => {
 	
 	const px = usePx();
 	
-	useEventListener(RunService.PreRender, () => {
-		camera.FieldOfView = 45;
-		camera.CameraType = Enum.CameraType.Scriptable;
-		camera.CFrame = cameraPart.CFrame;
-	});
+	useEffect(() => {
+		Camera.cframeMotion.immediate(cameraPart.CFrame);
+	}, []);
 	
 	useEffect(() => {
 		if (!isLoadingFinished) {

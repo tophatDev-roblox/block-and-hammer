@@ -4,6 +4,7 @@ import './coreGuis';
 import './ui';
 import './ui/startScreenState';
 import './ui/sideMenuState';
+import './camera';
 import './character';
 import './area';
 import './effects';
