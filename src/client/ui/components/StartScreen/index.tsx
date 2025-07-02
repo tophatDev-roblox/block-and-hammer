@@ -39,7 +39,7 @@ const StartScreen: React.FC = () => {
 	
 	const px = usePx();
 	
-	useEventListener(RunService.RenderStepped, () => {
+	useEventListener(RunService.PreRender, () => {
 		camera.FieldOfView = 45;
 		camera.CameraType = Enum.CameraType.Scriptable;
 		camera.CFrame = cameraPart.CFrame;

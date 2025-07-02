@@ -41,10 +41,10 @@ mapBoundariesState.onChange((mapBoundaries) => {
 		boundariesPart.Material = Enum.Material.ForceField;
 		boundariesPart.Parent = Workspace;
 		
-		const renderSteppedEvent = RunService.RenderStepped.Connect(() => {
+		const preRenderEvent = RunService.PreRender.Connect(() => {
 			if (!mapBoundariesState.value) {
 				boundariesPart.Destroy();
-				renderSteppedEvent.Disconnect();
+				preRenderEvent.Disconnect();
 				return;
 			}
 			

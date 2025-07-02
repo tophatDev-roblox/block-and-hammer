@@ -22,7 +22,7 @@ const SpeedEffectGUI: React.FC = () => {
 	
 	const characterParts = useAtom(CharacterState.partsAtom);
 	
-	useEventListener(RunService.RenderStepped, () => {
+	useEventListener(RunService.PreRender, () => {
 		if (characterParts === undefined) {
 			setImageTransparency(1);
 			setSize(UDim2.fromScale(6, 6));

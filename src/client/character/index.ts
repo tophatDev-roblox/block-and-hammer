@@ -313,7 +313,7 @@ function onCharacterRemoving(): void {
 	mouseCursorPart.Position = new Vector3(0, -500, 0);
 }
 
-function onRenderStepped(dt: number): void {
+function onPreRender(dt: number): void {
 	const currentTime = TimeSpan.now();
 	const characterParts = peek(CharacterState.partsAtom);
 	if (characterParts === undefined) {
@@ -472,4 +472,4 @@ UserInputService.InputChanged.Connect(processInput);
 UserInputService.InputEnded.Connect(onInputEnded);
 client.CharacterAdded.Connect(onCharacterAdded);
 client.CharacterRemoving.Connect(onCharacterRemoving);
-RunService.RenderStepped.Connect(onRenderStepped);
+RunService.PreRender.Connect(onPreRender);
