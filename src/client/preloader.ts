@@ -2,10 +2,13 @@ import { ContentProvider, RunService } from '@rbxts/services';
 import { Atom, batch } from '@rbxts/charm';
 
 import { Assets } from 'shared/assets';
+import { TimeSpan } from 'shared/timeSpan';
 
 export namespace Preloader {
 	export async function preloadAtom(loadingStatusAtom: Atom<string>, loadingPercentageAtom: Atom<number>, isLoadingFinishedAtom: Atom<boolean>): Promise<void> {
 		const preload = Promise.promisify((...args: Parameters<ContentProvider['PreloadAsync']>) => ContentProvider.PreloadAsync(...args));
+		
+		const startTime = TimeSpan.now();
 		
 		loadingStatusAtom('preloading asset ids...');
 		
@@ -41,12 +44,13 @@ export namespace Preloader {
 		
 		return new Promise<void>((resolve) => {
 			const connection = RunService.Heartbeat.Connect(() => {
-				if (loadedAssets < contentList.size()) {
+				if (loadedAssets < contentList.size() && TimeSpan.timeSince(startTime) < 4) {
 					return;
 				}
 				
 				connection.Disconnect();
 				batch(() => {
+					loadingPercentageAtom(1);
 					loadingStatusAtom('all done!');
 					isLoadingFinishedAtom(true);
 				});
