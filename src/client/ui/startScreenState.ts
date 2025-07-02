@@ -1,5 +1,4 @@
-import { setTimeout } from '@rbxts/set-timeout';
-import { atom, batch, effect } from '@rbxts/charm';
+import { atom, batch, effect, peek } from '@rbxts/charm';
 
 import { Remotes } from 'shared/remotes';
 import { CharacterState } from 'client/character/state';
@@ -13,11 +12,8 @@ export namespace StartScreenState {
 	export const loadingPercentageAtom = atom<number>(0);
 }
 
-function fullReset(): void {
-	const didReset = Remotes.fullReset();
-	if (!didReset) {
-		setTimeout(fullReset, 0.1);
-	}
+async function fullReset(): Promise<void> {
+	await Remotes.fullReset();
 };
 
 Preloader.preloadAtom(StartScreenState.loadingStatusAtom, StartScreenState.loadingPercentageAtom, StartScreenState.isLoadingFinishedAtom);
@@ -34,6 +30,12 @@ effect(() => {
 	
 	if (isVisible) {
 		Remotes.unloadCharacter.fire();
+		
+		const characterParts = peek(CharacterState.partsAtom);
+		if (characterParts !== undefined) {
+			characterParts.model.Destroy();
+			CharacterState.partsAtom(undefined);
+		}
 	} else {
 		fullReset();
 	}

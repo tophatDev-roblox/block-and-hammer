@@ -66,7 +66,7 @@ async function respawn(player: Player): Promise<void> {
 	const altitudeValue = leaderstats.FindFirstChild('Altitude');
 	const areaValue = leaderstats.FindFirstChild('Area');
 	if (!areaValue?.IsA('StringValue') || !altitudeValue?.IsA('IntValue')) {
-		throw 'failed to respawn player because Area leaderstat is not a StringValue or Altitude leaderstat is not an IntValue';
+		throw '[server::players] failed to respawn player because Area leaderstat is not a StringValue or Altitude leaderstat is not an IntValue';
 	}
 	
 	const existingCharacter = Workspace.FindFirstChild(player.Name) ?? player.Character;
@@ -82,7 +82,7 @@ async function respawn(player: Player): Promise<void> {
 	
 	const body = character.FindFirstChild('Body');
 	if (!body?.IsA('Part')) {
-		throw 'failed to respawn player because Body is not a Part';
+		throw '[server::players] failed to respawn player because Body is not a Part';
 	}
 	
 	characterData.set(character, {
@@ -120,9 +120,8 @@ async function respawn(player: Player): Promise<void> {
 	}
 }
 
-function onFullReset(player: Player): boolean {
-	respawn(player);
-	
+async function onFullReset(player: Player): Promise<true> {
+	await respawn(player);
 	return true;
 }
 
