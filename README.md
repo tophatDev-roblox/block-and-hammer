@@ -25,9 +25,6 @@
 
 ## building from source
 
-> [!WARNING]
-> this game is currently in pre-alpha, so place files are currently not yet provided
-
 ### prerequisites
 * [git](https://git-scm.com/downloads)
 * [pnpm](https://pnpm.io/installation)
