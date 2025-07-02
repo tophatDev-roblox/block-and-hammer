@@ -19,10 +19,34 @@ export namespace SFX {
 	
 	const soundDebounces = new Map<Sound, Debounced<() => void>>();
 	
-	subscribe(windSpeedAtom, (windSpeed) => {
+	subscribe(windSpeedAtom, (windSpeed, previousWindSpeed) => {
 		windSound.PlaybackSpeed = windSpeed;
-		if (windSpeed > 0.5) {
-			addSound(windSound, false, 0);
+		
+		const name = SFX.getName(windSound);
+		if (windSpeed > 0.5 && previousWindSpeed <= 0.5) {
+			playingSoundsAtom((playingSounds) => {
+				const updatedSounds = table.clone(playingSounds);
+				
+				const index = playingSounds.findIndex(([sound]) => sound === name);
+				if (index !== -1) {
+					updatedSounds[index][1] = math.huge;
+				} else {
+					updatedSounds.push([name, math.huge, 1]);
+				}
+				
+				return updatedSounds;
+			});
+		} else if (windSpeed <= 0.5 && previousWindSpeed > 0.5) {
+			playingSoundsAtom((playingSounds) => {
+				const index = playingSounds.findIndex(([sound]) => sound === name);
+				if (index === -1) {
+					return playingSounds;
+				}
+				
+				const updatedSounds = table.clone(playingSounds);
+				updatedSounds[index][1] = TimeSpan.now() + 1;
+				return updatedSounds;
+			});
 		}
 	});
 	
@@ -34,8 +58,12 @@ export namespace SFX {
 		speedVariation?: number;
 	}
 	
+	export function getName(sound: Sound): string {
+		return sound.GetAttribute('displayName') as string ?? sound.GetFullName();
+	}
+	
 	function addSound(targetSound: Sound, count: boolean, length: number): void {
-		const name = targetSound.GetAttribute('displayName') as string ?? targetSound.GetFullName();
+		const name = SFX.getName(targetSound);
 		const debounceDuration = length + 1;
 		
 		playingSoundsAtom((playingSounds) => {
