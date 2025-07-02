@@ -25,10 +25,12 @@ const Subtitle: React.FC<CaptionProps> = ({ sound, endTime, count, index }) => {
 	
 	useEffect(() => {
 		transparencyMotion.immediate(0);
-		transparencyMotion.tween(1, {
-			style: Enum.EasingStyle.Linear,
-			time: TimeSpan.timeUntil(endTime),
-		});
+		if (endTime < math.huge) {
+			transparencyMotion.tween(1, {
+				style: Enum.EasingStyle.Linear,
+				time: TimeSpan.timeUntil(endTime),
+			});
+		}
 	}, [endTime]);
 	
 	return (
