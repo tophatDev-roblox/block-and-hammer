@@ -1,11 +1,19 @@
-import { ContentProvider, RunService } from '@rbxts/services';
+import { ContentProvider, Players, RunService } from '@rbxts/services';
 import { Atom, batch } from '@rbxts/charm';
 
-import { Assets } from 'shared/assets';
+import { waitForChild } from 'shared/waitForChild';
 import { TimeSpan } from 'shared/timeSpan';
+import { Assets } from 'shared/assets';
+
+const client = Players.LocalPlayer;
 
 export namespace Preloader {
 	export async function preloadAtom(loadingStatusAtom: Atom<string>, loadingPercentageAtom: Atom<number>, isLoadingFinishedAtom: Atom<boolean>): Promise<void> {
+		const playerGui = await waitForChild(client, 'PlayerGui', 'PlayerGui');
+		
+		const initialLoadingGui = await waitForChild(playerGui, 'InitialLoadingGUI', 'ScreenGui');
+		initialLoadingGui.Destroy();
+		
 		const preload = Promise.promisify((...args: Parameters<ContentProvider['PreloadAsync']>) => ContentProvider.PreloadAsync(...args));
 		
 		const startTime = TimeSpan.now();

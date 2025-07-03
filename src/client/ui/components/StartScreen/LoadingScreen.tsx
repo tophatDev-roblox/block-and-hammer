@@ -1,3 +1,4 @@
+import { GuiService } from '@rbxts/services';
 import React, { useEffect } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { computed } from '@rbxts/charm';
@@ -5,11 +6,10 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { StartScreenState } from 'client/ui/startScreenState';
 import { useAtomBinding } from 'client/ui/hooks/useAtomBinding';
-import { Styles } from 'client/styles';
 import { usePx } from 'client/ui/hooks/usePx';
-import Text from '../Text';
-import { GuiService } from '@rbxts/services';
+import { Styles } from 'client/styles';
 import UIListLayout from '../UIListLayout';
+import Text from '../Text';
 
 const LoadingScreen: React.FC= () => {
 	const styles = useAtom(Styles.stateAtom);
