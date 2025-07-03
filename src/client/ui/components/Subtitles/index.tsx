@@ -3,7 +3,6 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { usePx } from 'client/ui/hooks/usePx';
 import { SFX } from 'client/sfx';
-import UIListLayout from '../UIListLayout';
 import Subtitle from './Subtitle';
 
 const SubtitlesGUI: React.FC = () => {
@@ -20,21 +19,16 @@ const SubtitlesGUI: React.FC = () => {
 			<frame
 				BackgroundTransparency={1}
 				Size={UDim2.fromOffset(0, 0)}
-				AutomaticSize={Enum.AutomaticSize.XY}
-				Position={new UDim2(1, 0, 1, px(-40))}
+				Position={new UDim2(1, 0, 1, px(-20))}
 				AnchorPoint={new Vector2(1, 1)}
 			>
-				<UIListLayout
-					fillDirection={Enum.FillDirection.Vertical}
-					alignX={Enum.HorizontalAlignment.Right}
-					alignY={Enum.VerticalAlignment.Bottom}
-				/>
 				{subtitles.map(([sound, endTime, count], index) => (
 					<Subtitle
+						key={sound}
 						sound={sound}
 						endTime={endTime}
 						count={count}
-						index={-index}
+						index={index}
 					/>
 				))}
 			</frame>

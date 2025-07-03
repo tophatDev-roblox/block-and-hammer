@@ -1,4 +1,4 @@
-import React from '@rbxts/react';
+import React, { forwardRef } from '@rbxts/react';
 
 import { getAutomaticSize } from 'shared/getAutomaticSize';
 import { StyleParse, Styles } from 'client/styles';
@@ -15,7 +15,7 @@ interface ContainerProps extends React.PropsWithChildren {
 	properties?: React.InstanceProps<Frame>;
 }
 
-const Container: React.FC<ContainerProps> = (props) => {
+const Container = forwardRef<Frame, ContainerProps>((props, ref) => {
 	const {
 		styles: { background, outline },
 		width,
@@ -42,6 +42,7 @@ const Container: React.FC<ContainerProps> = (props) => {
 	
 	return (
 		<frame
+			ref={ref}
 			BackgroundColor3={isRGBA ? StyleParse.color(background) : Color3.fromRGB(255, 255, 255)}
 			BackgroundTransparency={isRGBA ? 1 - background.alpha : 0}
 			BorderSizePixel={0}
@@ -64,6 +65,6 @@ const Container: React.FC<ContainerProps> = (props) => {
 			{children}
 		</frame>
 	);
-};
+});
 
 export default Container;
