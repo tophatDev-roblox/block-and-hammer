@@ -1,6 +1,6 @@
 import { GuiService } from '@rbxts/services';
 import React, { useEffect, useRef, useState } from '@rbxts/react';
-import { useEventListener } from '@rbxts/pretty-react-hooks';
+import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { Styles, StyleParse } from 'client/styles';
@@ -86,6 +86,8 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 	const inputType = useAtom(InputType.stateAtom);
 	const styles = useAtom(Styles.stateAtom);
 	
+	const [selectionThickness, selectionThicknessMotion] = useMotion<number>(0);
+	
 	const px = usePx();
 	
 	const isBackgroundRGBA = StyleParse.isRGBA(background);
@@ -102,6 +104,18 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 			onHover(false);
 		}
 	});
+	
+	useEffect(() => {
+		const value = isFocused
+			? StyleParse.px(px, styles.controller.selectionOutline.thickness, styles.controller.selectionOutline.autoScale)
+			: 0;
+		
+		selectionThicknessMotion.tween(value, {
+			time: 0.2,
+			style: Enum.EasingStyle.Sine,
+			direction: Enum.EasingDirection.Out,
+		});
+	}, [isFocused]);
 	
 	useEffect(() => {
 		const button = buttonRef.current;
@@ -198,8 +212,9 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 						<Outline
 							styles={styles.controller.selectionOutline}
 							applyStrokeMode={Enum.ApplyStrokeMode.Border}
-							overwriteThickness={isFocused ? undefined : 0}
-							animateThickness
+							properties={{
+								Thickness: selectionThickness,
+							}}
 						/>
 					</frame>
 					<frame

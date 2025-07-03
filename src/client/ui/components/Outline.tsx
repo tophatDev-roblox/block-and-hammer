@@ -1,5 +1,4 @@
-import React, { useEffect } from '@rbxts/react';
-import { useMotion } from '@rbxts/pretty-react-hooks';
+import React from '@rbxts/react';
 
 import { Styles, StyleParse } from 'client/styles';
 import { usePx } from '../hooks/usePx';
@@ -8,8 +7,7 @@ import Gradient from './Gradient';
 interface OutlineProps {
 	styles: Styles.Outline;
 	applyStrokeMode: Enum.ApplyStrokeMode;
-	overwriteThickness?: number;
-	animateThickness?: true;
+	properties?: React.InstanceProps<UIStroke>;
 }
 
 const Outline: React.FC<OutlineProps> = (props) => {
@@ -21,35 +19,21 @@ const Outline: React.FC<OutlineProps> = (props) => {
 			autoScale = true,
 		},
 		applyStrokeMode,
-		overwriteThickness,
-		animateThickness,
+		properties,
 	} = props;
 	
 	const px = usePx();
-	const [thicknessValue, thicknessMotion] = useMotion(0);
 	
 	const isRGBA = StyleParse.isRGBA(color);
-	
-	useEffect(() => {
-		const value = overwriteThickness ?? StyleParse.px(px, thickness, autoScale, false);
-		if (animateThickness) {
-			thicknessMotion.tween(value, {
-				time: 0.2,
-				style: Enum.EasingStyle.Sine,
-				direction: Enum.EasingDirection.Out,
-			});
-		} else {
-			thicknessMotion.set(value);
-		}
-	}, [thickness, overwriteThickness, animateThickness, px]);
 	
 	return (
 		<uistroke
 			ApplyStrokeMode={applyStrokeMode}
 			Color={isRGBA ? StyleParse.color(color) : Color3.fromRGB(255, 255, 255)}
 			Transparency={isRGBA ? 1 - color.alpha : 0}
-			Thickness={thicknessValue}
+			Thickness={autoScale ? px(thickness, false) : thickness}
 			LineJoinMode={StyleParse.outlineJoinMode(joinMode)}
+			{...properties}
 		>
 			{!isRGBA && (
 				<Gradient
