@@ -7,7 +7,7 @@ import UIListLayout from '../UIListLayout';
 import Subtitle from './Subtitle';
 
 const SubtitlesGUI: React.FC = () => {
-	const playingSounds = useAtom(SFX.playingSoundsAtom);
+	const subtitles = useAtom(SFX.subtitlesAtom);
 	
 	const px = usePx();
 	
@@ -29,7 +29,7 @@ const SubtitlesGUI: React.FC = () => {
 					alignX={Enum.HorizontalAlignment.Right}
 					alignY={Enum.VerticalAlignment.Bottom}
 				/>
-				{playingSounds.map(([sound, endTime, count], index) => (
+				{subtitles.map(([sound, endTime, count], index) => (
 					<Subtitle
 						sound={sound}
 						endTime={endTime}

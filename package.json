@@ -16,6 +16,7 @@
     "@rbxts/centurion-ui": "^1.0.8",
     "@rbxts/charm": "^0.10.0",
     "@rbxts/compiler-types": "3.0.0-types.0",
+    "@rbxts/immut": "0.4.4-ts.0",
     "@rbxts/iris": "2.3.1-ts.1",
     "@rbxts/pretty-react-hooks": "^0.6.4",
     "@rbxts/react": "^17.2.3",

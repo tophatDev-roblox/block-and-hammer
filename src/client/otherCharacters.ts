@@ -1,15 +1,19 @@
-import { atom, Atom } from '@rbxts/charm';
 import { Players } from '@rbxts/services';
+import { produce } from '@rbxts/immut';
+import { atom, Atom } from '@rbxts/charm';
 
 import { CharacterState } from './character/state';
 
 export namespace OtherCharacters {
-	export const partsAtoms = atom<Map<Player, Atom<CharacterState.Parts | undefined>>>(new Map());
+	export const partsAtoms = atom<ReadonlyMap<Player, Atom<CharacterState.Parts | undefined>>>(new Map());
 }
 
 function onPlayerAdded(player: Player): void {
 	const partsAtom = atom<CharacterState.Parts>();
-	OtherCharacters.partsAtoms((parts) => table.clone(parts).set(player, partsAtom));
+	
+	OtherCharacters.partsAtoms((parts) => produce(parts, (draft) => {
+		draft.set(player, partsAtom);
+	}));
 	
 	const onCharacterAdded = async (newCharacter: Model): Promise<void> => {
 		const characterParts = await CharacterState.createParts(newCharacter);
@@ -29,11 +33,9 @@ function onPlayerAdded(player: Player): void {
 }
 
 function onPlayerRemoving(player: Player): void {
-	OtherCharacters.partsAtoms((parts) => {
-		const newParts = table.clone(parts);
-		newParts.delete(player);
-		return newParts;
-	});
+	OtherCharacters.partsAtoms((parts) => produce(parts, (draft) => {
+		draft.delete(player);
+	}));
 }
 
 for (const player of Players.GetPlayers()) {
