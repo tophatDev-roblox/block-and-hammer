@@ -6,6 +6,6 @@ export namespace Number {
 	}
 	
 	export function isInRange(x: number, minimum: number, maximum: number): boolean {
-		return minimum < x && x < maximum;
+		return minimum <= x && x <= maximum;
 	}
 }
