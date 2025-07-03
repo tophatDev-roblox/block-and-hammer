@@ -166,6 +166,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 	
 	return (
 		<frame
+			key={'SideButton'}
 			BackgroundTransparency={1}
 			Size={new UDim2(1, 0, 0, iconSize + px(padding) * 2)}
 			LayoutOrder={order}

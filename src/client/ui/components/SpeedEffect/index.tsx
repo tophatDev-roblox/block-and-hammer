@@ -49,6 +49,7 @@ const SpeedEffectGUI: React.FC = () => {
 	
 	return (
 		<screengui
+			key={'SpeedEffectGUI'}
 			DisplayOrder={-1}
 			ResetOnSpawn={false}
 			IgnoreGuiInset

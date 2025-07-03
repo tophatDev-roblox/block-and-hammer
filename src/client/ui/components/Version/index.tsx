@@ -22,6 +22,7 @@ const VersionGUI: React.FC = () => {
 	
 	return (
 		<screengui
+			key={'VersionGUI'}
 			DisplayOrder={1}
 			ResetOnSpawn={false}
 			IgnoreGuiInset

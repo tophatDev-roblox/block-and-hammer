@@ -130,6 +130,7 @@ const StartScreen: React.FC = () => {
 	
 	return (
 		<screengui
+			key={'StartScreenGUI'}
 			DisplayOrder={50}
 			ScreenInsets={Enum.ScreenInsets.None}
 			ZIndexBehavior={Enum.ZIndexBehavior.Sibling}

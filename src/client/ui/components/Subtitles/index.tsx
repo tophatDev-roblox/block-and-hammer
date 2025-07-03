@@ -12,6 +12,7 @@ const SubtitlesGUI: React.FC = () => {
 	
 	return (
 		<screengui
+			key={'SubtitlesGUI'}
 			DisplayOrder={2}
 			ResetOnSpawn={false}
 			IgnoreGuiInset

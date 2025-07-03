@@ -27,6 +27,7 @@ const Modal: React.FC<ModalProps<Array<string>>> = ({ title, body, dismissable, 
 	
 	return (
 		<frame
+			key={'Modal'}
 			BackgroundTransparency={1}
 			Size={UDim2.fromOffset(px(1100), px(600))}
 			Position={UDim2.fromScale(0.5, 0.5)}

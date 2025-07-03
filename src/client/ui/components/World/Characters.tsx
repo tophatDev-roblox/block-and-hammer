@@ -31,6 +31,7 @@ const Characters: React.FC = () => {
 				
 				guis.push((
 					<billboardgui
+						key={player.Name}
 						Adornee={characterParts.body}
 						Size={UDim2.fromOffset(px(600), px(150))}
 						StudsOffsetWorldSpace={new Vector3(0, 5, 0)}
@@ -61,7 +62,9 @@ const Characters: React.FC = () => {
 	}, [px, styles.world.nameplate.username, styles.world.nameplate.displayName]);
 	
 	return (
-		<folder>
+		<folder
+			key={'Characters'}
+		>
 			{guis}
 		</folder>
 	);

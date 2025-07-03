@@ -66,6 +66,7 @@ const TimerGUI: React.FC = () => {
 	
 	return (
 		<screengui
+			key={'TimerGUI'}
 			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>

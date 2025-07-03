@@ -9,6 +9,7 @@ const ModalGUI: React.FC = () => {
 	
 	return (
 		<screengui
+			key={'ModalGUI'}
 			DisplayOrder={20}
 			ScreenInsets={Enum.ScreenInsets.None}
 			ResetOnSpawn={false}

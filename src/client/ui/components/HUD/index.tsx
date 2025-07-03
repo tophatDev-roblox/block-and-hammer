@@ -12,6 +12,7 @@ const HudGUI: React.FC = () => {
 	
 	return (
 		<screengui
+			key={'HudGUI'}
 			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>

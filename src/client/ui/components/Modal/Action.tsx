@@ -100,6 +100,7 @@ const Action: React.FC<ActionProps> = ({ styles, action, index, autoSelect, sele
 	
 	return (
 		<textbutton
+			key={'Action'}
 			ref={buttonRef}
 			BackgroundColor3={backgroundColor}
 			BackgroundTransparency={backgroundTransparency}

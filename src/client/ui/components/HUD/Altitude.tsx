@@ -35,6 +35,7 @@ const Altitude: React.FC = () => {
 	
 	return (
 		<frame
+			key={'Altitude'}
 			BackgroundTransparency={1}
 			Size={UDim2.fromScale(0, 0)}
 			AutomaticSize={Enum.AutomaticSize.XY}

@@ -66,6 +66,7 @@ const Subtitle: React.FC<CaptionProps> = ({ sound, endTime, count, index }) => {
 	
 	return (
 		<Container
+			key={'Subtitle'}
 			ref={containerRef}
 			styles={styles.subtitles.container}
 			automaticWidth

@@ -35,6 +35,7 @@ const Speedometer: React.FC = () => {
 	
 	return (
 		<frame
+			key={'Speedometer'}
 			BackgroundTransparency={1}
 			Size={UDim2.fromScale(0, 0)}
 			AutomaticSize={Enum.AutomaticSize.XY}

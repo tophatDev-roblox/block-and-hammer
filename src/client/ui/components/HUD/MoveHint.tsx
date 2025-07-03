@@ -19,6 +19,7 @@ const MoveHint: React.FC = () => {
 	if (inputType === InputType.Value.Touch) {
 		return (
 			<Text
+				key={'MoveHint'}
 				styles={styles.hud.text.moveHint}
 				text={'[tap the screen to move]'}
 				order={0}
@@ -29,6 +30,7 @@ const MoveHint: React.FC = () => {
 	} else if (inputType === InputType.Value.Controller) {
 		return (
 			<Text
+				key={'MoveHint'}
 				styles={styles.hud.text.moveHint}
 				text={'[use the right joystick to move]'}
 				order={0}
