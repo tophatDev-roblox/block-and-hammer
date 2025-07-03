@@ -1,6 +1,7 @@
+import { Assets } from 'shared/assets';
 import { Styles } from '.';
 
-const fontId = 'rbxassetid://12187365364';
+const fontId = Assets.Fonts.Inter;
 
 const textOutlineGradient: Styles.Gradient = {
 	colors: [

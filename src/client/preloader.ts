@@ -30,6 +30,13 @@ export namespace Preloader {
 			contentList.push(sound);
 		}
 		
+		for (const [name, id] of pairs(Assets.Fonts)) {
+			const textLabel = new Instance('TextLabel');
+			textLabel.Name = name;
+			textLabel.FontFace = new Font(id);
+			contentList.push(textLabel);
+		}
+		
 		let loadedAssets = 0;
 		preload(contentList, (id, status) => {
 			if (status === Enum.AssetFetchStatus.Success) {

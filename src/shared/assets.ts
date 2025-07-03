@@ -32,4 +32,8 @@ export namespace Assets {
 	export enum Music {
 		Menu = 'rbxassetid://93015601442719',
 	}
+	
+	export enum Fonts {
+		Inter = 'rbxassetid://12187365364',
+	}
 }
