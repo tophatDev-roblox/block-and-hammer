@@ -12,6 +12,7 @@ import { Units } from 'shared/units';
 import { Leaderstats } from './leaderstats';
 import { PlayerData } from './playerData';
 import { Badge } from './badge';
+import { Logger } from 'shared/logger';
 
 interface CharacterData {
 	body: Part;
@@ -23,12 +24,13 @@ interface CharacterData {
 	};
 }
 
-let baseCharacter: Model;
-let areasFolder: Folder;
-
+const logger = new Logger('players');
 const areaManager = new AreaManager();
 const joinLeaveRichText = new RichText({ bold: true, italic: true, font: { size: 14 } });
 const characterData = new Map<Model, CharacterData>();
+
+let baseCharacter: Model;
+let areasFolder: Folder;
 
 (async () => {
 	const assetsFolder = await waitForChild(ReplicatedStorage, 'Assets', 'Folder');
@@ -85,7 +87,7 @@ async function respawn(player: Player): Promise<void> {
 	
 	const body = character.FindFirstChild('Body');
 	if (!body?.IsA('Part')) {
-		throw '[server::players] failed to respawn player because Body is not a Part';
+		throw logger.format('failed to respawn player because Body is not a Part');
 	}
 	
 	characterData.set(character, {

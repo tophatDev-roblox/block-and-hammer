@@ -1,4 +1,7 @@
-print('[client::index] initializing');
+import { Logger } from 'shared/logger';
+
+const logger = new Logger('index');
+logger.print('initializing');
 
 import './coreGuis';
 import './ui';
@@ -13,3 +16,4 @@ import './chat';
 import './leaveSound';
 import './debugPanel';
 import './centurion';
+

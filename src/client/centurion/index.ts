@@ -1,10 +1,11 @@
 import { Centurion } from '@rbxts/centurion';
 import { CenturionUI } from '@rbxts/centurion-ui';
 
+import { Logger } from 'shared/logger';
 import { StyleParse } from 'client/styles';
-
 import defaultStyles from 'client/styles/default';
 
+const logger = new Logger('centurion');
 const client = Centurion.client();
 
 client.registry.registerGroup(
@@ -29,8 +30,8 @@ client.start()
 			},
 		});
 		
-		print('[client::centurion] started');
+		logger.print('started');
 	})
 	.catch((err) => {
-		warn('[client::centurion] failed to start centurion:', err);
+		logger.warn('failed to start centurion:', err);
 	});

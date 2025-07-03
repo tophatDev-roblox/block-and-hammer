@@ -7,7 +7,9 @@ import { AreaManager } from 'shared/areaManager';
 import { CharacterState } from 'client/character/state';
 import { UserSettings } from './settings';
 import { Leaderstats } from './leaderstats';
+import { Logger } from 'shared/logger';
 
+const logger = new Logger('area');
 const areaManager = new AreaManager();
 
 (async () => {
@@ -29,7 +31,7 @@ effect(() => {
 	const area = CharacterState.areaAtom();
 	leaderstats.area.Value = area;
 	
-	print('[client::area] area changed to', area);
+	logger.print('area changed to', area);
 });
 
 effect(() => {

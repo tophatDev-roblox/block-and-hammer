@@ -9,6 +9,8 @@ import { Controller } from 'shared/controller';
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { AreaManager } from 'shared/areaManager';
 import { Units } from 'shared/units';
+import { waitForChild } from 'shared/waitForChild';
+import { Logger } from 'shared/logger';
 import { DebugPanel } from 'client/debugPanel';
 import { UserSettings } from 'client/settings';
 import { InputType } from 'client/inputType';
@@ -17,10 +19,10 @@ import { Leaderstats } from 'client/leaderstats';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { ModalState } from 'client/ui/modalState';
 import { CharacterState } from './state';
-import { waitForChild } from 'shared/waitForChild';
 
 const client = Players.LocalPlayer;
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
+const logger = new Logger('character');
 const RNG = new Random();
 let ragdollTimeEnd: number | undefined = undefined;
 
@@ -37,7 +39,7 @@ export namespace Character {
 			return;
 		}
 		
-		print('[client::character] running quick reset');
+		logger.print('running quick reset');
 		
 		let spawnCFrame = new CFrame(0, 3, 0);
 		
@@ -273,7 +275,7 @@ function onResetButton(): void {
 }
 
 async function onCharacterAdded(newCharacter: Model): Promise<void> {
-	print('[client::character] character added');
+	logger.print('character added');
 	
 	ragdollTimeEnd = undefined;
 	effectsFolder.ClearAllChildren();
@@ -306,7 +308,7 @@ async function onCharacterAdded(newCharacter: Model): Promise<void> {
 }
 
 function onCharacterRemoving(): void {
-	print('[client::character] character removing');
+	logger.print('character removing');
 	
 	CharacterState.partsAtom(undefined);
 	CharacterState.mousePositionAtom(undefined);
@@ -384,7 +386,7 @@ subscribe(() => {
 		return;
 	}
 	
-	print('[client::character] forcePauseGameplay =', forcePauseGameplay);
+	logger.print('forcePauseGameplay =', forcePauseGameplay);
 	
 	if (forcePauseGameplay) {
 		characterParts.body.Anchored = true;
@@ -412,7 +414,7 @@ effect(() => {
 		return;
 	}
 	
-	print('[client::character] useLegacyPhysics =', useLegacyPhysics);
+	logger.print('useLegacyPhysics =', useLegacyPhysics);
 	if (useLegacyPhysics) {
 		characterParts.hammer.alignPosition.Responsiveness = 70;
 		characterParts.hammer.alignPosition.MaxForce = 12_500;

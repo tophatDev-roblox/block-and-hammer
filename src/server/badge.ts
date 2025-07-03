@@ -1,8 +1,10 @@
 import { BadgeService } from '@rbxts/services';
 import { setTimeout } from '@rbxts/set-timeout';
 
+import { Logger } from 'shared/logger';
 import { TimeSpan } from 'shared/timeSpan';
 
+const logger = new Logger('badge');
 const awardBadge = Promise.promisify((userId: number, badgeId: number) => BadgeService.AwardBadge(userId, badgeId));
 const hasBadge = Promise.promisify((userId: number, badgeId: number) => BadgeService.UserHasBadgeAsync(userId, badgeId));
 
@@ -17,12 +19,12 @@ export namespace Badge {
 			if (badgeId !== -1) {
 				await awardBadge(player.UserId, badgeId);
 			} else {
-				warn('[server::badge] placeholder badge');
+				logger.warn('placeholder badge');
 			}
 			
 			return;
 		} catch (err) {
-			warn(`[server::badge] failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
+			logger.warn(`failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
 			setTimeout(() => Badge.award(badgeId, player), 0.5);
 		}
 	}
@@ -31,7 +33,7 @@ export namespace Badge {
 		try {
 			return await hasBadge(player.UserId, badgeId);
 		} catch (err) {
-			warn(`[server::badge] failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
+			logger.warn(`failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
 			
 			await TimeSpan.sleep(0.5);
 			return await Badge.has(badgeId, player);

@@ -2,7 +2,10 @@ import { GuiService, UserInputService } from '@rbxts/services';
 import { atom, peek } from '@rbxts/charm';
 
 import { Controller } from 'shared/controller';
+import { Logger } from 'shared/logger';
 import { UserSettings } from './settings';
+
+const logger = new Logger('inputType');
 
 export namespace InputType {
 	export const enum Value {
@@ -16,13 +19,12 @@ export namespace InputType {
 }
 
 if (GuiService.IsTenFootInterface()) {
-	print('[client::inputType] detected 10-foot interface, switching to controller');
+	logger.print('detected 10-foot interface, switching to controller');
 	InputType.stateAtom(InputType.Value.Controller);
 } else if (UserInputService.GetConnectedGamepads().size() > 0) {
-	print('[client::inputType] detected one or more connected gamepads, possibly using controller');
+	logger.print('detected one or more connected gamepads, possibly using controller');
 	InputType.stateAtom(InputType.Value.Controller);
 }
-
 
 const mouseInputTypes = new Set<Enum.UserInputType>([
 	Enum.UserInputType.MouseMovement,
@@ -47,7 +49,7 @@ function processInput(input: InputObject): void {
 		}
 		
 		InputType.stateAtom(InputType.Value.Controller);
-		print('[client::inputType] set to Controller');
+		logger.print('set to Controller');
 	}
 }
 
@@ -66,7 +68,7 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 	
 	if (newInputType !== undefined && newInputType !== peek(InputType.stateAtom)) {
 		InputType.stateAtom(newInputType);
-		print('[client::inputType] set to', newInputType);
+		logger.print('set to', newInputType);
 	}
 }
 

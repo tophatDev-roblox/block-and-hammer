@@ -2,6 +2,7 @@ import { Players, RunService } from '@rbxts/services';
 
 import ProfileStore, { Profile } from 'shared/ProfileStore';
 import { TestingPlaceId } from 'shared/constants';
+import { Logger } from 'shared/logger';
 
 interface DataTemplate {
 	color: Color3 | undefined;
@@ -10,16 +11,18 @@ interface DataTemplate {
 
 type LoadedProfile = Profile<DataTemplate>;
 
+const logger = new Logger('playerData');
+
 let PlayerStore = ProfileStore.New<DataTemplate>('PlayerStore', {
 	color: undefined,
 	dollars: 100,
 });
 
 if (RunService.IsStudio() || game.PlaceId === TestingPlaceId) {
-	print('[server::profileStore] loading mock datastore');
+	logger.print('loaded mock datastore');
 	PlayerStore = PlayerStore.Mock;
 } else {
-	print('[server::profileStore] loading live datastore');
+	logger.print('loaded live datastore');
 }
 
 const startSession = Promise.promisify((...args: Parameters<ProfileStore['StartSessionAsync']>) => PlayerStore.StartSessionAsync(...args));

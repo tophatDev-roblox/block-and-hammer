@@ -1,4 +1,7 @@
+import { Logger } from './logger';
 import { Number } from './number';
+
+const logger = new Logger('areaManager');
 
 export namespace AreaManager {
 	export const enum Area {
@@ -20,7 +23,7 @@ export class AreaManager {
 		const pointA = area.FindFirstChild('A');
 		const pointB = area.FindFirstChild('B');
 		if (!pointA?.IsA('Part') || !pointB?.IsA('Part')) {
-			warn('[shared::area] area is missing A and B Part instances:', area);
+			logger.warn('area is missing A and B Part instances:', area);
 			return;
 		}
 		

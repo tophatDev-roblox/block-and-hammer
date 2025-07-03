@@ -1,6 +1,9 @@
 import { atom } from '@rbxts/charm';
 
+import { Logger } from 'shared/logger';
 import defaultStyles from './default';
+
+const logger = new Logger('styles');
 
 export namespace Styles {
 	export interface Color {
@@ -230,10 +233,10 @@ export namespace StyleParse {
 				try {
 					colorSequence = new ColorSequence(colorKeypoints);
 				} catch (err) {
-					warn(`[client::stylesParser/gradient] failed to create color sequence: ${err}`);
+					logger.warn(`(gradient) failed to create color sequence: ${err}`);
 				}
 			} else {
-				warn('[client::stylesParser/gradient] color must have at least 2 keypoints, start at 0 and end at 1');
+				logger.warn('(gradient) color must have at least 2 keypoints, start at 0 and end at 1');
 			}
 		}
 		
@@ -251,10 +254,10 @@ export namespace StyleParse {
 				try {
 					numberSequence = new NumberSequence(numberKeypoints);
 				} catch (err) {
-					warn(`[client::stylesParser/gradient] failed to create transparency sequence: ${err}`);
+					logger.warn(`(gradient) failed to create transparency sequence: ${err}`);
 				}
 			} else {
-				warn('[client::stylesParser/gradient] transparency must have at least 2 keypoints, start at 0 and end at 1');
+				logger.warn('(gradient) transparency must have at least 2 keypoints, start at 0 and end at 1');
 			}
 		}
 		

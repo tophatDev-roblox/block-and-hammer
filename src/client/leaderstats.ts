@@ -18,9 +18,6 @@ export namespace Leaderstats {
 	const leaderstatsFolder = await waitForChild(client, 'leaderstats', 'Folder');
 	const altitude = await waitForChild(leaderstatsFolder, 'Altitude', 'IntValue');
 	const area = await waitForChild(leaderstatsFolder, 'Area', 'StringValue');
-	if (!altitude.IsA('IntValue') || !area.IsA('StringValue')) {
-		throw '[client::leaderstats] Altitude is not an IntValue or Area is not a StringValue';
-	}
 	
 	Leaderstats.stateAtom({
 		altitude,
