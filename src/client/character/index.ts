@@ -238,12 +238,13 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
-	const userSettings = peek(UserSettings.stateAtom);
 	const inputType = peek(InputType.stateAtom);
 	if (positionalInputTypes.has(input.UserInputType)) {
 		CharacterState.mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
 	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Value.Controller) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
+			const userSettings = peek(UserSettings.stateAtom);
+			
 			let direction = input.Position;
 			if (direction.Magnitude > 1) {
 				direction = direction.Unit;
