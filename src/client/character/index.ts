@@ -55,6 +55,7 @@ export namespace Character {
 		effectsFolder.ClearAllChildren();
 		CharacterState.timeStartAtom(undefined);
 		CharacterState.mousePositionAtom(undefined);
+		CharacterState.thumbstickDirectionAtom(undefined);
 		CharacterState.shakeStrengthAtom(0);
 		characterParts.model.SetAttribute('justReset', true);
 		mouseCursorPart.Position = new Vector3(0, -500, 0);
@@ -282,6 +283,7 @@ async function onCharacterAdded(newCharacter: Model): Promise<void> {
 	effectsFolder.ClearAllChildren();
 	CharacterState.timeStartAtom(undefined);
 	CharacterState.mousePositionAtom(undefined);
+	CharacterState.thumbstickDirectionAtom(undefined);
 	CharacterState.shakeStrengthAtom(0);
 	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
@@ -397,6 +399,33 @@ function bindResetButtonCallback(resetEvent: BindableEvent): void {
 const resetEvent = new Instance('BindableEvent');
 resetEvent.Event.Connect(onResetButton);
 bindResetButtonCallback(resetEvent);
+
+subscribe(() => {
+	CharacterState.partsAtom();
+	return CharacterState.thumbstickDirectionAtom();
+}, (thumbstickDirection, previousThumbstickDirection) => {
+	if (thumbstickDirection === undefined || previousThumbstickDirection !== undefined) {
+		return;
+	}
+	
+	const characterParts = CharacterState.partsAtom();
+	if (characterParts === undefined) {
+		return;
+	}
+	
+	const pivot = characterParts.hammer.model.GetPivot();
+	if (pivot.Position.sub(characterParts.body.Position).Magnitude >= 0.5) {
+		return;
+	}
+	
+	const newPivot = CFrame.lookAlong(
+		pivot.Position,
+		new Vector3(thumbstickDirection.X, thumbstickDirection.Y, 0).Unit,
+		Vector3.zAxis,
+	).mul(CFrame.fromOrientation(math.pi / -2, 0, 0)).mul(CFrame.fromOrientation(0, math.pi, 0));
+	
+	characterParts.hammer.model.PivotTo(newPivot);
+});
 
 subscribe(() => {
 	CharacterState.partsAtom();
