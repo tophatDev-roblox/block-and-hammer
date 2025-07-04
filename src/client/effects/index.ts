@@ -8,10 +8,10 @@ import { waitForChild } from 'shared/waitForChild';
 import { Logger } from 'shared/logger';
 import { Character } from 'client/character';
 import { CharacterState } from 'client/character/state';
+import { InputType } from 'client/inputType';
 import { UserSettings } from 'client/settings';
 import { SFX } from 'client/sfx';
 import { materialConfiguration } from './materials';
-import { setTimeout } from '@rbxts/set-timeout';
 
 const logger = new Logger();
 const RNG = new Random();
@@ -32,7 +32,7 @@ let explosionHaptics: HapticEffect;
 	explosionSound = await waitForChild(SoundService, 'Explosion', 'Sound');
 	
 	explosionHaptics = new Instance('HapticEffect');
-	explosionHaptics.Type = Enum.HapticEffectType.GameplayExplosion;
+	explosionHaptics.Type = Enum.HapticEffectType.Custom;
 	explosionHaptics.Name = 'CharacterExplosion';
 	explosionHaptics.Parent = hapticsFolder;
 })();
@@ -234,12 +234,6 @@ effect(() => {
 		if (impactMagnitude > 130) {
 			let effectIntensity = math.clamp(1 + (impactMagnitude - 160) / 10, 1, 3);
 			
-			const userSettings = peek(UserSettings.stateAtom);
-			if (!userSettings.disableHaptics) {
-				explosionHaptics.Play();
-				setTimeout(() => explosionHaptics.Stop(), 0.5);
-			}
-			
 			SFX.play(explosionSound);
 			
 			const explosion = new Instance('Explosion');
@@ -367,6 +361,26 @@ effect(() => {
 				
 				Character.ragdoll(effectIntensity);
 				Character.shake(effectIntensity);
+				
+				const userSettings = peek(UserSettings.stateAtom);
+				const inputType = peek(InputType.stateAtom)
+				if (!userSettings.disableHaptics && inputType === InputType.Value.Controller) {
+					const baseAmplitude = effectIntensity / 4 + 0.2;
+					const duration = 700;
+					const steps = 10;
+					
+					const waveformKeys = new Array<FloatCurveKey>();
+					for (const i of $range(1, steps)) {
+						waveformKeys.push(new FloatCurveKey(
+							math.map(i, 1, steps, 0, duration),
+							math.clamp(baseAmplitude * (1 - (i - 1) / (steps - 1)) ** 1.5, 0.1, 1),
+							Enum.KeyInterpolationMode.Cubic,
+						));
+					}
+					
+					explosionHaptics.SetWaveformKeys(waveformKeys);
+					explosionHaptics.Play();
+				}
 			}
 		}
 		
