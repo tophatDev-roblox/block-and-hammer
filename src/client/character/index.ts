@@ -207,15 +207,17 @@ function moveTargetAttachment(position: Vector3): void {
 		return;
 	}
 	
-	if (timeStarted === undefined) {
-		CharacterState.timeStartAtom(TimeSpan.now());
-	}
+	const clampedPosition = clampPositionToCircle(position.mul(new Vector3(1, 1, 0)), characterParts.body.Position, hammerDistance);
 	
 	characterParts.targetAttachment.WorldCFrame = CFrame.lookAt(
-		clampPositionToCircle(position.mul(new Vector3(1, 1, 0)), characterParts.body.Position, hammerDistance),
+		clampedPosition,
 		characterParts.body.Position,
 		Vector3.zAxis,
 	);
+	
+	if (timeStarted === undefined && clampedPosition.sub(characterParts.body.Position).Magnitude > 0.5) {
+		CharacterState.timeStartAtom(TimeSpan.now());
+	}
 }
 
 function processInput(input: InputObject): void {
@@ -237,7 +239,6 @@ function processInput(input: InputObject): void {
 	}
 	
 	const userSettings = peek(UserSettings.stateAtom);
-	const hammerDistance = peek(CharacterState.hammerDistanceAtom);
 	const inputType = peek(InputType.stateAtom);
 	if (positionalInputTypes.has(input.UserInputType)) {
 		CharacterState.mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
@@ -247,13 +248,11 @@ function processInput(input: InputObject): void {
 			if (direction.Magnitude > 1) {
 				direction = direction.Unit;
 			} else if (input.Position.Magnitude < userSettings.controllerDeadzone) {
-				CharacterState.mousePositionAtom(undefined);
+				CharacterState.thumbstickDirectionAtom(undefined);
 				return;
 			}
 			
-			const position = characterParts.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
-			const [screenPosition] = camera.WorldToScreenPoint(position);
-			CharacterState.mousePositionAtom(new Vector2(screenPosition.X, screenPosition.Y));
+			CharacterState.thumbstickDirectionAtom(new Vector2(-direction.X, direction.Y));
 		}
 	}
 }
@@ -261,15 +260,13 @@ function processInput(input: InputObject): void {
 function onInputEnded(input: InputObject): void {
 	const characterParts = peek(CharacterState.partsAtom);
 	const inputType = peek(InputType.stateAtom);
-	print(inputType);
 	if (characterParts === undefined || inputType !== InputType.Value.Controller) {
 		return;
 	}
 	
 	if (Controller.isGamepadInput(input.UserInputType) && input.KeyCode === Enum.KeyCode.Thumbstick2) {
 		characterParts.targetAttachment.CFrame = CFrame.fromOrientation(math.pi / -2, 0, 0);
-		CharacterState.mousePositionAtom(undefined);
-		print('end');
+		CharacterState.thumbstickDirectionAtom(undefined);
 	}
 }
 
@@ -328,16 +325,36 @@ function onPreRender(): void {
 	}
 	
 	const currentTime = TimeSpan.now();
+	
+	let dontMoveTargetAttachment = false;
+	
 	const mousePosition = peek(CharacterState.mousePositionAtom);
-	if (mousePosition !== undefined) {
-		const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
-		const position = rayIntersectXYPlane(ray);
-		mouseCursorPart.Position = position;
+	const inputType = peek(InputType.stateAtom);
+	if (inputType === InputType.Value.Controller) {
+		const thumbstickDirection = peek(CharacterState.thumbstickDirectionAtom);
+		if (thumbstickDirection !== undefined) {
+			const hammerDistance = peek(CharacterState.hammerDistanceAtom);
+			
+			const relativeDirection = thumbstickDirection.mul(hammerDistance);
+			const position = characterParts.body.Position.add(new Vector3(relativeDirection.X, relativeDirection.Y, 0));
+			mouseCursorPart.Position = position;
+		} else {
+			mouseCursorPart.Position = characterParts.body.Position.add(new Vector3(0, 0.001, 0));
+		}
 	} else {
-		mouseCursorPart.Position = characterParts.body.Position.add(new Vector3(0, 0.001, 0));
+		if (mousePosition !== undefined) {
+			const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
+			const position = rayIntersectXYPlane(ray);
+			mouseCursorPart.Position = position;
+		} else {
+			mouseCursorPart.Position = new Vector3(0, -500, 0);
+			dontMoveTargetAttachment = true;
+		}
 	}
 	
-	moveTargetAttachment(mouseCursorPart.Position);
+	if (!dontMoveTargetAttachment) {
+		moveTargetAttachment(mouseCursorPart.Position);
+	}
 	
 	const disableCamera = peek(CharacterState.disableCameraAtom);
 	if (!disableCamera) {
