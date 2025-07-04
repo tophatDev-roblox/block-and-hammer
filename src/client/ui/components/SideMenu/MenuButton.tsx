@@ -2,6 +2,7 @@ import { GuiService } from '@rbxts/services';
 import React, { useEffect, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
+import { setTimeout } from '@rbxts/set-timeout';
 
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
@@ -55,35 +56,35 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 			if (sideMenuOpened) {
 				const delay = (totalButtons - index - 1) / 30;
 				
-				const thread = task.delay(delay, () => {
+				const clearTimeout = setTimeout(() => {
 					sizeMotion.tween(openSize, {
 						style: Enum.EasingStyle.Back,
 						direction: Enum.EasingDirection.Out,
 						time: 0.3,
 					});
-				});
+				}, delay);
 				
-				const animateThread = task.delay(delay + 0.3, () => {
+				const clearAnimateTimeout = setTimeout(() => {
 					setCanAnimate(true);
-				});
+				}, delay + 0.3);
 				
 				return () => {
-					task.cancel(thread);
-					task.cancel(animateThread);
+					clearTimeout();
+					clearAnimateTimeout();
 				};
 			} else {
 				setCanAnimate(false);
 				
-				const thread = task.delay(index / 20, () => {
+				const clearTimeout = setTimeout(() => {
 					sizeMotion.tween(closeSize, {
 						style: Enum.EasingStyle.Back,
 						direction: Enum.EasingDirection.In,
 						time: 0.3,
 					});
-				});
+				}, index / 20);
 				
 				return () => {
-					task.cancel(thread);
+					clearTimeout();
 				};
 			}
 		} else {
