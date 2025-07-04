@@ -1,12 +1,33 @@
-import { useCallback, useMemo } from '@rbxts/react';
+import { useCallback } from '@rbxts/react';
+import { atom, effect } from '@rbxts/charm';
+import { useAtom } from '@rbxts/react-charm';
 
-import { calculatePixelScale } from 'shared/calculatePixelScale';
-import { useViewportSize } from './useViewportSize';
+import { PixelScale } from 'shared/pixelScale';
+import { Camera } from 'client/camera';
+
+const scaleAtom = atom<number>(1);
 
 export function usePx(): (px: number, rounded?: boolean) => number {
-	const viewportSize = useViewportSize();
-	
-	const scale = useMemo(() => calculatePixelScale(viewportSize)[0], [viewportSize]);
-	
+	const scale = useAtom(scaleAtom);
 	return useCallback((px, rounded = true) => rounded ? math.round(px * scale) : px * scale, [scale]);
 }
+
+function onViewportSizeChange(camera: Camera): void {
+	const [scale] = PixelScale.calculate(camera.ViewportSize);
+	scaleAtom(scale);
+}
+
+effect(() => {
+	const camera = Camera.instanceAtom();
+	if (camera === undefined) {
+		return;
+	}
+	
+	onViewportSizeChange(camera);
+	
+	const viewportSizeChangedEvent = camera.GetPropertyChangedSignal('ViewportSize').Connect(() => onViewportSizeChange(camera));
+	
+	return () => {
+		viewportSizeChangedEvent.Disconnect();
+	};
+});
