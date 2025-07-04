@@ -247,7 +247,8 @@ function processInput(input: InputObject): void {
 			if (direction.Magnitude > 1) {
 				direction = direction.Unit;
 			} else if (input.Position.Magnitude < userSettings.controllerDeadzone) {
-				direction = new Vector3(0, 0.001, 0);
+				CharacterState.mousePositionAtom(undefined);
+				return;
 			}
 			
 			const position = characterParts.body.Position.add(direction.mul(hammerDistance).mul(new Vector3(-1, 1, 0)));
@@ -260,6 +261,7 @@ function processInput(input: InputObject): void {
 function onInputEnded(input: InputObject): void {
 	const characterParts = peek(CharacterState.partsAtom);
 	const inputType = peek(InputType.stateAtom);
+	print(inputType);
 	if (characterParts === undefined || inputType !== InputType.Value.Controller) {
 		return;
 	}
@@ -267,6 +269,7 @@ function onInputEnded(input: InputObject): void {
 	if (Controller.isGamepadInput(input.UserInputType) && input.KeyCode === Enum.KeyCode.Thumbstick2) {
 		characterParts.targetAttachment.CFrame = CFrame.fromOrientation(math.pi / -2, 0, 0);
 		CharacterState.mousePositionAtom(undefined);
+		print('end');
 	}
 }
 

@@ -11,6 +11,7 @@ import { CharacterState } from 'client/character/state';
 import { UserSettings } from 'client/settings';
 import { SFX } from 'client/sfx';
 import { materialConfiguration } from './materials';
+import { setTimeout } from '@rbxts/set-timeout';
 
 const logger = new Logger();
 const RNG = new Random();
@@ -236,9 +237,7 @@ effect(() => {
 			const userSettings = peek(UserSettings.stateAtom);
 			if (!userSettings.disableHaptics) {
 				explosionHaptics.Play();
-				task.delay(1, () => {
-					explosionHaptics.Stop();
-				});
+				setTimeout(() => explosionHaptics.Stop(), 0.5);
 			}
 			
 			SFX.play(explosionSound);
