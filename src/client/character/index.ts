@@ -414,7 +414,7 @@ subscribe(() => {
 	}
 	
 	const pivot = characterParts.hammer.model.GetPivot();
-	if (pivot.Position.sub(characterParts.body.Position).Magnitude >= 0.5) {
+	if (pivot.Position.sub(characterParts.body.Position).Magnitude >= 1) {
 		return;
 	}
 	
@@ -422,7 +422,7 @@ subscribe(() => {
 		pivot.Position,
 		new Vector3(thumbstickDirection.X, thumbstickDirection.Y, 0).Unit,
 		Vector3.zAxis,
-	).mul(CFrame.fromOrientation(math.pi / -2, 0, 0)).mul(CFrame.fromOrientation(0, math.pi, 0));
+	).mul(CFrame.fromEulerAnglesXYZ(math.pi / -2, math.pi, 0));
 	
 	characterParts.hammer.model.PivotTo(newPivot);
 });
