@@ -12,6 +12,7 @@ export namespace DebugPanel {
 	export function render(): void {
 		Iris.Window(['Debug Panel', false, false, false, true], { position: windowPositionState, size: windowSizeState, isOpened: windowOpenedState }); {
 			Iris.SliderNum(['Camera Z-Offset', 1, 0, 100], { number: cameraZOffsetState });
+			Iris.SliderNum(['Max Hammer Distance', 1, 0, 100], { number: hammerDistanceState });
 			Iris.Checkbox(['Disable Ragdoll'], { isChecked: disableRagdollState });
 			Iris.Checkbox(['Map Boundaries'], { isChecked: mapBoundariesState });
 		} Iris.End();
@@ -24,6 +25,9 @@ const windowOpenedState = Iris.State<boolean>(false);
 
 const cameraZOffsetState = Iris.State<number>(peek(CharacterState.cameraZOffsetAtom));
 cameraZOffsetState.onChange((cameraZOffset) => CharacterState.cameraZOffsetAtom(-cameraZOffset));
+
+const hammerDistanceState = Iris.State<number>(peek(CharacterState.hammerDistanceAtom));
+hammerDistanceState.onChange((hammerDistance) => CharacterState.hammerDistanceAtom(hammerDistance));
 
 const disableRagdollState = Iris.State<boolean>(false);
 disableRagdollState.onChange((disableRagdoll) => DebugPanel.disableRagdollAtom(disableRagdoll));
@@ -68,5 +72,9 @@ if (IsDebugPanelEnabled && RunService.IsRunning()) {
 	
 	subscribe(CharacterState.cameraZOffsetAtom, (cameraZOffset) => {
 		cameraZOffsetState.set(-cameraZOffset);
+	});
+	
+	subscribe(CharacterState.hammerDistanceAtom, (hammerDistance) => {
+		hammerDistanceState.set(hammerDistance);
 	});
 }

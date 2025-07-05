@@ -492,8 +492,12 @@ effect(() => {
 	
 	const existingRangeDisplay = characterParts.model.FindFirstChild('RangeDisplay');
 	if (userSettings.character.showRange) {
-		if (existingRangeDisplay === undefined) {
+		const hammerDistance = CharacterState.hammerDistanceAtom();
+		const size = new Vector3(0.001, hammerDistance * 2, hammerDistance * 2);
+		
+		if (existingRangeDisplay === undefined || !existingRangeDisplay.IsA('Part')) {
 			const clone = rangeDisplay.Clone();
+			clone.Size = size;
 			
 			const alignPosition = clone.FindFirstChild('AlignPosition');
 			if (!alignPosition?.IsA('AlignPosition')) {
@@ -502,6 +506,8 @@ effect(() => {
 			
 			alignPosition.Attachment1 = characterParts.centerAttachment;
 			clone.Parent = characterParts.model;
+		} else {
+			existingRangeDisplay.Size = size;
 		}
 	} else {
 		existingRangeDisplay?.Destroy();
