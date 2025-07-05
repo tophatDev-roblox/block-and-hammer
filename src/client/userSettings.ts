@@ -2,6 +2,9 @@ import { atom } from '@rbxts/charm';
 
 export namespace UserSettings {
 	interface Value {
+		character: {
+			showRange: boolean;
+		};
 		performance: {
 			areaUpdateInterval: number;
 		};
@@ -21,6 +24,9 @@ export namespace UserSettings {
 	}
 	
 	export const stateAtom = atom<Value>({
+		character: {
+			showRange: true,
+		},
 		performance: {
 			areaUpdateInterval: 0.2,
 		},

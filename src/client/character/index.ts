@@ -27,6 +27,7 @@ const RNG = new Random();
 let ragdollTimeEnd: number | undefined = undefined;
 
 let baseStunParticles: Part;
+let rangeDisplay: Part;
 let mouseCursorPart: Part;
 let effectsFolder: Folder;
 let mapFolder: Folder;
@@ -391,6 +392,7 @@ function bindResetButtonCallback(resetEvent: BindableEvent): void {
 (async () => {
 	const assetsFolder = await waitForChild(ReplicatedStorage, 'Assets', 'Folder');
 	baseStunParticles = await waitForChild(assetsFolder, 'StunParticles', 'Part');
+	rangeDisplay = await waitForChild(assetsFolder, 'RangeDisplay', 'Part');
 	mouseCursorPart = await waitForChild(Workspace, 'MouseCursor', 'Part');
 	effectsFolder = await waitForChild(Workspace, 'Effects', 'Folder');
 	mapFolder = await waitForChild(Workspace, 'Map', 'Folder');
@@ -459,12 +461,30 @@ subscribe(() => {
 
 effect(() => {
 	const characterParts = CharacterState.partsAtom();
-	const useLegacyPhysics = CharacterState.useLegacyPhysicsAtom();
 	if (characterParts === undefined) {
 		return;
 	}
 	
-	logger.print('useLegacyPhysics =', useLegacyPhysics);
+	const userSettings = UserSettings.stateAtom();
+	
+	const existingRangeDisplay = characterParts.model.FindFirstChild('RangeDisplay');
+	if (userSettings.character.showRange) {
+		if (existingRangeDisplay === undefined) {
+			const clone = rangeDisplay.Clone();
+			
+			const alignPosition = clone.FindFirstChild('AlignPosition');
+			if (!alignPosition?.IsA('AlignPosition')) {
+				throw logger.format(`expected AlignPosition in RangeDisplay, got ${alignPosition?.ClassName}`);
+			}
+			
+			alignPosition.Attachment1 = characterParts.centerAttachment;
+			clone.Parent = characterParts.model;
+		}
+	} else {
+		existingRangeDisplay?.Destroy();
+	}
+	
+	const useLegacyPhysics = CharacterState.useLegacyPhysicsAtom();
 	if (useLegacyPhysics) {
 		characterParts.hammer.alignPosition.Responsiveness = 70;
 		characterParts.hammer.alignPosition.MaxForce = 12_500;
