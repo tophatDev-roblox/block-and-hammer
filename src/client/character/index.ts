@@ -12,7 +12,7 @@ import { Units } from 'shared/units';
 import { waitForChild } from 'shared/waitForChild';
 import { Logger } from 'shared/logger';
 import { DebugPanel } from 'client/debugPanel';
-import { UserSettings } from 'client/settings';
+import { UserSettings } from 'client/userSettings';
 import { InputType } from 'client/inputType';
 import { Camera } from 'client/camera';
 import { Leaderstats } from 'client/leaderstats';

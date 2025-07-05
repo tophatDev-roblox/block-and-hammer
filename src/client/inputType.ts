@@ -3,7 +3,7 @@ import { atom, peek } from '@rbxts/charm';
 
 import { Controller } from 'shared/controller';
 import { Logger } from 'shared/logger';
-import { UserSettings } from './settings';
+import { UserSettings } from './userSettings';
 
 const logger = new Logger('inputType');
 

@@ -5,7 +5,7 @@ import { effect } from '@rbxts/charm';
 import { waitForChild } from 'shared/waitForChild';
 import { AreaManager } from 'shared/areaManager';
 import { CharacterState } from 'client/character/state';
-import { UserSettings } from './settings';
+import { UserSettings } from './userSettings';
 import { Leaderstats } from './leaderstats';
 import { Logger } from 'shared/logger';
 

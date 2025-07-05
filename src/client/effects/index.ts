@@ -9,7 +9,7 @@ import { Logger } from 'shared/logger';
 import { Character } from 'client/character';
 import { CharacterState } from 'client/character/state';
 import { InputType } from 'client/inputType';
-import { UserSettings } from 'client/settings';
+import { UserSettings } from 'client/userSettings';
 import { SFX } from 'client/sfx';
 import { materialConfiguration } from './materials';
 
