@@ -2,10 +2,16 @@ import { atom } from '@rbxts/charm';
 
 export namespace UserSettings {
 	interface Value {
-		areaUpdateInterval: number;
-		disableHaptics: boolean;
-		controllerDetectionType: ControllerDetection;
-		controllerDeadzone: number;
+		performance: {
+			areaUpdateInterval: number;
+		};
+		controller: {
+			detectionType: ControllerDetection;
+			deadzonePercentage: number;
+		};
+		haptics: {
+			disabled: boolean;
+		};
 	}
 	
 	export enum ControllerDetection {
@@ -15,9 +21,15 @@ export namespace UserSettings {
 	}
 	
 	export const stateAtom = atom<Value>({
-		areaUpdateInterval: 0.2,
-		disableHaptics: false,
-		controllerDetectionType: ControllerDetection.OnInput,
-		controllerDeadzone: 0.1,
+		performance: {
+			areaUpdateInterval: 0.2,
+		},
+		controller: {
+			detectionType: ControllerDetection.OnInput,
+			deadzonePercentage: 0.1,
+		},
+		haptics: {
+			disabled: false,
+		},
 	});
 }

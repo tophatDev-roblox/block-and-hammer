@@ -364,7 +364,7 @@ effect(() => {
 				
 				const userSettings = peek(UserSettings.stateAtom);
 				const inputType = peek(InputType.stateAtom)
-				if (!userSettings.disableHaptics && inputType === InputType.Value.Controller) {
+				if (!userSettings.haptics.disabled && inputType === InputType.Value.Controller) {
 					const baseAmplitude = effectIntensity / 4 + 0.2;
 					const duration = 700;
 					const steps = 10;

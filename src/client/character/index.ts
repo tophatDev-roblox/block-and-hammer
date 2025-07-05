@@ -249,7 +249,7 @@ function processInput(input: InputObject): void {
 			let direction = input.Position;
 			if (direction.Magnitude > 1) {
 				direction = direction.Unit;
-			} else if (input.Position.Magnitude < userSettings.controllerDeadzone) {
+			} else if (input.Position.Magnitude < userSettings.controller.deadzonePercentage) {
 				CharacterState.thumbstickDirectionAtom(undefined);
 				return;
 			}

@@ -37,13 +37,13 @@ const mouseInputTypes = new Set<Enum.UserInputType>([
 function processInput(input: InputObject): void {
 	const userSettings = peek(UserSettings.stateAtom);
 	const inputType = peek(InputType.stateAtom);
-	if (userSettings.controllerDetectionType !== UserSettings.ControllerDetection.OnInput || inputType === InputType.Value.Controller) {
+	if (userSettings.controller.detectionType !== UserSettings.ControllerDetection.OnInput || inputType === InputType.Value.Controller) {
 		return;
 	}
 	
 	if (Controller.isGamepadInput(input.UserInputType)) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick1 || input.KeyCode === Enum.KeyCode.Thumbstick2) {
-			if (input.Position.Magnitude < userSettings.controllerDeadzone) {
+			if (input.Position.Magnitude < userSettings.controller.deadzonePercentage) {
 				return;
 			}
 		}
@@ -59,7 +59,7 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 		newInputType = InputType.Value.Touch;
 	} else if (Controller.isGamepadInput(userInputType)) {
 		const userSettings = peek(UserSettings.stateAtom);
-		if (userSettings.controllerDetectionType === UserSettings.ControllerDetection.LastInput) {
+		if (userSettings.controller.detectionType === UserSettings.ControllerDetection.LastInput) {
 			newInputType = InputType.Value.Controller;
 		}
 	} else if (mouseInputTypes.has(userInputType)) {

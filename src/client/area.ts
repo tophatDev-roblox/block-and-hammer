@@ -60,7 +60,7 @@ effect(() => {
 		}
 		
 		CharacterState.areaAtom(AreaManager.Area.Unknown);
-	}, userSettings.areaUpdateInterval);
+	}, userSettings.performance.areaUpdateInterval);
 	
 	return () => {
 		clearInterval();
