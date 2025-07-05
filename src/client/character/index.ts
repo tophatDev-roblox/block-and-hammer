@@ -24,7 +24,6 @@ const client = Players.LocalPlayer;
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 const logger = new Logger('character');
 const RNG = new Random();
-let ragdollTimeEnd: number | undefined = undefined;
 
 let baseStunParticles: Part;
 let rangeDisplay: Part;
@@ -85,8 +84,12 @@ export namespace Character {
 			return;
 		}
 		
+		const ragdollTimeEnd = peek(CharacterState.ragdollTimeEndAtom);
 		if (ragdollTimeEnd === undefined) {
-			ragdollTimeEnd = TimeSpan.now() + seconds;
+			CharacterState.ragdollTimeEndAtom(TimeSpan.now() + seconds);
+			
+			const hammerDistance = peek(CharacterState.hammerDistanceAtom);
+			characterParts.distanceConstraint.Length = hammerDistance;
 			
 			const centerAttachment = characterParts.centerAttachment;
 			
@@ -144,7 +147,7 @@ export namespace Character {
 			characterParts.hammer.alignPosition.Enabled = false;
 			characterParts.hammer.alignOrientation.Enabled = false;
 		} else {
-			ragdollTimeEnd += seconds * 0.75;
+			CharacterState.ragdollTimeEndAtom(ragdollTimeEnd + seconds * 0.75);
 		}
 	}
 	
@@ -162,13 +165,16 @@ function endRagdoll(): void {
 		return;
 	}
 	
-	ragdollTimeEnd = undefined;
+	CharacterState.ragdollTimeEndAtom(undefined);
 	
 	const characterParts = peek(CharacterState.partsAtom);
 	if (characterParts !== undefined) {
+		const hammerDistance = peek(CharacterState.hammerDistanceAtom);
+		
 		characterParts.model.FindFirstChild('StunParticles')?.Destroy();
 		characterParts.rotationLock.Enabled = true;
 		characterParts.targetAttachment.CFrame = CFrame.lookAlong(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
+		characterParts.distanceConstraint.Length = hammerDistance * 1.1;
 		
 		const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder, characterParts.body]);
 		const origin = characterParts.hammer.head.Position;
@@ -280,8 +286,8 @@ function onResetButton(): void {
 async function onCharacterAdded(newCharacter: Model): Promise<void> {
 	logger.print('character added');
 	
-	ragdollTimeEnd = undefined;
 	effectsFolder.ClearAllChildren();
+	CharacterState.ragdollTimeEndAtom(undefined);
 	CharacterState.timeStartAtom(undefined);
 	CharacterState.mousePositionAtom(undefined);
 	CharacterState.thumbstickDirectionAtom(undefined);
@@ -370,6 +376,7 @@ function onPreRender(): void {
 			friction: 60,
 		});
 		
+		const ragdollTimeEnd = peek(CharacterState.ragdollTimeEndAtom);
 		if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
 			endRagdoll();
 		}
@@ -458,6 +465,22 @@ subscribe(() => {
 		}
 	}
 });
+
+effect(() => {
+	const characterParts = CharacterState.partsAtom();
+	if (characterParts === undefined) {
+		return;
+	}
+	
+	const ragdollTimeEnd = CharacterState.ragdollTimeEndAtom();
+	const hammerDistance = CharacterState.hammerDistanceAtom();
+	if (ragdollTimeEnd === undefined) {
+		characterParts.distanceConstraint.Length = hammerDistance * 1.1;
+	} else {
+		characterParts.distanceConstraint.Length = hammerDistance;
+	}
+});
+
 
 effect(() => {
 	const characterParts = CharacterState.partsAtom();

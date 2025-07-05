@@ -10,6 +10,7 @@ export namespace CharacterState {
 		centerAttachment: Attachment;
 		targetAttachment: Attachment;
 		rotationLock: AlignOrientation;
+		distanceConstraint: RopeConstraint;
 		hammer: {
 			model: Model;
 			head: Part;
@@ -30,6 +31,7 @@ export namespace CharacterState {
 			centerAttachment: await waitForChild(body, 'Center.0', 'Attachment'),
 			targetAttachment: await waitForChild(body, 'Target.1', 'Attachment'),
 			rotationLock: await waitForChild(body, 'AlignOrientation', 'AlignOrientation'),
+			distanceConstraint: await waitForChild(body, 'DistanceConstraint', 'RopeConstraint'),
 			hammer: {
 				model: hammer,
 				handle: await waitForChild(hammer, 'Handle', 'Part'),
@@ -49,6 +51,7 @@ export namespace CharacterState {
 	export const thumbstickDirectionAtom = atom<Vector2>();
 	export const disableCameraAtom = atom<boolean>(false);
 	export const shakeStrengthAtom = atom<number>(0);
+	export const ragdollTimeEndAtom = atom<number>();
 	export const useLegacyPhysicsAtom = atom<boolean>(false);
 	export const forcePauseGameplayAtom = atom<boolean>(false);
 	export const forcePauseTimeAtom = atom<number>();
