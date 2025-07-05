@@ -4,6 +4,7 @@ import { Remotes } from 'shared/remotes';
 import { CharacterState } from 'client/character/state';
 import { Preloader } from 'client/preloader';
 import { CoreGuis } from 'client/coreGuis';
+import { GuiService } from '@rbxts/services';
 
 export namespace StartScreenState {
 	export const isVisibleAtom = atom<boolean>(true);
@@ -25,7 +26,7 @@ effect(() => {
 	
 	batch(() => {
 		CoreGuis.chatAtom(!isVisible);
-		CoreGuis.playerListAtom(!isVisible);
+		CoreGuis.playerListAtom(GuiService.IsTenFootInterface() ? false : !isVisible);
 	});
 	
 	if (isVisible) {

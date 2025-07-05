@@ -16,6 +16,11 @@ effect(() => {
 		return;
 	}
 	
+	if (GuiService.IsTenFootInterface()) {
+		CoreGuis.playerListAtom(false);
+		return;
+	}
+	
 	if (sideMenuOpen) {
 		CoreGuis.playerListAtom(false);
 	} else {
