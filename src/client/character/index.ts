@@ -229,11 +229,6 @@ function moveTargetAttachment(position: Vector3): void {
 }
 
 function processInput(input: InputObject): void {
-	if (input.KeyCode === Enum.KeyCode.M && input.UserInputState === Enum.UserInputState.Begin) {
-		CharacterState.useLegacyPhysicsAtom((useLegacyPhysics) => !useLegacyPhysics);
-		return;
-	}
-	
 	if (peek(CharacterState.forcePauseGameplayAtom)) {
 		return;
 	}

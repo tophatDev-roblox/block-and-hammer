@@ -3,6 +3,7 @@ import { atom, peek, subscribe } from '@rbxts/charm';
 import Iris from '@rbxts/iris';
 
 import { IsDebugPanelEnabled } from 'shared/constants';
+import { TimeSpan } from 'shared/timeSpan';
 import { CharacterState } from 'client/character/state';
 
 export namespace DebugPanel {
@@ -15,6 +16,21 @@ export namespace DebugPanel {
 			Iris.SliderNum(['Max Hammer Distance', 1, 0, 100], { number: hammerDistanceState });
 			Iris.Checkbox(['Disable Ragdoll'], { isChecked: disableRagdollState });
 			Iris.Checkbox(['Map Boundaries'], { isChecked: mapBoundariesState });
+			Iris.Checkbox(['Legacy Physics'], { isChecked: legacyPhysicsState });
+			
+			if (windowOpenedState.get()) {
+				const timeStart = peek(CharacterState.timeStartAtom);
+				const shakeStrength = peek(CharacterState.shakeStrengthAtom);
+				const ragdollTimeEnd = peek(CharacterState.ragdollTimeEndAtom);
+				const mousePosition = peek(CharacterState.mousePositionAtom);
+				const thumbstickDirection = peek(CharacterState.thumbstickDirectionAtom);
+				
+				Iris.Text(['Time: %.3fs'.format(timeStart !== undefined ? TimeSpan.timeSince(timeStart) : 0)]);
+				Iris.Text(['Shake Strength: %.4f'.format(shakeStrength)]);
+				Iris.Text(['Ragdoll Duration: %.3fs'.format(ragdollTimeEnd !== undefined ? TimeSpan.timeUntil(ragdollTimeEnd) : 0)]);
+				Iris.Text(['Mouse Position: (%d, %d)'.format(mousePosition?.X ?? -1, mousePosition?.Y ?? -1)]);
+				Iris.Text(['Thumbstick Direction: (%d, %d)'.format(thumbstickDirection?.X ?? -1, thumbstickDirection?.Y ?? -1)]);
+			}
 		} Iris.End();
 	}
 }
@@ -62,6 +78,9 @@ mapBoundariesState.onChange((mapBoundaries) => {
 	}
 });
 
+const legacyPhysicsState = Iris.State<boolean>(peek(CharacterState.useLegacyPhysicsAtom));
+legacyPhysicsState.onChange((legacyPhysics) => CharacterState.useLegacyPhysicsAtom(legacyPhysics));
+
 if (IsDebugPanelEnabled && RunService.IsRunning()) {
 	Iris.Init();
 	Iris.Connect(DebugPanel.render);
@@ -76,5 +95,9 @@ if (IsDebugPanelEnabled && RunService.IsRunning()) {
 	
 	subscribe(CharacterState.hammerDistanceAtom, (hammerDistance) => {
 		hammerDistanceState.set(hammerDistance);
+	});
+	
+	subscribe(CharacterState.useLegacyPhysicsAtom, (legacyPhysics) => {
+		legacyPhysicsState.set(legacyPhysics);
 	});
 }
