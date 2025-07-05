@@ -87,7 +87,7 @@ async function respawn(player: Player): Promise<void> {
 	
 	const body = character.FindFirstChild('Body');
 	if (!body?.IsA('Part')) {
-		throw logger.format('failed to respawn player because Body is not a Part');
+		throw logger.format(`expected Body to be Part, got ${body?.ClassName}`);
 	}
 	
 	characterData.set(character, {
