@@ -29,7 +29,7 @@ export namespace DebugPanel {
 				Iris.Text(['Shake Strength: %.4f'.format(shakeStrength)]);
 				Iris.Text(['Ragdoll Duration: %.3fs'.format(ragdollTimeEnd !== undefined ? TimeSpan.timeUntil(ragdollTimeEnd) : 0)]);
 				Iris.Text(['Mouse Position: (%d, %d)'.format(mousePosition?.X ?? -1, mousePosition?.Y ?? -1)]);
-				Iris.Text(['Thumbstick Direction: (%.3f, %.3f)'.format(thumbstickDirection?.X ?? -1, thumbstickDirection?.Y ?? -1)]);
+				Iris.Text(['Thumbstick Direction: (%.3f, %.3f)'.format(thumbstickDirection?.X ?? 0, thumbstickDirection?.Y ?? 0)]);
 			}
 		} Iris.End();
 	}
