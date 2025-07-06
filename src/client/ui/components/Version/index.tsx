@@ -4,7 +4,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { TestingPlaceId } from 'shared/constants';
 import { usePx } from 'client/ui/hooks/usePx';
-import { Styles } from 'client/styles';
+import { Styles } from 'shared/styles';
 import UIPadding from '../UIPadding';
 import Text from '../Text';
 

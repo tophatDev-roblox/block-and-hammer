@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { Styles, StyleParse } from 'client/styles';
+import { Styles, StyleParse } from 'shared/styles';
 import { Assets } from 'shared/assets';
 import { InputType } from 'client/inputType';
 import { usePx } from '../hooks/usePx';
@@ -225,7 +225,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 						<uicorner
 							CornerRadius={new UDim(1, 0)}
 						/>
-						{outline !== false && (
+						{outline !== undefined && (
 							<Outline
 								styles={outline}
 								applyStrokeMode={Enum.ApplyStrokeMode.Border}

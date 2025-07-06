@@ -1,7 +1,7 @@
 import React, { forwardRef } from '@rbxts/react';
 
 import { getAutomaticSize } from 'shared/getAutomaticSize';
-import { StyleParse, Styles } from 'client/styles';
+import { StyleParse, Styles } from 'shared/styles';
 import Gradient from './Gradient';
 import Outline from './Outline';
 
@@ -56,7 +56,7 @@ const Container = forwardRef<Frame, ContainerProps>((props, ref) => {
 					styles={background}
 				/>
 			)}
-			{outline !== false && (
+			{outline !== undefined && (
 				<Outline
 					styles={outline}
 					applyStrokeMode={Enum.ApplyStrokeMode.Border}

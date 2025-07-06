@@ -3,7 +3,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { InputType } from 'client/inputType';
 import { CharacterState } from 'client/character/state';
-import { Styles } from 'client/styles';
+import { Styles } from 'shared/styles';
 import Text from '../Text';
 
 const MoveHint: React.FC = () => {

@@ -5,7 +5,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { usePx } from 'client/ui/hooks/usePx';
 import { InputType } from 'client/inputType';
-import { StyleParse, Styles } from 'client/styles';
+import { StyleParse, Styles } from 'shared/styles';
 import UIPadding from '../UIPadding';
 import Outline from '../Outline';
 import Text from '../Text';
@@ -117,7 +117,7 @@ const Action: React.FC<ActionProps> = ({ styles, action, index, autoSelect, sele
 				MouseButton1Click: onClick,
 			}}
 		>
-			{outline !== false && (
+			{outline !== undefined && (
 				<Outline
 					styles={outline}
 					applyStrokeMode={Enum.ApplyStrokeMode.Border}

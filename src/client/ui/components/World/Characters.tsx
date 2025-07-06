@@ -5,7 +5,7 @@ import { effect } from '@rbxts/charm';
 
 import { OtherCharacters } from 'client/otherCharacters';
 import { usePx } from 'client/ui/hooks/usePx';
-import { Styles } from 'client/styles';
+import { Styles } from 'shared/styles';
 import UIListLayout from '../UIListLayout';
 import Text from '../Text';
 

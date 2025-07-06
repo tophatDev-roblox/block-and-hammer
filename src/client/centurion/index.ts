@@ -2,8 +2,9 @@ import { Centurion } from '@rbxts/centurion';
 import { CenturionUI } from '@rbxts/centurion-ui';
 
 import { Logger } from 'shared/logger';
-import { StyleParse } from 'client/styles';
-import defaultStyles from 'client/styles/default';
+
+import { StyleParse } from 'shared/styles';
+import defaultStyles from 'shared/styles/default';
 
 const logger = new Logger('centurion');
 const client = Centurion.client();

@@ -8,7 +8,7 @@ import Ripple, { createMotion } from '@rbxts/ripple';
 import { waitForChild } from 'shared/waitForChild';
 import { usePx } from 'client/ui/hooks/usePx';
 import { StartScreenState } from 'client/ui/startScreenState';
-import { StyleParse, Styles } from 'client/styles';
+import { StyleParse, Styles } from 'shared/styles';
 import { Camera } from 'client/camera';
 import { Effects } from 'client/effects';
 import Text from '../Text';
@@ -125,8 +125,7 @@ const StartScreen: React.FC = () => {
 	}, [isLoadingFinished]);
 	
 	const logoOutline = styles.startScreen.logo.outline;
-	
-	const logoPadding = logoOutline !== false ? StyleParse.px(px, logoOutline.thickness, logoOutline.autoScale) : 0;
+	const logoPadding = logoOutline !== undefined ? StyleParse.px(px, logoOutline.thickness, logoOutline.autoScale) : 0;
 	
 	return (
 		<screengui

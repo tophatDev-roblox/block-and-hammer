@@ -1,4 +1,5 @@
 import { RunService, SoundService, Workspace } from '@rbxts/services';
+
 import { effect, peek } from '@rbxts/charm';
 import { createMotion } from '@rbxts/ripple';
 
@@ -6,11 +7,13 @@ import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
 import { waitForChild } from 'shared/waitForChild';
 import { Logger } from 'shared/logger';
+
 import { Character } from 'client/character';
 import { CharacterState } from 'client/character/state';
 import { InputType } from 'client/inputType';
 import { UserSettings } from 'client/userSettings';
 import { SFX } from 'client/sfx';
+
 import { materialConfiguration } from './materials';
 
 const logger = new Logger();

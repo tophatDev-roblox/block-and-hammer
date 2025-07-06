@@ -8,7 +8,7 @@ import { Shake } from 'shared/shake';
 import { TimeSpan } from 'shared/timeSpan';
 import { RichText } from 'shared/richText';
 import { usePx } from 'client/ui/hooks/usePx';
-import { Styles } from 'client/styles';
+import { Styles } from 'shared/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 import UIListLayout from '../UIListLayout';

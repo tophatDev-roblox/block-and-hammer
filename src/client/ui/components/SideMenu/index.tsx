@@ -5,7 +5,7 @@ import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { Assets } from 'shared/assets';
-import { Styles } from 'client/styles';
+import { Styles } from 'shared/styles';
 import { usePx } from 'client/ui/hooks/usePx';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { StartScreenState } from 'client/ui/startScreenState';

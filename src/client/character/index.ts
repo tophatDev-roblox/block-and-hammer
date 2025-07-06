@@ -1,4 +1,5 @@
 import { GuiService, Players, ReplicatedStorage, RunService, StarterGui, UserInputService, Workspace } from '@rbxts/services';
+
 import { setTimeout } from '@rbxts/set-timeout';
 import { effect, peek, subscribe } from '@rbxts/charm';
 import { createMotion } from '@rbxts/ripple';
@@ -11,6 +12,7 @@ import { AreaManager } from 'shared/areaManager';
 import { Units } from 'shared/units';
 import { waitForChild } from 'shared/waitForChild';
 import { Logger } from 'shared/logger';
+
 import { DebugPanel } from 'client/debugPanel';
 import { UserSettings } from 'client/userSettings';
 import { InputType } from 'client/inputType';
@@ -18,6 +20,7 @@ import { Camera } from 'client/camera';
 import { Leaderstats } from 'client/leaderstats';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { ModalState } from 'client/ui/modalState';
+
 import { CharacterState } from './state';
 
 const client = Players.LocalPlayer;
@@ -105,7 +108,7 @@ export namespace Character {
 			const rigidConstraint = stunParticles.FindFirstChild('RigidConstraint') as RigidConstraint;
 			rigidConstraint.Attachment1 = centerAttachment;
 			
-			const rigidAttachment = stunParticles.FindFirstChild('Rigid.0') as Attachment;
+			const rigidAttachment = stunParticles.FindFirstChild('RigidAttachment0') as Attachment;
 			const baseCFrame = rigidAttachment.CFrame;
 			
 			const attachmentMotion = createMotion<number>(0, {
@@ -286,9 +289,7 @@ async function onCharacterAdded(newCharacter: Model): Promise<void> {
 		Vector3.zAxis,
 	));
 	
-	const bubbleChatOrigin = newCharacter.FindFirstChild('BubbleChatOrigin') as Part;
-	const bubbleChatAttachment = bubbleChatOrigin.FindFirstChild('Rigid.0') as Attachment;
-	bubbleChatAttachment.Position = new Vector3(0, -1.5, 2.5);
+	characterParts.bubbleChatOrigin.connectionAttachment.Position = new Vector3(0, -1.5, 2.5);
 	
 	// TODO: fix voicechat (idk how tho i havent found any guide for voicechat + new audio api)
 	// const audioEmitter = newCharacter.WaitForChild('AudioEmitter') as AudioEmitter;

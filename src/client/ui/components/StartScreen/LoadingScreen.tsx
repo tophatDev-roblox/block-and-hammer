@@ -7,7 +7,7 @@ import { useAtom } from '@rbxts/react-charm';
 import { StartScreenState } from 'client/ui/startScreenState';
 import { useAtomBinding } from 'client/ui/hooks/useAtomBinding';
 import { usePx } from 'client/ui/hooks/usePx';
-import { Styles } from 'client/styles';
+import { Styles } from 'shared/styles';
 import UIListLayout from '../UIListLayout';
 import Text from '../Text';
 

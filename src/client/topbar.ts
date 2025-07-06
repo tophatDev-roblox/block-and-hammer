@@ -4,12 +4,12 @@ import { effect, subscribe } from '@rbxts/charm';
 import Icon from 'shared/Icon';
 import NumberSpinner from 'shared/NumberSpinner';
 import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
-import { Styles } from 'client/styles';
+import { Styles } from 'shared/styles';
 import { InputType } from 'client/inputType';
 import { DebugPanel } from 'client/debugPanel';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { StartScreenState } from 'client/ui/startScreenState';
-import defaultStyles from 'client/styles/default';
+import defaultStyles from 'shared/styles/default';
 import { ModalState } from './ui/modalState';
 
 const client = Players.LocalPlayer;

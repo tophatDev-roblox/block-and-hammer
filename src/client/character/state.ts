@@ -18,19 +18,23 @@ export namespace CharacterState {
 			alignPosition: AlignPosition;
 			alignOrientation: AlignOrientation;
 		};
+		bubbleChatOrigin: {
+			connectionAttachment: Attachment;
+		};
 	}
 	
 	export async function createParts(character: Model): Promise<Parts> {
 		const body = await waitForChild(character, 'Body', 'Part');
+		const bubbleChatOrigin = await waitForChild(character, 'BubbleChatOrigin', 'Part');
 		const hammer = await waitForChild(character, 'Hammer', 'Model');
 		const head = await waitForChild(hammer, 'Head', 'Part');
 		
 		return {
 			model: character,
 			body: body,
-			centerAttachment: await waitForChild(body, 'Center.0', 'Attachment'),
-			targetAttachment: await waitForChild(body, 'Target.1', 'Attachment'),
-			rotationLock: await waitForChild(body, 'AlignOrientation', 'AlignOrientation'),
+			centerAttachment: await waitForChild(body, 'CenterAttachment', 'Attachment'),
+			targetAttachment: await waitForChild(body, 'TargetAttachment1', 'Attachment'),
+			rotationLock: await waitForChild(body, 'RotationLock', 'AlignOrientation'),
 			distanceConstraint: await waitForChild(body, 'DistanceConstraint', 'RopeConstraint'),
 			hammer: {
 				model: hammer,
@@ -38,6 +42,9 @@ export namespace CharacterState {
 				head: head,
 				alignPosition: await waitForChild(head, 'AlignPosition', 'AlignPosition'),
 				alignOrientation: await waitForChild(head, 'AlignOrientation', 'AlignOrientation'),
+			},
+			bubbleChatOrigin: {
+				connectionAttachment: await waitForChild(bubbleChatOrigin, 'ConnectionAttachment', 'Attachment'),
 			},
 		};
 	}

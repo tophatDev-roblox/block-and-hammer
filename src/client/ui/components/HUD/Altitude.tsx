@@ -7,7 +7,7 @@ import { peek } from '@rbxts/charm';
 import { TimeSpan } from 'shared/timeSpan';
 import { Shake } from 'shared/shake';
 import { Units } from 'shared/units';
-import { Styles } from 'client/styles';
+import { Styles } from 'shared/styles';
 import { CharacterState } from 'client/character/state';
 import Text from '../Text';
 

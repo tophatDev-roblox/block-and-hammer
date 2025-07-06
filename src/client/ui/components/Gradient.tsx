@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 
-import { Styles, StyleParse } from 'client/styles';
+import { Styles, StyleParse } from 'shared/styles';
 
 interface GradientProps {
 	styles: Styles.Gradient;
