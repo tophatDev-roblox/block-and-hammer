@@ -35,7 +35,7 @@ export namespace Character {
 	export function quickReset(): void {
 		const characterParts = peek(CharacterState.partsAtom);
 		const area = CharacterState.areaAtom();
-		if (characterParts === undefined || peek(CharacterState.forcePauseGameplayAtom)) {
+		if (characterParts === undefined) {
 			return;
 		}
 		
@@ -80,7 +80,7 @@ export namespace Character {
 	
 	export function ragdoll(seconds: number): void {
 		const characterParts = peek(CharacterState.partsAtom);
-		if (characterParts === undefined || peek(CharacterState.forcePauseGameplayAtom)) {
+		if (characterParts === undefined) {
 			return;
 		}
 		
@@ -152,19 +152,11 @@ export namespace Character {
 	}
 	
 	export function shake(magnitude: number): void {
-		if (peek(CharacterState.forcePauseGameplayAtom)) {
-			return;
-		}
-		
 		CharacterState.shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength));
 	}
 }
 
 function endRagdoll(): void {
-	if (peek(CharacterState.forcePauseGameplayAtom)) {
-		return;
-	}
-	
 	CharacterState.ragdollTimeEndAtom(undefined);
 	
 	const characterParts = peek(CharacterState.partsAtom);
@@ -229,10 +221,6 @@ function moveTargetAttachment(position: Vector3): void {
 }
 
 function processInput(input: InputObject): void {
-	if (peek(CharacterState.forcePauseGameplayAtom)) {
-		return;
-	}
-	
 	const camera = peek(Camera.instanceAtom);
 	const characterParts = peek(CharacterState.partsAtom);
 	const sideMenuOpen = peek(SideMenuState.isOpenAtom);
@@ -431,36 +419,6 @@ subscribe(() => {
 	characterParts.hammer.model.PivotTo(newPivot);
 });
 
-subscribe(() => {
-	CharacterState.partsAtom();
-	return CharacterState.forcePauseGameplayAtom();
-}, (forcePauseGameplay, previousForcePauseGameplay) => {
-	const characterParts = CharacterState.partsAtom();
-	if (characterParts === undefined || forcePauseGameplay === previousForcePauseGameplay) {
-		return;
-	}
-	
-	logger.print('forcePauseGameplay =', forcePauseGameplay);
-	
-	if (forcePauseGameplay) {
-		characterParts.body.Anchored = true;
-		characterParts.hammer.head.Anchored = true;
-		
-		const startTime = peek(CharacterState.forcePauseTimeAtom);
-		if (typeIs(startTime, 'number')) {
-			CharacterState.forcePauseTimeAtom(TimeSpan.now() - startTime);
-		}
-	} else {
-		characterParts.body.Anchored = false;
-		characterParts.hammer.head.Anchored = false;
-		
-		const forcePauseTime = peek(CharacterState.forcePauseTimeAtom);
-		if (forcePauseTime !== undefined) {
-			CharacterState.forcePauseTimeAtom(TimeSpan.now() - forcePauseTime);
-		}
-	}
-});
-
 effect(() => {
 	const characterParts = CharacterState.partsAtom();
 	if (characterParts === undefined) {
@@ -475,7 +433,6 @@ effect(() => {
 		characterParts.distanceConstraint.Length = hammerDistance;
 	}
 });
-
 
 effect(() => {
 	const characterParts = CharacterState.partsAtom();

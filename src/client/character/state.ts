@@ -53,6 +53,4 @@ export namespace CharacterState {
 	export const shakeStrengthAtom = atom<number>(0);
 	export const ragdollTimeEndAtom = atom<number>();
 	export const useLegacyPhysicsAtom = atom<boolean>(false);
-	export const forcePauseGameplayAtom = atom<boolean>(false);
-	export const forcePauseTimeAtom = atom<number>();
 }
