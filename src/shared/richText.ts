@@ -1,3 +1,9 @@
+export const enum JoinMode {
+	Round = 'round',
+	Bevel = 'bevel',
+	Miter = 'miter',
+}
+
 interface RichTextData {
 	bold?: true;
 	italic?: true;
@@ -13,7 +19,7 @@ interface RichTextData {
 	};
 	stroke?: {
 		color?: Color3;
-		joins?: 'round' | 'bevel' | 'miter';
+		joins?: JoinMode;
 		thickness?: number;
 		transparency?: number;
 	};
