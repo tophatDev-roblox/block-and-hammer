@@ -1,18 +1,23 @@
 import { GuiService } from '@rbxts/services';
-import { setTimeout } from '@rbxts/set-timeout';
+
 import React, { useEffect, useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
+import { setTimeout } from '@rbxts/set-timeout';
+
 import { Assets } from 'shared/assets';
 import { Styles } from 'shared/styles';
-import { usePx } from 'client/ui/hooks/usePx';
-import { SideMenuState } from 'client/ui/sideMenuState';
+
 import { StartScreenState } from 'client/ui/startScreenState';
+import { SideMenuState } from 'client/ui/sideMenuState';
 import { ModalState } from 'client/ui/modalState';
+import { usePx } from 'client/ui/hooks/usePx';
+
+import ContainerImage from '../ContainerImage';
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
-import ContainerImage from '../ContainerImage';
+
 import MenuButton from './MenuButton';
 
 const SideMenuGUI: React.FC = () => {

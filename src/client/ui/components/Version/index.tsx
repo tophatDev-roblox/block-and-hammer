@@ -1,10 +1,13 @@
 import { RunService } from '@rbxts/services';
+
 import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
+import { Styles } from 'shared/styles';
+
 import { TestingPlaceId } from 'shared/constants';
 import { usePx } from 'client/ui/hooks/usePx';
-import { Styles } from 'shared/styles';
+
 import UIPadding from '../UIPadding';
 import Text from '../Text';
 

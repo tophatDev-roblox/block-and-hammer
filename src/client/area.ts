@@ -4,10 +4,12 @@ import { effect } from '@rbxts/charm';
 
 import { waitForChild } from 'shared/waitForChild';
 import { AreaManager } from 'shared/areaManager';
-import { CharacterState } from 'client/character/state';
-import { UserSettings } from './userSettings';
-import { Leaderstats } from './leaderstats';
 import { Logger } from 'shared/logger';
+
+import { UserSettings } from 'client/userSettings';
+import { Leaderstats } from 'client/leaderstats';
+
+import { CharacterState } from 'client/character/state';
 
 const logger = new Logger('area');
 const areaManager = new AreaManager();

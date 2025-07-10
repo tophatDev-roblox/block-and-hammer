@@ -1,8 +1,10 @@
 import { Players } from '@rbxts/services';
+
 import React from '@rbxts/react';
 import ReactRoblox from '@rbxts/react-roblox';
 
 import { waitForChild } from 'shared/waitForChild';
+
 import App from './components/App';
 
 const client = Players.LocalPlayer;

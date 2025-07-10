@@ -1,21 +1,26 @@
 import { GuiService, RunService, Workspace } from '@rbxts/services';
-import { setTimeout } from '@rbxts/set-timeout';
+
 import React, { useEffect, useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
-import Ripple, { createMotion } from '@rbxts/ripple';
 
-import { waitForChild } from 'shared/waitForChild';
-import { usePx } from 'client/ui/hooks/usePx';
-import { StartScreenState } from 'client/ui/startScreenState';
+import { createMotion } from '@rbxts/ripple';
+import { setTimeout } from '@rbxts/set-timeout';
+
 import { StyleParse, Styles } from 'shared/styles';
-import { Camera } from 'client/camera';
+import { waitForChild } from 'shared/waitForChild';
+
+import { StartScreenState } from 'client/ui/startScreenState';
 import { Effects } from 'client/effects';
-import Text from '../Text';
-import Button from './Button';
-import LoadingScreen from './LoadingScreen';
+import { Camera } from 'client/camera';
+import { usePx } from 'client/ui/hooks/usePx';
+
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
+import Text from '../Text';
+
+import LoadingScreen from './LoadingScreen';
+import Button from './Button';
 
 let hitPart: BasePart;
 let head: Part;
@@ -37,7 +42,7 @@ let cameraPart: Part;
 	cameraPart = await waitForChild(startScreen, 'Camera', 'Part');
 })();
 
-const StartScreen: React.FC = () => {
+const StartScreenGUI: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);
 	
 	const isVisible = useAtom(StartScreenState.isVisibleAtom);
@@ -184,4 +189,4 @@ const StartScreen: React.FC = () => {
 	);
 };
 
-export default StartScreen;
+export default StartScreenGUI;

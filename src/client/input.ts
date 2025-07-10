@@ -1,9 +1,11 @@
 import { GuiService, UserInputService } from '@rbxts/services';
+
 import { atom, peek } from '@rbxts/charm';
 
 import { Controller } from 'shared/controller';
 import { InputType } from 'shared/inputType';
 import { Logger } from 'shared/logger';
+
 import { UserSettings } from './userSettings';
 
 const logger = new Logger('inputType');

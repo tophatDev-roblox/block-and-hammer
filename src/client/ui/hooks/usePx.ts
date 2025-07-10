@@ -1,8 +1,10 @@
 import { useCallback } from '@rbxts/react';
-import { atom, effect } from '@rbxts/charm';
 import { useAtom } from '@rbxts/react-charm';
 
+import { atom, effect } from '@rbxts/charm';
+
 import { PixelScale } from 'shared/pixelScale';
+
 import { Camera } from 'client/camera';
 
 const scaleAtom = atom<number>(1);

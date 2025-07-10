@@ -3,6 +3,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { usePx } from 'client/ui/hooks/usePx';
 import { SFX } from 'client/sfx';
+
 import Subtitle from './Subtitle';
 
 const SubtitlesGUI: React.FC = () => {

@@ -1,18 +1,22 @@
 import { GuiService } from '@rbxts/services';
+
 import React, { useEffect, useRef, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { InputType } from 'shared/inputType';
 import { Styles, StyleParse } from 'shared/styles';
+import { InputType } from 'shared/inputType';
 import { Assets } from 'shared/assets';
+
 import { clientInputTypeAtom } from 'client/input';
-import { usePx } from '../hooks/usePx';
-import Text from './Text';
-import Gradient from './Gradient';
-import Outline from './Outline';
+
+import { usePx } from 'client/ui/hooks/usePx';
+
 import UIListLayout from './UIListLayout';
 import UIPadding from './UIPadding';
+import Gradient from './Gradient';
+import Outline from './Outline';
+import Text from './Text';
 
 interface SideButtonProps {
 	styles: Styles.ButtonWithIcon;

@@ -1,7 +1,7 @@
 import { atom } from '@rbxts/charm';
 
-import { AreaManager } from 'shared/areaManager';
 import { waitForChild } from 'shared/waitForChild';
+import { AreaManager } from 'shared/areaManager';
 
 export namespace CharacterState {
 	export interface Parts {

@@ -1,7 +1,9 @@
 import React from '@rbxts/react';
 
 import { Styles, StyleParse } from 'shared/styles';
-import { usePx } from '../hooks/usePx';
+
+import { usePx } from 'client/ui/hooks/usePx';
+
 import Gradient from './Gradient';
 
 interface OutlineProps {

@@ -1,10 +1,8 @@
 import { Centurion } from '@rbxts/centurion';
 import { CenturionUI } from '@rbxts/centurion-ui';
 
+import { Styles, StyleParse } from 'shared/styles';
 import { Logger } from 'shared/logger';
-
-import { StyleParse } from 'shared/styles';
-import defaultStyles from 'shared/styles/default';
 
 const logger = new Logger('centurion');
 const client = Centurion.client();
@@ -25,9 +23,9 @@ client.start()
 			position: new UDim2(0.5, 0, 0.5, -88),
 			anchor: new Vector2(0.5, 0),
 			font: {
-				bold: StyleParse.font(defaultStyles.centurion.text.bold),
-				medium: StyleParse.font(defaultStyles.centurion.text.medium),
-				regular: StyleParse.font(defaultStyles.centurion.text.regular),
+				bold: StyleParse.font(Styles.Default.centurion.text.bold),
+				medium: StyleParse.font(Styles.Default.centurion.text.medium),
+				regular: StyleParse.font(Styles.Default.centurion.text.regular),
 			},
 		});
 		

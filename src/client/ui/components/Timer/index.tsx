@@ -1,18 +1,22 @@
 import { RunService } from '@rbxts/services';
+
 import React, { useBinding, useMemo } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
+
 import { peek } from '@rbxts/charm';
 
-import { Shake } from 'shared/shake';
 import { TimeSpan } from 'shared/timeSpan';
 import { RichText } from 'shared/richText';
-import { usePx } from 'client/ui/hooks/usePx';
 import { Styles } from 'shared/styles';
+import { Shake } from 'shared/shake';
+
 import { CharacterState } from 'client/character/state';
-import Text from '../Text';
+import { usePx } from 'client/ui/hooks/usePx';
+
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
+import Text from '../Text';
 
 const TimerGUI: React.FC = () => {
 	const [text, setText] = useBinding<string>('--');

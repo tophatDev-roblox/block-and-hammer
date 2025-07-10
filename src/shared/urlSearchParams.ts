@@ -1,5 +1,5 @@
-import encodeURIComponent from './encodeURIComponent';
-import { String } from './string';
+import { encodeURIComponent } from 'shared/encodeURIComponent';
+import { String } from 'shared/string';
 
 type ParamEntry = [string, string];
 

@@ -8,6 +8,8 @@ import defaultStyles from './default';
 const logger = new Logger('styles');
 
 export namespace Styles {
+	export const Default = defaultStyles;
+	
 	export type Color = t.static<typeof Color>;
 	export const Color = t.interface({
 		red: t.integer,

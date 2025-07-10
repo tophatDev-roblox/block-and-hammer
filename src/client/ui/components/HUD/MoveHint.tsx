@@ -1,10 +1,12 @@
 import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { Styles } from 'shared/styles';
 import { InputType } from 'shared/inputType';
-import { CharacterState } from 'client/character/state';
+import { Styles } from 'shared/styles';
+
 import { clientInputTypeAtom } from 'client/input';
+import { CharacterState } from 'client/character/state';
+
 import Text from '../Text';
 
 const MoveHint: React.FC = () => {

@@ -1,11 +1,15 @@
 import { Players } from '@rbxts/services';
+
 import React, { useEffect, useState } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
+
 import { effect } from '@rbxts/charm';
+
+import { Styles } from 'shared/styles';
 
 import { OtherCharacters } from 'client/otherCharacters';
 import { usePx } from 'client/ui/hooks/usePx';
-import { Styles } from 'shared/styles';
+
 import UIListLayout from '../UIListLayout';
 import Text from '../Text';
 

@@ -1,24 +1,25 @@
 import { GuiService, Players, ReplicatedStorage, RunService, StarterGui, UserInputService, Workspace } from '@rbxts/services';
 
-import { setTimeout } from '@rbxts/set-timeout';
 import { effect, peek, subscribe } from '@rbxts/charm';
 import { createMotion } from '@rbxts/ripple';
+import { setTimeout } from '@rbxts/set-timeout';
 
+import { IsDebugPanelEnabled } from 'shared/constants';
+import { waitForChild } from 'shared/waitForChild';
+import { AreaManager } from 'shared/areaManager';
+import { Controller } from 'shared/controller';
 import { InputType } from 'shared/inputType';
 import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
-import { Controller } from 'shared/controller';
-import { IsDebugPanelEnabled } from 'shared/constants';
-import { AreaManager } from 'shared/areaManager';
-import { Units } from 'shared/units';
-import { waitForChild } from 'shared/waitForChild';
 import { Logger } from 'shared/logger';
+import { Units } from 'shared/units';
 
 import { clientInputTypeAtom } from 'client/input';
-import { DebugPanel } from 'client/debugPanel';
 import { UserSettings } from 'client/userSettings';
-import { Camera } from 'client/camera';
 import { Leaderstats } from 'client/leaderstats';
+import { DebugPanel } from 'client/debugPanel';
+import { Camera } from 'client/camera';
+
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { ModalState } from 'client/ui/modalState';
 

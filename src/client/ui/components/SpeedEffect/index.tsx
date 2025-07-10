@@ -1,10 +1,12 @@
 import { GuiService, RunService } from '@rbxts/services';
+
 import React, { useBinding, useRef } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { CharacterState } from 'client/character/state';
 import { TimeSpan } from 'shared/timeSpan';
+
+import { CharacterState } from 'client/character/state';
 
 const imageIds = [
 	'rbxassetid://13484709347',

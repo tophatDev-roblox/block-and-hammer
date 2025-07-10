@@ -1,4 +1,4 @@
-import NumberSpinner from './NumberSpinner';
+import NumberSpinner from 'shared/NumberSpinner';
 
 type IconState = 'Selected' | 'Deselected';
 type Alignment = 'Left' | 'Center' | 'Right';

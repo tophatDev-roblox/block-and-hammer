@@ -1,6 +1,6 @@
 import { Client, createRemotes, remote, Server } from '@rbxts/remo';
 
-import { InputType } from './inputType';
+import { InputType } from 'shared/inputType';
 
 export const Remotes = createRemotes({
 	fullReset: remote<Server>().returns<true>(),

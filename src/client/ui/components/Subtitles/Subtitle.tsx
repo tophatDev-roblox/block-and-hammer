@@ -4,10 +4,12 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { TimeSpan } from 'shared/timeSpan';
 import { Styles } from 'shared/styles';
+
 import { usePx } from 'client/ui/hooks/usePx';
+
 import UIPadding from '../UIPadding';
-import Text from '../Text';
 import Container from '../Container';
+import Text from '../Text';
 
 interface CaptionProps {
 	sound: string;

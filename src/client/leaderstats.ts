@@ -1,4 +1,5 @@
 import { Players } from '@rbxts/services';
+
 import { atom } from '@rbxts/charm';
 
 import { waitForChild } from 'shared/waitForChild';

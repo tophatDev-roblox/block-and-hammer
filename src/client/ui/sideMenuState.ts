@@ -1,8 +1,10 @@
 import { GuiService } from '@rbxts/services';
-import { setTimeout } from '@rbxts/set-timeout';
+
 import { atom, effect } from '@rbxts/charm';
+import { setTimeout } from '@rbxts/set-timeout';
 
 import { CoreGuis } from 'client/coreGuis';
+
 import { StartScreenState } from './startScreenState';
 
 export namespace SideMenuState {

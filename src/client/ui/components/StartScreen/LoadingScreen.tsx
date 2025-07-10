@@ -1,13 +1,17 @@
 import { GuiService } from '@rbxts/services';
+
 import React, { useEffect } from '@rbxts/react';
-import { useMotion } from '@rbxts/pretty-react-hooks';
-import { computed } from '@rbxts/charm';
 import { useAtom } from '@rbxts/react-charm';
+import { useMotion } from '@rbxts/pretty-react-hooks';
+
+import { computed } from '@rbxts/charm';
+
+import { Styles } from 'shared/styles';
 
 import { StartScreenState } from 'client/ui/startScreenState';
 import { useAtomBinding } from 'client/ui/hooks/useAtomBinding';
 import { usePx } from 'client/ui/hooks/usePx';
-import { Styles } from 'shared/styles';
+
 import UIListLayout from '../UIListLayout';
 import Text from '../Text';
 

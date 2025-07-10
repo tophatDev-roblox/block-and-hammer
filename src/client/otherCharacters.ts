@@ -1,6 +1,7 @@
 import { Players } from '@rbxts/services';
-import { produce } from '@rbxts/immut';
+
 import { atom, Atom } from '@rbxts/charm';
+import { produce } from '@rbxts/immut';
 
 import { CharacterState } from './character/state';
 

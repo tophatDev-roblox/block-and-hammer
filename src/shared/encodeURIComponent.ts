@@ -12,7 +12,7 @@ for (const i of $range(97, 122)) { // a-z
 	unreservedURLCharacters.add(utf8.char(i));
 }
 
-export default function encodeURIComponent(uriComponent: string): string {
+export function encodeURIComponent(uriComponent: string): string {
 	const totalCodes = uriComponent.size();
 	
 	const buff = buffer.create(totalCodes);

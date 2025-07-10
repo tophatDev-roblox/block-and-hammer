@@ -1,6 +1,7 @@
 import { SoundService } from '@rbxts/services';
 
 import { waitForChild } from 'shared/waitForChild';
+
 import { SFX } from 'client/sfx';
 
 export interface ParticleData {

@@ -1,6 +1,7 @@
 import { StarterGui } from '@rbxts/services';
-import { setTimeout } from '@rbxts/set-timeout';
+
 import { atom, effect } from '@rbxts/charm';
+import { setTimeout } from '@rbxts/set-timeout';
 
 export namespace CoreGuis {
 	export const chatAtom = atom<boolean>(false);

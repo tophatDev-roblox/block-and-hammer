@@ -1,14 +1,18 @@
 import { RunService } from '@rbxts/services';
+
 import React, { useBinding, useMemo } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
+
 import { peek } from '@rbxts/charm';
 
 import { TimeSpan } from 'shared/timeSpan';
+import { Styles } from 'shared/styles';
 import { Shake } from 'shared/shake';
 import { Units } from 'shared/units';
-import { Styles } from 'shared/styles';
+
 import { CharacterState } from 'client/character/state';
+
 import Text from '../Text';
 
 const Speedometer: React.FC = () => {

@@ -1,17 +1,20 @@
 import { Players } from '@rbxts/services';
+
 import { effect, subscribe } from '@rbxts/charm';
 
-import Icon from 'shared/Icon';
-import NumberSpinner from 'shared/NumberSpinner';
 import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
-import { InputType } from 'shared/inputType';
-import { Styles } from 'shared/styles';
-import defaultStyles from 'shared/styles/default';
+
+import NumberSpinner from 'shared/NumberSpinner';
+import Icon from 'shared/Icon';
+
 import { clientInputTypeAtom } from 'client/input';
 import { DebugPanel } from 'client/debugPanel';
-import { SideMenuState } from 'client/ui/sideMenuState';
+import { InputType } from 'shared/inputType';
+import { Styles } from 'shared/styles';
+
 import { StartScreenState } from 'client/ui/startScreenState';
-import { ModalState } from './ui/modalState';
+import { SideMenuState } from 'client/ui/sideMenuState';
+import { ModalState } from 'client/ui/modalState';
 
 const client = Players.LocalPlayer;
 
@@ -145,7 +148,7 @@ function onAttributeChanged(attribute: string) {
 	dollarsNumber.Value = math.clamp(client.GetAttribute(attribute) as number | undefined ?? 0, MinDollars, MaxDollars);
 }
 
-applyStyles(defaultStyles);
+applyStyles(Styles.Default);
 onAttributeChanged('dollars');
 
 client.AttributeChanged.Connect(onAttributeChanged);

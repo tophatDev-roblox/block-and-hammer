@@ -1,9 +1,12 @@
 import { RunService, Workspace } from '@rbxts/services';
-import { atom, peek, subscribe } from '@rbxts/charm';
+
 import Iris from '@rbxts/iris';
+
+import { atom, peek, subscribe } from '@rbxts/charm';
 
 import { IsDebugPanelEnabled } from 'shared/constants';
 import { TimeSpan } from 'shared/timeSpan';
+
 import { CharacterState } from 'client/character/state';
 
 export namespace DebugPanel {

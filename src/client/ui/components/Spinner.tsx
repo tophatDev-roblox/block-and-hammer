@@ -3,7 +3,8 @@ import React, { useBinding, useState } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
 
 import { TimeSpan } from 'shared/timeSpan';
-import { usePx } from '../hooks/usePx';
+
+import { usePx } from 'client/ui/hooks/usePx';
 
 interface SpinnerProps {
 	size?: number;

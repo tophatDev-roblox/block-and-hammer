@@ -1,12 +1,15 @@
 import { GuiService } from '@rbxts/services';
+
 import React, { useEffect, useRef, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { InputType } from 'shared/inputType';
 import { StyleParse, Styles } from 'shared/styles';
+import { InputType } from 'shared/inputType';
+
 import { clientInputTypeAtom } from 'client/input';
 import { usePx } from 'client/ui/hooks/usePx';
+
 import UIPadding from '../UIPadding';
 import Outline from '../Outline';
 import Text from '../Text';

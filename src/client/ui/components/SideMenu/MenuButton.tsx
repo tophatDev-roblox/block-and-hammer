@@ -1,13 +1,18 @@
 import { GuiService } from '@rbxts/services';
+
 import React, { useEffect, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
+
 import { setTimeout } from '@rbxts/set-timeout';
 
 import { InputType } from 'shared/inputType';
+
+import { clientInputTypeAtom } from 'client/input';
+
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
-import { clientInputTypeAtom } from 'client/input';
+
 import SideButton, { InheritedProps } from '../SideButton';
 
 interface MenuButtonProps extends InheritedProps {

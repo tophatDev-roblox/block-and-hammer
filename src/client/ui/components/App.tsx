@@ -2,22 +2,23 @@ import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { StartScreenState } from 'client/ui/startScreenState';
-import World from './World';
-import StartScreen from './StartScreen';
+
 import SpeedEffectGUI from './SpeedEffect';
+import StartScreenGUI from './StartScreen';
+import SubtitlesGUI from './Subtitles';
+import SideMenuGUI from './SideMenu';
 import VersionGUI from './Version';
-import HudGUI from './HUD';
 import TimerGUI from './Timer';
 import ModalGUI from './Modal';
-import SideMenuGUI from './SideMenu';
-import SubtitlesGUI from './Subtitles';
+import HudGUI from './HUD';
+import World from './World';
 
 const App: React.FC = () => {
 	const isInStartScreen = useAtom(StartScreenState.isVisibleAtom);
 	if (isInStartScreen) {
 		return (
 			<>
-				<StartScreen />
+				<StartScreenGUI />
 				<VersionGUI />
 			</>
 		);

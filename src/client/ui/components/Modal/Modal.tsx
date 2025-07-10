@@ -2,12 +2,15 @@ import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
 import { Assets } from 'shared/assets';
-import { usePx } from 'client/ui/hooks/usePx';
 import { Styles } from 'shared/styles';
+
+import { usePx } from 'client/ui/hooks/usePx';
+
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
 import Container from '../Container';
 import Text from '../Text';
+
 import Action from './Action';
 
 interface ModalProps<T extends Array<string>> {

@@ -1,5 +1,5 @@
-import { Logger } from './logger';
-import { Number } from './number';
+import { Logger } from 'shared/logger';
+import { Number } from 'shared/number';
 
 const logger = new Logger('areaManager');
 

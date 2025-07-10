@@ -1,4 +1,5 @@
 import { ContentProvider, Players, RunService } from '@rbxts/services';
+
 import { Atom, batch } from '@rbxts/charm';
 
 import { waitForChild } from 'shared/waitForChild';
