@@ -59,7 +59,7 @@ export namespace Styles {
 	});
 	
 	export type JoinMode = t.static<typeof JoinMode>;
-	export const JoinMode = t.literal('miter', 'round', 'bevel');;
+	export const JoinMode = t.literal('miter', 'round', 'bevel');
 	
 	export type Outline = t.static<typeof Outline>;
 	export const Outline = t.interface({
