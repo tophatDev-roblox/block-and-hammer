@@ -1,19 +1,28 @@
-type Constant =
-	| 'AUTO_SAVE_PERIOD'
-	| 'LOAD_REPEAT_PERIOD'
-	| 'FIRST_LOAD_REPEAT'
-	| 'SESSION_STEAL'
-	| 'ASSUME_DEAD'
-	| 'START_SESSION_TIMEOUT'
-	| 'CRITICAL_STATE_ERROR_COUNT'
-	| 'CRITICAL_STATE_ERROR_EXPIRE'
-	| 'CRITICAL_STATE_EXPIRE'
-	| 'MAX_MESSAGE_QUEUE';
+export const enum Constant {
+	AutoSavePeriod = 'AUTO_SAVE_PERIOD',
+	LoadRepeatPeriod = 'LOAD_REPEAT_PERIOD',
+	FirstLoadRepeat = 'FIRST_LOAD_REPEAT',
+	SessionSteal = 'SESSION_STEAL',
+	AssumeDead = 'ASSUME_DEAD',
+	StartSessionTimeout = 'START_SESSION_TIMEOUT',
+	CriticalStateErrorCount = 'CRITICAL_STATE_ERROR_COUNT',
+	CriticalStateErrorExpire = 'CRITICAL_STATE_ERROR_EXPIRE',
+	CriticalStateExpire = 'CRITICAL_STATE_EXPIRE',
+	MaxMessageQueue = 'MAX_MESSAGE_QUEUE',
+}
 
-type LastSaveReason =
-	| 'Manual'
-	| 'External'
-	| 'Shutdown';
+export const enum LastSaveReason {
+	Manual = 'Manual',
+	External = 'External',
+	Shutdown = 'Shutdown',
+}
+
+export const enum DataStoreState {
+	NotReady = 'NotReady',
+	NoInternet = 'NoInternet',
+	NoAccess = 'NoAccess',
+	Access = 'Access',
+}
 
 export default class ProfileStore<T extends object = {}> {
 	/** When the Roblox is shutting down this value will be set to `true` and most methods will silently fail. */
@@ -53,7 +62,7 @@ export default class ProfileStore<T extends object = {}> {
 	/**
 	 * Indicates ProfileStore's access to the DataStore. If at first check `ProfileStore.DataStoreState` is `"NotReady"`, it will eventually change to one of the other 3 possible values (`NoInternet`, `NoAccess` or `Access`) and never change again. `"Access"` means `ProfileStore` can write to the DataStore.
 	 */
-	static readonly DataStoreState: 'NotReady' | 'NoInternet' | 'NoAccess' | 'Access';
+	static readonly DataStoreState: DataStoreState;
 	/**
 	 * `ProfileStore` objects expose methods for reading and writing to profiles. Equivalent of [:GetDataStore()](https://create.roblox.com/docs/reference/engine/classes/DataStoreService#GetDataStore) in Roblox [DataStoreService](https://create.roblox.com/docs/reference/engine/classes/DataStoreService) API.
 	 */
