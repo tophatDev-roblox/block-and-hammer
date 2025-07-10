@@ -3,9 +3,10 @@ import React, { useEffect, useRef, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { usePx } from 'client/ui/hooks/usePx';
-import { InputType } from 'client/inputType';
+import { InputType } from 'shared/inputType';
 import { StyleParse, Styles } from 'shared/styles';
+import { clientInputTypeAtom } from 'client/input';
+import { usePx } from 'client/ui/hooks/usePx';
 import UIPadding from '../UIPadding';
 import Outline from '../Outline';
 import Text from '../Text';
@@ -37,7 +38,7 @@ const Action: React.FC<ActionProps> = ({ styles, action, index, autoSelect, sele
 	const [backgroundColor, backgroundColorMotion] = useMotion<Color3>(StyleParse.color(background));
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion<number>(1 - background.alpha);
 	
-	const inputType = useAtom(InputType.stateAtom);
+	const inputType = useAtom(clientInputTypeAtom);
 	
 	const px = usePx();
 	
@@ -67,7 +68,7 @@ const Action: React.FC<ActionProps> = ({ styles, action, index, autoSelect, sele
 	
 	useEffect(() => {
 		const button = buttonRef.current;
-		if (inputType !== InputType.Value.Controller || button === undefined || !selectable) {
+		if (inputType !== InputType.Controller || button === undefined || !selectable) {
 			if (!selectable && GuiService.SelectedObject === button) {
 				GuiService.SelectedObject = undefined;
 			}
@@ -87,7 +88,7 @@ const Action: React.FC<ActionProps> = ({ styles, action, index, autoSelect, sele
 	}, []);
 	
 	useEventListener(GuiService.GetPropertyChangedSignal('SelectedObject'), () => {
-		if (inputType !== InputType.Value.Controller) {
+		if (inputType !== InputType.Controller) {
 			return;
 		}
 		

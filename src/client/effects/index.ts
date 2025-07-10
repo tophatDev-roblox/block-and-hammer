@@ -7,10 +7,11 @@ import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
 import { waitForChild } from 'shared/waitForChild';
 import { Logger } from 'shared/logger';
+import { InputType } from 'shared/inputType';
 
+import { clientInputTypeAtom } from 'client/input';
 import { Character } from 'client/character';
 import { CharacterState } from 'client/character/state';
-import { InputType } from 'client/inputType';
 import { UserSettings } from 'client/userSettings';
 import { SFX } from 'client/sfx';
 
@@ -366,8 +367,8 @@ effect(() => {
 				Character.shake(effectIntensity);
 				
 				const userSettings = peek(UserSettings.stateAtom);
-				const inputType = peek(InputType.stateAtom)
-				if (!userSettings.haptics.disabled && inputType === InputType.Value.Controller) {
+				const inputType = peek(clientInputTypeAtom)
+				if (!userSettings.haptics.disabled && inputType === InputType.Controller) {
 					const baseAmplitude = effectIntensity / 4 + 0.2;
 					const duration = 700;
 					const steps = 10;

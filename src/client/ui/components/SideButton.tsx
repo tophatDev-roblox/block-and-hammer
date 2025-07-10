@@ -3,9 +3,10 @@ import React, { useEffect, useRef, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
+import { InputType } from 'shared/inputType';
 import { Styles, StyleParse } from 'shared/styles';
 import { Assets } from 'shared/assets';
-import { InputType } from 'client/inputType';
+import { clientInputTypeAtom } from 'client/input';
 import { usePx } from '../hooks/usePx';
 import Text from './Text';
 import Gradient from './Gradient';
@@ -83,7 +84,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 	const selectionImageObjectRef = useRef<Frame>();
 	const buttonRef = useRef<ImageButton>();
 	
-	const inputType = useAtom(InputType.stateAtom);
+	const inputType = useAtom(clientInputTypeAtom);
 	const styles = useAtom(Styles.stateAtom);
 	
 	const [selectionThickness, selectionThicknessMotion] = useMotion<number>(0);
@@ -119,8 +120,8 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 	
 	useEffect(() => {
 		const button = buttonRef.current;
-		if (button === undefined || inputType !== InputType.Value.Controller) {
-			if (inputType !== InputType.Value.Controller) {
+		if (button === undefined || inputType !== InputType.Controller) {
+			if (inputType !== InputType.Controller) {
 				GuiService.SelectedObject = undefined;
 			}
 			

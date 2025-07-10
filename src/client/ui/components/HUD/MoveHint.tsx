@@ -1,14 +1,15 @@
 import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { InputType } from 'client/inputType';
-import { CharacterState } from 'client/character/state';
 import { Styles } from 'shared/styles';
+import { InputType } from 'shared/inputType';
+import { CharacterState } from 'client/character/state';
+import { clientInputTypeAtom } from 'client/input';
 import Text from '../Text';
 
 const MoveHint: React.FC = () => {
 	const timeStart = useAtom(CharacterState.timeStartAtom);
-	const inputType = useAtom(InputType.stateAtom);
+	const inputType = useAtom(clientInputTypeAtom);
 	
 	const styles = useAtom(Styles.stateAtom);
 	
@@ -16,7 +17,7 @@ const MoveHint: React.FC = () => {
 		return undefined;
 	}
 	
-	if (inputType === InputType.Value.Touch) {
+	if (inputType === InputType.Touch) {
 		return (
 			<Text
 				key={'MoveHint'}
@@ -27,7 +28,7 @@ const MoveHint: React.FC = () => {
 				automaticHeight
 			/>
 		);
-	} else if (inputType === InputType.Value.Controller) {
+	} else if (inputType === InputType.Controller) {
 		return (
 			<Text
 				key={'MoveHint'}

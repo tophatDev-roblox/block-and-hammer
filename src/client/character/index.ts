@@ -4,6 +4,7 @@ import { setTimeout } from '@rbxts/set-timeout';
 import { effect, peek, subscribe } from '@rbxts/charm';
 import { createMotion } from '@rbxts/ripple';
 
+import { InputType } from 'shared/inputType';
 import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
 import { Controller } from 'shared/controller';
@@ -13,9 +14,9 @@ import { Units } from 'shared/units';
 import { waitForChild } from 'shared/waitForChild';
 import { Logger } from 'shared/logger';
 
+import { clientInputTypeAtom } from 'client/input';
 import { DebugPanel } from 'client/debugPanel';
 import { UserSettings } from 'client/userSettings';
-import { InputType } from 'client/inputType';
 import { Camera } from 'client/camera';
 import { Leaderstats } from 'client/leaderstats';
 import { SideMenuState } from 'client/ui/sideMenuState';
@@ -232,10 +233,10 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
-	const inputType = peek(InputType.stateAtom);
+	const inputType = peek(clientInputTypeAtom);
 	if (positionalInputTypes.has(input.UserInputType)) {
 		CharacterState.mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
-	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Value.Controller) {
+	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Controller) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
 			const userSettings = peek(UserSettings.stateAtom);
 			
@@ -254,8 +255,8 @@ function processInput(input: InputObject): void {
 
 function onInputEnded(input: InputObject): void {
 	const characterParts = peek(CharacterState.partsAtom);
-	const inputType = peek(InputType.stateAtom);
-	if (characterParts === undefined || inputType !== InputType.Value.Controller) {
+	const inputType = peek(clientInputTypeAtom);
+	if (characterParts === undefined || inputType !== InputType.Controller) {
 		return;
 	}
 	
@@ -323,8 +324,8 @@ function onPreRender(): void {
 	let dontMoveTargetAttachment = false;
 	
 	const mousePosition = peek(CharacterState.mousePositionAtom);
-	const inputType = peek(InputType.stateAtom);
-	if (inputType === InputType.Value.Controller) {
+	const inputType = peek(clientInputTypeAtom);
+	if (inputType === InputType.Controller) {
 		const thumbstickDirection = peek(CharacterState.thumbstickDirectionAtom);
 		if (thumbstickDirection !== undefined) {
 			const hammerDistance = peek(CharacterState.hammerDistanceAtom);

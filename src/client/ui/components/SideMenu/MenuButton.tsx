@@ -4,9 +4,10 @@ import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 import { setTimeout } from '@rbxts/set-timeout';
 
+import { InputType } from 'shared/inputType';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { usePx } from 'client/ui/hooks/usePx';
-import { InputType } from 'client/inputType';
+import { clientInputTypeAtom } from 'client/input';
 import SideButton, { InheritedProps } from '../SideButton';
 
 interface MenuButtonProps extends InheritedProps {
@@ -34,13 +35,13 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 	const [isPressed, setPressed] = useState<boolean>(false);
 	
 	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
-	const inputType = useAtom(InputType.stateAtom);
+	const inputType = useAtom(clientInputTypeAtom);
 	
 	const px = usePx();
 	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
 	
 	useEventListener(GuiService.GetPropertyChangedSignal('SelectedObject'), () => {
-		if (inputType !== InputType.Value.Controller) {
+		if (inputType !== InputType.Controller) {
 			return;
 		}
 		

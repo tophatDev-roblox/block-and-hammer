@@ -4,12 +4,13 @@ import { effect, subscribe } from '@rbxts/charm';
 import Icon from 'shared/Icon';
 import NumberSpinner from 'shared/NumberSpinner';
 import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
+import { InputType } from 'shared/inputType';
 import { Styles } from 'shared/styles';
-import { InputType } from 'client/inputType';
+import defaultStyles from 'shared/styles/default';
+import { clientInputTypeAtom } from 'client/input';
 import { DebugPanel } from 'client/debugPanel';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { StartScreenState } from 'client/ui/startScreenState';
-import defaultStyles from 'shared/styles/default';
 import { ModalState } from './ui/modalState';
 
 const client = Players.LocalPlayer;
@@ -87,18 +88,18 @@ subscribe(ModalState.stateAtom, (modal) => {
 });
 
 effect(() => {
-	const inputType = InputType.stateAtom();
+	const inputType = clientInputTypeAtom();
 	switch (inputType) {
-		case InputType.Value.Desktop: {
+		case InputType.Desktop: {
 			menuIcon.setCaptionHint(Enum.KeyCode.B);
 			break;
 		}
-		case InputType.Value.Controller: {
+		case InputType.Controller: {
 			menuIcon.setCaptionHint(Enum.KeyCode.ButtonB);
 			break;
 		}
-		case InputType.Value.Touch:
-		case InputType.Value.Unknown: {
+		case InputType.Touch:
+		case InputType.Unknown: {
 			menuIcon.setCaptionHint(Enum.KeyCode.Unknown);
 			break;
 		}

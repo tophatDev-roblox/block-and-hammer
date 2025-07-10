@@ -2,28 +2,20 @@ import { GuiService, UserInputService } from '@rbxts/services';
 import { atom, peek } from '@rbxts/charm';
 
 import { Controller } from 'shared/controller';
+import { InputType } from 'shared/inputType';
 import { Logger } from 'shared/logger';
 import { UserSettings } from './userSettings';
 
 const logger = new Logger('inputType');
 
-export namespace InputType {
-	export const enum Value {
-		Unknown = 'Unknown',
-		Desktop = 'Desktop',
-		Touch = 'Touch',
-		Controller = 'Controller',
-	}
-	
-	export const stateAtom = atom<InputType.Value>(InputType.Value.Unknown);
-}
+export const clientInputTypeAtom = atom<InputType>(InputType.Unknown);
 
 if (GuiService.IsTenFootInterface()) {
 	logger.print('detected 10-foot interface, switching to controller');
-	InputType.stateAtom(InputType.Value.Controller);
+	clientInputTypeAtom(InputType.Controller);
 } else if (UserInputService.GetConnectedGamepads().size() > 0) {
 	logger.print('detected one or more connected gamepads, possibly using controller');
-	InputType.stateAtom(InputType.Value.Controller);
+	clientInputTypeAtom(InputType.Controller);
 }
 
 const mouseInputTypes = new Set<Enum.UserInputType>([
@@ -36,8 +28,8 @@ const mouseInputTypes = new Set<Enum.UserInputType>([
 
 function processInput(input: InputObject): void {
 	const userSettings = peek(UserSettings.stateAtom);
-	const inputType = peek(InputType.stateAtom);
-	if (userSettings.controller.detectionType !== UserSettings.ControllerDetection.OnInput || inputType === InputType.Value.Controller) {
+	const inputType = peek(clientInputTypeAtom);
+	if (userSettings.controller.detectionType !== UserSettings.ControllerDetection.OnInput || inputType === InputType.Controller) {
 		return;
 	}
 	
@@ -48,26 +40,26 @@ function processInput(input: InputObject): void {
 			}
 		}
 		
-		InputType.stateAtom(InputType.Value.Controller);
+		clientInputTypeAtom(InputType.Controller);
 		logger.print('set to Controller');
 	}
 }
 
 function onInputTypeChanged(userInputType: Enum.UserInputType): void {
-	let newInputType: InputType.Value | undefined = undefined;
+	let newInputType: InputType | undefined = undefined;
 	if (userInputType === Enum.UserInputType.Touch) {
-		newInputType = InputType.Value.Touch;
+		newInputType = InputType.Touch;
 	} else if (Controller.isGamepadInput(userInputType)) {
 		const userSettings = peek(UserSettings.stateAtom);
 		if (userSettings.controller.detectionType === UserSettings.ControllerDetection.LastInput) {
-			newInputType = InputType.Value.Controller;
+			newInputType = InputType.Controller;
 		}
 	} else if (mouseInputTypes.has(userInputType)) {
-		newInputType = InputType.Value.Desktop;
+		newInputType = InputType.Desktop;
 	}
 	
-	if (newInputType !== undefined && newInputType !== peek(InputType.stateAtom)) {
-		InputType.stateAtom(newInputType);
+	if (newInputType !== undefined && newInputType !== peek(clientInputTypeAtom)) {
+		clientInputTypeAtom(newInputType);
 		logger.print('set to', newInputType);
 	}
 }
