@@ -4,10 +4,10 @@ import { atom, peek, subscribe } from '@rbxts/charm';
 
 import { Controller } from 'shared/controller';
 import { InputType } from 'shared/inputType';
+import { Remotes } from 'shared/remotes';
 import { Logger } from 'shared/logger';
 
 import { UserSettings } from './userSettings';
-import { Remotes } from 'shared/remotes';
 
 const logger = new Logger('inputType');
 

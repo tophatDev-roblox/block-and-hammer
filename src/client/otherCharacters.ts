@@ -5,7 +5,7 @@ import { produce } from '@rbxts/immut';
 
 import { InputType } from 'shared/inputType';
 
-import { CharacterState } from './character/state';
+import { CharacterState } from 'client/character/state';
 
 export namespace OtherCharacters {
 	export const partsAtoms = atom<ReadonlyMap<Player, [Atom<CharacterState.Parts | undefined>, Atom<InputType>]>>(new Map());
