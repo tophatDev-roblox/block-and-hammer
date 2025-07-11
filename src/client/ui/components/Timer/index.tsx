@@ -24,6 +24,7 @@ const TimerGUI: React.FC = () => {
 	
 	const timeStart = useAtom(CharacterState.timeStartAtom);
 	const styles = useAtom(Styles.stateAtom);
+	
 	const px = usePx();
 	
 	const millisecondsRichText = useMemo(() => {
