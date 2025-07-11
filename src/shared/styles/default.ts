@@ -237,6 +237,10 @@ const data: Styles.Data = {
 				outline: { color: textOutlineGradient, thickness: 2, joinMode: 'miter', autoScale: true },
 				autoScale: true,
 			},
+			icons: {
+				size: 26,
+				autoScale: true,
+			},
 		},
 	},
 	centurion: {

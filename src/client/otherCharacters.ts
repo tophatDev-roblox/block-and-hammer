@@ -3,17 +3,20 @@ import { Players } from '@rbxts/services';
 import { atom, Atom } from '@rbxts/charm';
 import { produce } from '@rbxts/immut';
 
+import { InputType } from 'shared/inputType';
+
 import { CharacterState } from './character/state';
 
 export namespace OtherCharacters {
-	export const partsAtoms = atom<ReadonlyMap<Player, Atom<CharacterState.Parts | undefined>>>(new Map());
+	export const partsAtoms = atom<ReadonlyMap<Player, [Atom<CharacterState.Parts | undefined>, Atom<InputType>]>>(new Map());
 }
 
 function onPlayerAdded(player: Player): void {
 	const partsAtom = atom<CharacterState.Parts>();
+	const inputTypeAtom = atom<InputType>(InputType.Unknown);
 	
 	OtherCharacters.partsAtoms((parts) => produce(parts, (draft) => {
-		draft.set(player, partsAtom);
+		draft.set(player, [partsAtom, inputTypeAtom]);
 	}));
 	
 	const onCharacterAdded = async (newCharacter: Model): Promise<void> => {
@@ -25,12 +28,20 @@ function onPlayerAdded(player: Player): void {
 		partsAtom(undefined);
 	};
 	
+	const onAttributeChanged = (): void => {
+		const inputType = (player.GetAttribute('InputType') ?? InputType.Unknown) as InputType;
+		inputTypeAtom(inputType);
+	};
+	
 	if (player.Character !== undefined) {
 		onCharacterAdded(player.Character);
 	}
 	
+	onAttributeChanged();
+	
 	player.CharacterAdded.Connect(onCharacterAdded);
 	player.CharacterRemoving.Connect(onCharacterRemoving);
+	player.AttributeChanged.Connect(onAttributeChanged);
 }
 
 function onPlayerRemoving(player: Player): void {

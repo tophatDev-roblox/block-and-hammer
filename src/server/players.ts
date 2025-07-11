@@ -1,18 +1,21 @@
 import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/services';
-import { setInterval, throttle } from '@rbxts/set-timeout';
+
+import { debounce, setInterval, throttle } from '@rbxts/set-timeout';
 
 import computeNameColor from 'shared/NameColor';
-import { waitForChild } from 'shared/waitForChild';
-import { Remotes } from 'shared/remotes';
-import { RichText } from 'shared/richText';
-import { Number } from 'shared/number';
 import { MaxDollars, MinDollars } from 'shared/constants';
+import { waitForChild } from 'shared/waitForChild';
 import { AreaManager } from 'shared/areaManager';
-import { Units } from 'shared/units';
-import { Leaderstats } from './leaderstats';
-import { PlayerData } from './playerData';
-import { Badge } from './badge';
+import { InputType } from 'shared/inputType';
+import { RichText } from 'shared/richText';
+import { Remotes } from 'shared/remotes';
+import { Number } from 'shared/number';
 import { Logger } from 'shared/logger';
+import { Units } from 'shared/units';
+
+import { Leaderstats } from 'server/leaderstats';
+import { PlayerData } from 'server/playerData';
+import { Badge } from 'server/badge';
 
 interface CharacterData {
 	body: Part;
@@ -32,41 +35,13 @@ const characterData = new Map<Model, CharacterData>();
 let baseCharacter: Model;
 let areasFolder: Folder;
 
-(async () => {
-	const assetsFolder = await waitForChild(ReplicatedStorage, 'Assets', 'Folder');
-	baseCharacter = await waitForChild(assetsFolder, 'BaseCharacter', 'Model');
-	areasFolder = await waitForChild(Workspace, 'Areas', 'Folder');
-	
-	for (const area of areasFolder.GetChildren()) {
-		areaManager.processArea(area);
-	}
-})();
+const onFullReset = throttle(async (player: Player): Promise<true> => {
+	await respawn(player);
+	return true;
+}, 0.2);
 
-setInterval(() => {
-	for (const [, data] of characterData) {
-		const body = data.body;
-		
-		if (data.region !== undefined && areaManager.isInArea(body, data.region)) {
-			continue;
-		}
-		
-		let didFindArea = false;
-		for (const [area, region] of areaManager.areas) {
-			if (areaManager.isInArea(body, region)) {
-				data.region = region;
-				data.area = area;
-				didFindArea = true;
-				break;
-			}
-		}
-		
-		if (!didFindArea) {
-			data.area = AreaManager.Area.Unknown;
-			data.region = undefined;
-		}
-		
-		data.leaderstats.area.Value = data.area;
-	}
+const onInputTypeChanged = debounce((player: Player, inputType: InputType): void => {
+	player.SetAttribute('InputType', inputType);
 }, 1);
 
 async function respawn(player: Player): Promise<void> {
@@ -117,11 +92,6 @@ async function respawn(player: Player): Promise<void> {
 	} else {
 		body.Color = computeNameColor(player.Name);
 	}
-}
-
-async function onFullReset(player: Player): Promise<true> {
-	await respawn(player);
-	return true;
 }
 
 function onUnloadCharacter(player: Player): void {
@@ -220,11 +190,49 @@ function onPreSimulation(): void {
 	}
 }
 
+(async () => {
+	const assetsFolder = await waitForChild(ReplicatedStorage, 'Assets', 'Folder');
+	baseCharacter = await waitForChild(assetsFolder, 'BaseCharacter', 'Model');
+	areasFolder = await waitForChild(Workspace, 'Areas', 'Folder');
+	
+	for (const area of areasFolder.GetChildren()) {
+		areaManager.processArea(area);
+	}
+})();
+
+setInterval(() => {
+	for (const [, data] of characterData) {
+		const body = data.body;
+		
+		if (data.region !== undefined && areaManager.isInArea(body, data.region)) {
+			continue;
+		}
+		
+		let didFindArea = false;
+		for (const [area, region] of areaManager.areas) {
+			if (areaManager.isInArea(body, region)) {
+				data.region = region;
+				data.area = area;
+				didFindArea = true;
+				break;
+			}
+		}
+		
+		if (!didFindArea) {
+			data.area = AreaManager.Area.Unknown;
+			data.region = undefined;
+		}
+		
+		data.leaderstats.area.Value = data.area;
+	}
+}, 1);
+
 for (const player of Players.GetPlayers()) {
 	onPlayerAdded(player);
 }
 
-Remotes.fullReset.onRequest(throttle(onFullReset, 0.2));
+Remotes.updateInputType.connect((player, inputType) => onInputTypeChanged(player, inputType));
+Remotes.fullReset.onRequest((player) => onFullReset(player));
 Remotes.unloadCharacter.connect(onUnloadCharacter);
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);

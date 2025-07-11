@@ -183,6 +183,10 @@ export namespace Styles {
 			nameplate: t.interface({
 				displayName: Text,
 				username: Text,
+				icons: t.interface({
+					size: t.number,
+					autoScale: t.boolean,
+				}),
 			}),
 		}),
 		centurion: t.interface({

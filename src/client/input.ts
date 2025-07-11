@@ -1,12 +1,13 @@
 import { GuiService, UserInputService } from '@rbxts/services';
 
-import { atom, peek } from '@rbxts/charm';
+import { atom, peek, subscribe } from '@rbxts/charm';
 
 import { Controller } from 'shared/controller';
 import { InputType } from 'shared/inputType';
 import { Logger } from 'shared/logger';
 
 import { UserSettings } from './userSettings';
+import { Remotes } from 'shared/remotes';
 
 const logger = new Logger('inputType');
 
@@ -65,6 +66,10 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 		logger.print('set to', newInputType);
 	}
 }
+
+subscribe(clientInputTypeAtom, (inputType) => {
+	Remotes.updateInputType(inputType);
+});
 
 onInputTypeChanged(UserInputService.GetLastInputType());
 

@@ -8,6 +8,10 @@ export namespace Assets {
 		StartMenuIcon = 'rbxassetid://136761769714294',
 		CloseIcon = 'rbxassetid://70441562491259',
 		SwitchLevelIcon = 'rbxassetid://106272588290568',
+		DesktopIcon = 'rbxassetid://81157937953392',
+		MobileIcon = 'rbxassetid://137095237157660',
+		ControllerIcon = 'rbxassetid://125502909458436',
+		QuestionIcon = 'rbxassetid://75706370460179',
 	}
 	
 	export enum Images {
