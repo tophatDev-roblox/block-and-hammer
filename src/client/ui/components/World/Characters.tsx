@@ -100,7 +100,7 @@ const Characters: React.FC = () => {
 			
 			setGuis(guis);
 		});
-	}, [px, styles.world.nameplate.username, styles.world.nameplate.displayName]);
+	}, [px, styles.world.nameplate.username, styles.world.nameplate.displayName, styles.world.nameplate.icons]);
 	
 	return (
 		<folder
