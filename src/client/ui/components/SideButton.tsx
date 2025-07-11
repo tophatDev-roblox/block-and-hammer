@@ -98,7 +98,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 	const isBackgroundRGBA = StyleParse.isRGBA(background);
 	const isIconBackgroundRGBA = StyleParse.isRGBA(iconBackground);
 	const isIconColorRGBA = StyleParse.isRGBA(iconColor);
-	const iconSize = textStyles.autoScale === false ? textStyles.size : px(textStyles.size);
+	const iconSize = StyleParse.px(px, textStyles.size, textStyles.autoScale);
 	
 	useEventListener(GuiService.GetPropertyChangedSignal('SelectedObject'), () => {
 		if (GuiService.SelectedObject === buttonRef.current) {
