@@ -2,37 +2,73 @@ import { RunService, Workspace } from '@rbxts/services';
 
 import Iris from '@rbxts/iris';
 
-import { atom, peek, subscribe } from '@rbxts/charm';
+import { peek, subscribe } from '@rbxts/charm';
 
 import { IsDebugPanelEnabled } from 'shared/constants';
+import { StatusEffect } from 'shared/statusEffect';
 import { TimeSpan } from 'shared/timeSpan';
 
 import { CharacterState } from 'client/character/state';
 
+import { DebugPanelState } from './state';
+
 export namespace DebugPanel {
-	export const isOpenAtom = atom<boolean>(false);
-	export const disableRagdollAtom = atom<boolean>(false);
-	
 	export function render(): void {
 		Iris.Window(['Debug Panel', false, false, false, true], { position: windowPositionState, size: windowSizeState, isOpened: windowOpenedState }); {
-			Iris.SliderNum(['Camera Z-Offset', 1, 0, 100], { number: cameraZOffsetState });
-			Iris.SliderNum(['Max Hammer Distance', 1, 0, 100], { number: hammerDistanceState });
-			Iris.Checkbox(['Disable Ragdoll'], { isChecked: disableRagdollState });
-			Iris.Checkbox(['Map Boundaries'], { isChecked: mapBoundariesState });
-			Iris.Checkbox(['Legacy Physics'], { isChecked: legacyPhysicsState });
+			Iris.CollapsingHeader(['Camera']); {
+				Iris.SliderNum(['Z-Offset', 1, 0, 100], { number: cameraZOffsetState });
+			} Iris.End();
+			
+			Iris.CollapsingHeader(['Character']); {
+				Iris.Checkbox(['Disable Ragdoll'], { isChecked: disableRagdollState });
+				Iris.Checkbox(['Map Boundaries'], { isChecked: mapBoundariesState });
+				Iris.Checkbox(['Legacy Physics'], { isChecked: legacyPhysicsState });
+			} Iris.End();
+			
+			Iris.CollapsingHeader(['Hammer']); {
+				Iris.SliderNum(['Max Hammer Distance', 1, 0, 100], { number: hammerDistanceState });
+			} Iris.End();
 			
 			if (windowOpenedState.get()) {
-				const timeStart = peek(CharacterState.timeStartAtom);
-				const shakeStrength = peek(CharacterState.shakeStrengthAtom);
-				const ragdollTimeEnd = peek(CharacterState.ragdollTimeEndAtom);
-				const mousePosition = peek(CharacterState.mousePositionAtom);
-				const thumbstickDirection = peek(CharacterState.thumbstickDirectionAtom);
+				Iris.CollapsingHeader(['Info']); {
+					const timeStart = peek(CharacterState.timeStartAtom);
+					const shakeStrength = peek(CharacterState.shakeStrengthAtom);
+					
+					Iris.Text(['Time: %.3fs'.format(timeStart !== undefined ? TimeSpan.timeSince(timeStart) : 0)]);
+					Iris.Text(['Shake Strength: %.4f'.format(shakeStrength)]);
+				} Iris.End();
 				
-				Iris.Text(['Time: %.3fs'.format(timeStart !== undefined ? TimeSpan.timeSince(timeStart) : 0)]);
-				Iris.Text(['Shake Strength: %.4f'.format(shakeStrength)]);
-				Iris.Text(['Ragdoll Duration: %.3fs'.format(ragdollTimeEnd !== undefined ? TimeSpan.timeUntil(ragdollTimeEnd) : 0)]);
-				Iris.Text(['Mouse Position: (%d, %d)'.format(mousePosition?.X ?? -1, mousePosition?.Y ?? -1)]);
-				Iris.Text(['Thumbstick Direction: (%.3f, %.3f)'.format(thumbstickDirection?.X ?? 0, thumbstickDirection?.Y ?? 0)]);
+				Iris.CollapsingHeader(['Input']); {
+					const mousePosition = peek(CharacterState.mousePositionAtom);
+					const thumbstickDirection = peek(CharacterState.thumbstickDirectionAtom);
+					
+					Iris.Text(['Mouse Position: (%d, %d)'.format(mousePosition?.X ?? -1, mousePosition?.Y ?? -1)]);
+					Iris.Text(['Thumbstick Direction: (%.3f, %.3f)'.format(thumbstickDirection?.X ?? 0, thumbstickDirection?.Y ?? 0)]);
+				} Iris.End();
+				
+				Iris.CollapsingHeader(['Status Effects']); {
+					const effectIndexState = Iris.State<StatusEffect>(StatusEffect.Dizzy);
+					const effectDurationState = Iris.State<number>(1);
+					
+					const effectSelection = [StatusEffect.Dizzy, StatusEffect.Ragdoll];
+					const statusEffects = peek(CharacterState.statusEffectsAtom);
+					
+					Iris.Text(['Currently Active: %s'.format(
+						statusEffects.size() > 0 ? statusEffects.map((statusEffect) => statusEffect.effect).join(', ') : 'None',
+					)]);
+					Iris.ComboArray(['Effect'], { index: effectIndexState }, effectSelection);
+					Iris.SliderNum(['Duration', 0.1, 0.1, 15], { number: effectDurationState });
+					
+					const applyButton = Iris.Button(['Apply']);
+					if (applyButton.clicked()) {
+						const effect = effectIndexState.get();
+						const duration = effectDurationState.get();
+						
+						CharacterState.applyStatusEffects([
+							[effect, duration],
+						]);
+					}
+				} Iris.End();
 			}
 		} Iris.End();
 	}
@@ -49,7 +85,7 @@ const hammerDistanceState = Iris.State<number>(peek(CharacterState.hammerDistanc
 hammerDistanceState.onChange((hammerDistance) => CharacterState.hammerDistanceAtom(hammerDistance));
 
 const disableRagdollState = Iris.State<boolean>(false);
-disableRagdollState.onChange((disableRagdoll) => DebugPanel.disableRagdollAtom(disableRagdoll));
+disableRagdollState.onChange((disableRagdoll) => DebugPanelState.disableRagdollAtom(disableRagdoll));
 
 const mapBoundariesState = Iris.State<boolean>(false);
 mapBoundariesState.onChange((mapBoundaries) => {
@@ -88,7 +124,7 @@ if (IsDebugPanelEnabled && RunService.IsRunning()) {
 	Iris.Init();
 	Iris.Connect(DebugPanel.render);
 	
-	subscribe(DebugPanel.isOpenAtom, (isOpen) => {
+	subscribe(DebugPanelState.isOpenAtom, (isOpen) => {
 		windowOpenedState.set(isOpen);
 	});
 	

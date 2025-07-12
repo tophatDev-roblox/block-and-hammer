@@ -5,6 +5,7 @@ import { usePx } from 'client/ui/hooks/usePx';
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
 
+import StatusEffects from './StatusEffects';
 import Speedometer from './Speedometer';
 import Altitude from './Altitude';
 import MoveHint from './MoveHint';
@@ -22,11 +23,13 @@ const HudGUI: React.FC = () => {
 				fillDirection={Enum.FillDirection.Vertical}
 				alignX={Enum.HorizontalAlignment.Center}
 				alignY={Enum.VerticalAlignment.Bottom}
+				padding={px(6)}
 			/>
 			<UIPadding
 				padding={px(8)}
 			/>
 			<MoveHint />
+			<StatusEffects />
 			<Speedometer />
 			<Altitude />
 		</screengui>

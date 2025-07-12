@@ -43,7 +43,7 @@ const Altitude: React.FC = () => {
 			BackgroundTransparency={1}
 			Size={UDim2.fromScale(0, 0)}
 			AutomaticSize={Enum.AutomaticSize.XY}
-			LayoutOrder={2}
+			LayoutOrder={3}
 		>
 			<Text
 				styles={styles.hud.text.altitude}

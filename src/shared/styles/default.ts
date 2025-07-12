@@ -48,6 +48,15 @@ const data: Styles.Data = {
 				autoScale: true,
 			},
 		},
+		statusEffects: {
+			icons: {
+				background: { red: 0, green: 0, blue: 0, alpha: 0.6 },
+				outline: undefined,
+				progress: { red: 255, green: 255, blue: 255, alpha: 0.07 },
+				size: 60,
+				autoScale: true,
+			},
+		},
 	},
 	timer: {
 		text: {

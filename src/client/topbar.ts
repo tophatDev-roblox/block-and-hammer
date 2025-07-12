@@ -8,13 +8,14 @@ import NumberSpinner from 'shared/NumberSpinner';
 import Icon from 'shared/Icon';
 
 import { clientInputTypeAtom } from 'client/input';
-import { DebugPanel } from 'client/debugPanel';
 import { InputType } from 'shared/inputType';
 import { Styles } from 'shared/styles';
 
 import { StartScreenState } from 'client/ui/startScreenState';
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { ModalState } from 'client/ui/modalState';
+
+import { DebugPanelState } from './debugPanel/state';
 
 const client = Players.LocalPlayer;
 
@@ -119,7 +120,7 @@ if (IsDebugPanelEnabled) {
 		.modifyTheme(theme)
 		.modifyTheme(['IconImageScale', 'Value', 0.7]);
 	
-	subscribe(DebugPanel.isOpenAtom, (isOpen) => {
+	subscribe(DebugPanelState.isOpenAtom, (isOpen) => {
 		if (isOpen) {
 			debugIcon.select();
 		} else {
@@ -128,11 +129,11 @@ if (IsDebugPanelEnabled) {
 	});
 	
 	debugIcon.selected.Connect(() => {
-		DebugPanel.isOpenAtom(true);
+		DebugPanelState.isOpenAtom(true);
 	});
 	
 	debugIcon.deselected.Connect(() => {
-		DebugPanel.isOpenAtom(false);
+		DebugPanelState.isOpenAtom(false);
 	});
 }
 

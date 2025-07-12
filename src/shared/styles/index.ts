@@ -139,6 +139,15 @@ export namespace Styles {
 				speedometer: t.intersection(Text, FloatDisplay),
 				moveHint: Text,
 			}),
+			statusEffects: t.interface({
+				icons: t.interface({
+					background: t.union(ColorWithAlpha, Gradient),
+					outline: t.optional(Outline),
+					progress: ColorWithAlpha,
+					size: t.number,
+					autoScale: t.boolean,
+				}),
+			}),
 		}),
 		timer: t.interface({
 			text: t.intersection(Text, t.interface({

@@ -1,10 +1,9 @@
 import { GuiService, Players, ReplicatedStorage, RunService, StarterGui, UserInputService, Workspace } from '@rbxts/services';
 
+import { table as ImmutTable, produce } from '@rbxts/immut';
 import { effect, peek, subscribe } from '@rbxts/charm';
-import { createMotion } from '@rbxts/ripple';
 import { setTimeout } from '@rbxts/set-timeout';
 
-import { IsDebugPanelEnabled } from 'shared/constants';
 import { waitForChild } from 'shared/waitForChild';
 import { AreaManager } from 'shared/areaManager';
 import { Controller } from 'shared/controller';
@@ -17,20 +16,18 @@ import { Units } from 'shared/units';
 import { clientInputTypeAtom } from 'client/input';
 import { UserSettings } from 'client/userSettings';
 import { Leaderstats } from 'client/leaderstats';
-import { DebugPanel } from 'client/debugPanel';
 import { Camera } from 'client/camera';
 
 import { SideMenuState } from 'client/ui/sideMenuState';
 import { ModalState } from 'client/ui/modalState';
 
 import { CharacterState } from './state';
+import { StatusEffect } from 'shared/statusEffect';
 
 const client = Players.LocalPlayer;
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 const logger = new Logger('character');
-const RNG = new Random();
 
-let baseStunParticles: Part;
 let rangeDisplay: Part;
 let mouseCursorPart: Part;
 let effectsFolder: Folder;
@@ -56,8 +53,8 @@ export namespace Character {
 			}
 		}
 		
-		endRagdoll();
 		effectsFolder.ClearAllChildren();
+		CharacterState.statusEffectsAtom([]);
 		CharacterState.timeStartAtom(undefined);
 		CharacterState.mousePositionAtom(undefined);
 		CharacterState.thumbstickDirectionAtom(undefined);
@@ -84,107 +81,53 @@ export namespace Character {
 	}
 	
 	export function ragdoll(seconds: number): void {
-		const characterParts = peek(CharacterState.partsAtom);
-		if (characterParts === undefined) {
-			return;
-		}
-		
-		const ragdollTimeEnd = peek(CharacterState.ragdollTimeEndAtom);
-		if (ragdollTimeEnd === undefined) {
-			CharacterState.ragdollTimeEndAtom(TimeSpan.now() + seconds);
-			
-			const hammerDistance = peek(CharacterState.hammerDistanceAtom);
-			characterParts.distanceConstraint.Length = hammerDistance;
-			
-			const centerAttachment = characterParts.centerAttachment;
-			
-			const stunParticles = baseStunParticles.Clone();
-			for (const particleEmitter of stunParticles.GetDescendants()) {
-				if (!particleEmitter.IsA('ParticleEmitter')) {
-					continue;
-				}
-				
-				particleEmitter.Emit(1);
-			}
-			
-			const rigidConstraint = stunParticles.FindFirstChild('RigidConstraint') as RigidConstraint;
-			rigidConstraint.Attachment1 = centerAttachment;
-			
-			const rigidAttachment = stunParticles.FindFirstChild('RigidAttachment0') as Attachment;
-			const baseCFrame = rigidAttachment.CFrame;
-			
-			const attachmentMotion = createMotion<number>(0, {
-				heartbeat: RunService.PreRender,
-				start: true,
-			});
-			
-			attachmentMotion.tween(math.pi, {
-				style: Enum.EasingStyle.Linear,
-				time: 0.7,
-				repeatCount: -1,
-			});
-			
-			attachmentMotion.onStep((rotation) => {
-				rigidAttachment.CFrame = baseCFrame.mul(CFrame.fromOrientation(0, rotation, 0));
-			});
-			
-			stunParticles.Destroying.Connect(() => {
-				attachmentMotion.destroy();
-			});
-			
-			stunParticles.Parent = characterParts.model;
-			
-			if (IsDebugPanelEnabled && peek(DebugPanel.disableRagdollAtom)) {
-				return;
-			}
-			
-			const minAngle = 10;
-			const maxAngle = 20;
-			
-			characterParts.body.AssemblyAngularVelocity = new Vector3(
-				RNG.NextNumber(minAngle, maxAngle),
-				RNG.NextNumber(minAngle, maxAngle),
-				RNG.NextNumber(minAngle, maxAngle),
-			);
-			
-			characterParts.rotationLock.Enabled = false;
-			characterParts.hammer.handle.CanCollide = true;
-			characterParts.hammer.alignPosition.Enabled = false;
-			characterParts.hammer.alignOrientation.Enabled = false;
-		} else {
-			CharacterState.ragdollTimeEndAtom(ragdollTimeEnd + seconds * 0.75);
-		}
+		CharacterState.applyStatusEffects([
+			[StatusEffect.Ragdoll, seconds],
+			[StatusEffect.Dizzy, seconds],
+		]);
 	}
 	
 	export function shake(magnitude: number): void {
 		CharacterState.shakeStrengthAtom((shakeStrength) => math.max(magnitude, shakeStrength));
 	}
-}
-
-function endRagdoll(): void {
-	CharacterState.ragdollTimeEndAtom(undefined);
 	
-	const characterParts = peek(CharacterState.partsAtom);
-	if (characterParts !== undefined) {
-		const hammerDistance = peek(CharacterState.hammerDistanceAtom);
-		
-		characterParts.model.FindFirstChild('StunParticles')?.Destroy();
-		characterParts.rotationLock.Enabled = true;
-		characterParts.targetAttachment.CFrame = CFrame.lookAlong(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
-		characterParts.distanceConstraint.Length = hammerDistance * 1.1;
-		
-		const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder, characterParts.body]);
-		const origin = characterParts.hammer.head.Position;
-		const direction = characterParts.body.Position.sub(origin);
-		
-		const result = Workspace.Raycast(origin, direction, params);
-		if (result !== undefined && result.Instance !== characterParts.body) {
-			characterParts.hammer.model.PivotTo(CFrame.lookAlong(characterParts.body.Position, Vector3.yAxis.mul(-1), Vector3.zAxis));
+	export function endStatusEffects(i: number): void {
+		const characterParts = peek(CharacterState.partsAtom);
+		if (characterParts === undefined) {
+			return;
 		}
 		
-		characterParts.hammer.handle.CanCollide = false;
-		characterParts.hammer.alignPosition.Enabled = true;
-		characterParts.hammer.alignOrientation.Enabled = true;
+		CharacterState.statusEffectsAtom((statusEffects) => produce(statusEffects, (draft) => {
+			const statusEffect = draft[i];
+			ImmutTable.remove(draft, i + 1);
+			
+			switch (statusEffect.effect) {
+				case StatusEffect.Ragdoll: {
+					characterParts.rotationLock.Enabled = true;
+					characterParts.targetAttachment.CFrame = CFrame.lookAlong(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
+					
+					const params = Raycast.params(Enum.RaycastFilterType.Include, [mapFolder, characterParts.body]);
+					const origin = characterParts.hammer.head.Position;
+					const direction = characterParts.body.Position.sub(origin);
+					
+					const result = Workspace.Raycast(origin, direction, params);
+					if (result !== undefined && result.Instance !== characterParts.body) {
+						characterParts.hammer.model.PivotTo(CFrame.lookAlong(characterParts.body.Position, Vector3.yAxis.mul(-1), Vector3.zAxis));
+					}
+					
+					characterParts.hammer.handle.CanCollide = false;
+					characterParts.hammer.alignPosition.Enabled = true;
+					characterParts.hammer.alignOrientation.Enabled = true;
+					
+					break;
+				}
+				case StatusEffect.Dizzy: {
+					characterParts.model.FindFirstChild('StunParticles')?.Destroy();
+					
+					break;
+				}
+			}
+		}));
 	}
 }
 
@@ -210,6 +153,15 @@ function moveTargetAttachment(position: Vector3): void {
 	const characterParts = peek(CharacterState.partsAtom);
 	if (characterParts === undefined) {
 		return;
+	}
+	
+	const statusEffects = peek(CharacterState.statusEffectsAtom);
+	if (CharacterState.hasStatusEffect(StatusEffect.Dizzy, statusEffects)) {
+		position = new Vector3(
+			2 * characterParts.body.Position.X - position.X,
+			2 * characterParts.body.Position.Y - position.Y,
+			0,
+		);
 	}
 	
 	const clampedPosition = clampPositionToCircle(position.mul(new Vector3(1, 1, 0)), characterParts.body.Position, hammerDistance);
@@ -254,6 +206,20 @@ function processInput(input: InputObject): void {
 	}
 }
 
+function updateStatusEffects(): void {
+	const currentTime = TimeSpan.now();
+	
+	const statusEffects = peek(CharacterState.statusEffectsAtom);
+	for (const i of $range(0, statusEffects.size() - 1)) {
+		const statusEffect = statusEffects[i];
+		if (currentTime >= statusEffect.endTime) {
+			Character.endStatusEffects(i);
+			updateStatusEffects();
+			break;
+		}
+	}
+}
+
 function onInputEnded(input: InputObject): void {
 	const characterParts = peek(CharacterState.partsAtom);
 	const inputType = peek(clientInputTypeAtom);
@@ -275,7 +241,7 @@ async function onCharacterAdded(newCharacter: Model): Promise<void> {
 	logger.print('character added');
 	
 	effectsFolder.ClearAllChildren();
-	CharacterState.ragdollTimeEndAtom(undefined);
+	CharacterState.statusEffectsAtom([]);
 	CharacterState.timeStartAtom(undefined);
 	CharacterState.mousePositionAtom(undefined);
 	CharacterState.thumbstickDirectionAtom(undefined);
@@ -320,8 +286,6 @@ function onPreRender(): void {
 		return;
 	}
 	
-	const currentTime = TimeSpan.now();
-	
 	let dontMoveTargetAttachment = false;
 	
 	const mousePosition = peek(CharacterState.mousePositionAtom);
@@ -361,12 +325,9 @@ function onPreRender(): void {
 			tension: 500,
 			friction: 60,
 		});
-		
-		const ragdollTimeEnd = peek(CharacterState.ragdollTimeEndAtom);
-		if (ragdollTimeEnd !== undefined && ragdollTimeEnd <= currentTime) {
-			endRagdoll();
-		}
 	}
+	
+	updateStatusEffects();
 	
 	const leaderstats = peek(Leaderstats.stateAtom);
 	if (leaderstats !== undefined) {
@@ -384,7 +345,6 @@ function bindResetButtonCallback(resetEvent: BindableEvent): void {
 
 (async () => {
 	const assetsFolder = await waitForChild(ReplicatedStorage, 'Assets', 'Folder');
-	baseStunParticles = await waitForChild(assetsFolder, 'StunParticles', 'Part');
 	rangeDisplay = await waitForChild(assetsFolder, 'RangeDisplay', 'Part');
 	mouseCursorPart = await waitForChild(Workspace, 'MouseCursor', 'Part');
 	effectsFolder = await waitForChild(Workspace, 'Effects', 'Folder');
@@ -428,9 +388,9 @@ effect(() => {
 		return;
 	}
 	
-	const ragdollTimeEnd = CharacterState.ragdollTimeEndAtom();
+	const statusEffects = CharacterState.statusEffectsAtom();
 	const hammerDistance = CharacterState.hammerDistanceAtom();
-	if (ragdollTimeEnd === undefined) {
+	if (CharacterState.hasStatusEffect(StatusEffect.Ragdoll, statusEffects)) {
 		characterParts.distanceConstraint.Length = hammerDistance * 1.1;
 	} else {
 		characterParts.distanceConstraint.Length = hammerDistance;

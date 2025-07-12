@@ -43,7 +43,7 @@ const Speedometer: React.FC = () => {
 			BackgroundTransparency={1}
 			Size={UDim2.fromScale(0, 0)}
 			AutomaticSize={Enum.AutomaticSize.XY}
-			LayoutOrder={1}
+			LayoutOrder={2}
 		>
 			<Text
 				styles={styles.hud.text.speedometer}

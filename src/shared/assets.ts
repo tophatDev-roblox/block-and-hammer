@@ -12,6 +12,8 @@ export namespace Assets {
 		MobileIcon = 'rbxassetid://137095237157660',
 		ControllerIcon = 'rbxassetid://125502909458436',
 		QuestionIcon = 'rbxassetid://75706370460179',
+		RagdollEffectIcon = 'rbxassetid://137768418845613',
+		DizzyEffectIcon = 'rbxassetid://129344731386711',
 	}
 	
 	export enum Images {
