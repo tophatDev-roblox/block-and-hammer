@@ -1,6 +1,7 @@
-import { CreateReactStory } from '@rbxts/ui-labs';
 import React from '@rbxts/react';
 import ReactRoblox from '@rbxts/react-roblox';
+
+import { CreateReactStory } from '@rbxts/ui-labs';
 
 import SideMenuGUI from '../components/SideMenu';
 
