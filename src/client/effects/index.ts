@@ -9,12 +9,12 @@ import { TimeSpan } from 'shared/timeSpan';
 import { Raycast } from 'shared/raycast';
 import { Logger } from 'shared/logger';
 
-import { CharacterState } from 'client/character/state';
-import { Character } from 'client/character';
-import { SFX } from 'client/sfx';
-
 import { clientInputTypeAtom } from 'client/input';
 import { UserSettings } from 'client/userSettings';
+import { SFX } from 'client/sfx';
+
+import { CharacterState } from 'client/character/state';
+import { Character } from 'client/character';
 
 import { materialConfiguration } from './materials';
 
