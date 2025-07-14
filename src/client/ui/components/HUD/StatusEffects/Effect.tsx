@@ -5,11 +5,11 @@ import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { StyleParse, Styles } from 'shared/styles';
-import { StatusEffect } from 'shared/statusEffect';
 import { TimeSpan } from 'shared/timeSpan';
 import { Assets } from 'shared/assets';
 
 import { CharacterState } from 'client/character/state';
+import { StatusEffect } from 'client/statusEffect';
 import { usePx } from 'client/ui/hooks/usePx';
 
 import RadialProgress from '../../RadialProgress';

@@ -19,10 +19,10 @@ import { Leaderstats } from 'client/leaderstats';
 import { Camera } from 'client/camera';
 
 import { SideMenuState } from 'client/ui/sideMenuState';
+import { StatusEffect } from 'client/statusEffect';
 import { ModalState } from 'client/ui/modalState';
 
 import { CharacterState } from './state';
-import { StatusEffect } from 'shared/statusEffect';
 
 const client = Players.LocalPlayer;
 const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
