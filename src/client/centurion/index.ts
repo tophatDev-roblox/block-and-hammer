@@ -7,10 +7,6 @@ import { Logger } from 'shared/logger';
 const logger = new Logger('centurion');
 const client = Centurion.client();
 
-client.registry.registerGroup(
-	{ name: 'teleport', description: 'subcommands for teleporting yourself' },
-);
-
 const commandsContainer = script.FindFirstChild('commands');
 if (commandsContainer !== undefined) {
 	client.registry.load(commandsContainer);
