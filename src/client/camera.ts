@@ -20,8 +20,8 @@ export namespace Camera {
 	});
 }
 
-function onCameraTypeChangeAtom(): void {
-	const camera = Camera.instanceAtom();
+function onCameraTypeChange(): void {
+	const camera = peek(Camera.instanceAtom);
 	if (camera === undefined) {
 		return;
 	}
@@ -30,11 +30,11 @@ function onCameraTypeChangeAtom(): void {
 }
 
 (async () => {
-	const camera = await waitForChild(Workspace, 'Camera', 'Camera');
+	const camera = Workspace.CurrentCamera ?? await waitForChild(Workspace, 'Camera', 'Camera');
 	Camera.instanceAtom(camera);
 	
-	onCameraTypeChangeAtom();
-	camera.GetPropertyChangedSignal('CameraType').Connect(onCameraTypeChangeAtom);
+	onCameraTypeChange();
+	camera.GetPropertyChangedSignal('CameraType').Connect(onCameraTypeChange);
 	
 	Camera.cframeMotion.onStep((cameraCFrame, dt) => {
 		const disableCamera = peek(CharacterState.disableCameraAtom);
