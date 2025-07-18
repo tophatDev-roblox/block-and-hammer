@@ -27,7 +27,7 @@
 
 ### prerequisites
 * [git](https://git-scm.com/downloads)
-* [pnpm](https://pnpm.io/installation)
+* [pnpm](https://pnpm.io/installation) (or [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm))
 * [Rojo](https://rojo.space)
 
 ---
@@ -39,11 +39,11 @@
 git clone https://github.com/tophatDev-roblox/block-and-hammer
 cd block-and-hammer
 ```
-2. install dependencies
+2. install dependencies using `pnpm` (or `npm`)
 ```bash
 pnpm i
 ```
-3. watch/build with roblox-ts and serve with Rojo
+3. `watch` / `build` using roblox-ts and `serve` using Rojo
 ```bash
 pnpm watch
 ```
@@ -51,11 +51,11 @@ pnpm watch
 rojo serve
 ```
 4. download the place file from the [latest release](https://github.com/tophatDev-roblox/block-and-hammer/releases/latest) then open it in Roblox Studio
-5. once in the place, connect the Rojo plugin and you should be able to play the game
+5. once in the place, [connect Rojo](https://rojo.space/docs/v7/getting-started/new-game/#live-syncing-into-studio) and you should be able to start the game
 
 ## specific version
 
 1. go to to the release of which version you want to build
-2. download the `Source code (zip)` from the Assets section of the release
+2. download `Source code (zip)` from the *Assets* section of the release
 3. extract the `.zip` file to a folder
 4. continue to step 2 of [latest version](#latest-version)
