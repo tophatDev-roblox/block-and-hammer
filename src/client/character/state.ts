@@ -4,9 +4,9 @@ import { table as ImmutTable, produce } from '@rbxts/immut';
 import { createMotion } from '@rbxts/ripple';
 import { atom, peek } from '@rbxts/charm';
 
-import { IsDebugPanelEnabled } from 'shared/constants';
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
+import { Constants } from 'shared/constants';
 import { TimeSpan } from 'shared/time-span';
 
 import { DebugPanelState } from 'client/debug-panel/state';
@@ -102,7 +102,7 @@ export namespace CharacterState {
 					
 					switch (effect) {
 						case StatusEffect.Ragdoll: {
-							if (IsDebugPanelEnabled && peek(DebugPanelState.disableRagdollAtom)) {
+							if (Constants.IsDebugPanelEnabled && peek(DebugPanelState.disableRagdollAtom)) {
 								break;
 							}
 							

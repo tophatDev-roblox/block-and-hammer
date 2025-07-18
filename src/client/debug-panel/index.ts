@@ -4,7 +4,7 @@ import Iris from '@rbxts/iris';
 
 import { peek, subscribe } from '@rbxts/charm';
 
-import { IsDebugPanelEnabled } from 'shared/constants';
+import { Constants } from 'shared/constants';
 import { TimeSpan } from 'shared/time-span';
 
 import { CharacterState } from 'client/character/state';
@@ -120,7 +120,7 @@ mapBoundariesState.onChange((mapBoundaries) => {
 const legacyPhysicsState = Iris.State<boolean>(peek(CharacterState.useLegacyPhysicsAtom));
 legacyPhysicsState.onChange((legacyPhysics) => CharacterState.useLegacyPhysicsAtom(legacyPhysics));
 
-if (IsDebugPanelEnabled && RunService.IsRunning()) {
+if (Constants.IsDebugPanelEnabled && RunService.IsRunning()) {
 	Iris.Init();
 	Iris.Connect(DebugPanel.render);
 	

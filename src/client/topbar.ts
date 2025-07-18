@@ -2,7 +2,7 @@ import { Players } from '@rbxts/services';
 
 import { effect, subscribe } from '@rbxts/charm';
 
-import { IsDebugPanelEnabled, MaxDollars, MinDollars } from 'shared/constants';
+import { Constants } from 'shared/constants';
 
 import NumberSpinner from 'shared/NumberSpinner';
 import Icon from 'shared/Icon';
@@ -110,7 +110,7 @@ effect(() => {
 	}
 });
 
-if (IsDebugPanelEnabled) {
+if (Constants.IsDebugPanelEnabled) {
 	const debugIcon = new Icon()
 		.setImage(6953984446)
 		.setCaption('Open debug panel')
@@ -146,7 +146,7 @@ function onAttributeChanged(attribute: string) {
 		return;
 	}
 	
-	dollarsNumber.Value = math.clamp(client.GetAttribute(attribute) as number | undefined ?? 0, MinDollars, MaxDollars);
+	dollarsNumber.Value = math.clamp(client.GetAttribute(attribute) as number | undefined ?? 0, Constants.MinDollars, Constants.MaxDollars);
 }
 
 applyStyles(Styles.Default);

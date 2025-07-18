@@ -2,16 +2,17 @@ import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/servic
 
 import { debounce, setInterval, throttle } from '@rbxts/set-timeout';
 
-import computeNameColor from 'shared/NameColor';
-import { MaxDollars, MinDollars } from 'shared/constants';
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
+import { Constants } from 'shared/constants';
 import { InputType } from 'shared/inputType';
 import { RichText } from 'shared/rich-text';
 import { Remotes } from 'shared/remotes';
 import { Number } from 'shared/number';
 import { Logger } from 'shared/logger';
 import { Units } from 'shared/units';
+
+import computeNameColor from 'shared/NameColor';
 
 import { Leaderstats } from 'server/leaderstats';
 import { PlayerData } from 'server/player-data';
@@ -138,7 +139,7 @@ async function onPlayerAdded(player: Player): Promise<void> {
 					return;
 				}
 				
-				profile.Data.dollars = math.clamp(dollars, MinDollars, MaxDollars);
+				profile.Data.dollars = math.clamp(dollars, Constants.MinDollars, Constants.MaxDollars);
 				
 				break;
 			}

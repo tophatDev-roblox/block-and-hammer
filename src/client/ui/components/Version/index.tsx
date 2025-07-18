@@ -3,9 +3,9 @@ import { RunService } from '@rbxts/services';
 import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
+import { Constants } from 'shared/constants';
 import { Styles } from 'shared/styles';
 
-import { TestingPlaceId } from 'shared/constants';
 import { usePx } from 'client/ui/hooks/use-px';
 
 import UIPadding from '../UIPadding';
@@ -19,7 +19,7 @@ const VersionGUI: React.FC = () => {
 	let versionString = `block and hammer v${game.PlaceVersion}`;
 	if (RunService.IsStudio()) {
 		versionString += ' [dev]';
-	} else if (game.PlaceId === TestingPlaceId) {
+	} else if (game.PlaceId === Constants.TestingPlaceId) {
 		versionString += ' [test]';
 	}
 	
