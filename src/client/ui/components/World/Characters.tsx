@@ -6,7 +6,7 @@ import { useAtom } from '@rbxts/react-charm';
 import { effect } from '@rbxts/charm';
 
 import { StyleParse, Styles } from 'shared/styles';
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 import { Assets } from 'shared/assets';
 
 import { OtherCharacters } from 'client/other-characters';

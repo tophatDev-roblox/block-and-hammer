@@ -5,7 +5,7 @@ import { debounce, setInterval, throttle } from '@rbxts/set-timeout';
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
 import { Constants } from 'shared/constants';
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 import { RichText } from 'shared/rich-text';
 import { Remotes } from 'shared/remotes';
 import { Number } from 'shared/number';

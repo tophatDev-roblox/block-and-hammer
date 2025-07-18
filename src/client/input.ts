@@ -3,7 +3,7 @@ import { GuiService, UserInputService } from '@rbxts/services';
 import { atom, peek, subscribe } from '@rbxts/charm';
 
 import { Controller } from 'shared/controller';
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 import { Remotes } from 'shared/remotes';
 import { Logger } from 'shared/logger';
 

@@ -5,7 +5,7 @@ import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { StyleParse, Styles } from 'shared/styles';
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 
 import { clientInputTypeAtom } from 'client/input';
 import { usePx } from 'client/ui/hooks/use-px';

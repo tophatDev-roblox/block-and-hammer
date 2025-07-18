@@ -8,7 +8,7 @@ import NumberSpinner from 'shared/NumberSpinner';
 import Icon from 'shared/Icon';
 
 import { clientInputTypeAtom } from 'client/input';
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 import { Styles } from 'shared/styles';
 
 import { StartScreenState } from 'client/ui/start-screen-state';

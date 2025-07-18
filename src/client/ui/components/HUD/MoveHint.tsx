@@ -1,7 +1,7 @@
 import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 import { Styles } from 'shared/styles';
 
 import { clientInputTypeAtom } from 'client/input';

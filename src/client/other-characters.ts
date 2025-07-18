@@ -3,7 +3,7 @@ import { Players } from '@rbxts/services';
 import { atom, Atom } from '@rbxts/charm';
 import { produce } from '@rbxts/immut';
 
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 
 import { CharacterState } from 'client/character/state';
 

@@ -6,7 +6,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { setTimeout } from '@rbxts/set-timeout';
 
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 
 import { clientInputTypeAtom } from 'client/input';
 

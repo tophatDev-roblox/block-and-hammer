@@ -7,7 +7,7 @@ import { setTimeout } from '@rbxts/set-timeout';
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
 import { Controller } from 'shared/controller';
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 import { TimeSpan } from 'shared/time-span';
 import { Raycast } from 'shared/raycast';
 import { Logger } from 'shared/logger';

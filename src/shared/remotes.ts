@@ -1,6 +1,6 @@
 import { Client, createRemotes, remote, Server } from '@rbxts/remo';
 
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 import { matches } from 'shared/matches';
 
 export const Remotes = createRemotes({

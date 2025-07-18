@@ -4,7 +4,7 @@ import { createMotion } from '@rbxts/ripple';
 import { effect, peek } from '@rbxts/charm';
 
 import { waitForChild } from 'shared/wait-for-child';
-import { InputType } from 'shared/inputType';
+import { InputType } from 'shared/input-type';
 import { TimeSpan } from 'shared/time-span';
 import { Raycast } from 'shared/raycast';
 import { Logger } from 'shared/logger';
