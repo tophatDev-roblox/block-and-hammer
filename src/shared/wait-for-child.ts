@@ -1,6 +1,6 @@
 import { Logger } from './logger';
 
-const logger = new Logger('waitForChild');
+const logger = new Logger('wait-for-child');
 
 export async function waitForChild<T extends keyof Objects>(instance: Instance, childName: string): Promise<Instance>;
 export async function waitForChild<T extends keyof Objects>(instance: Instance, childName: string, className: T): Promise<Objects[T]>;

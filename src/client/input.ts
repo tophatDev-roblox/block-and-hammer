@@ -9,7 +9,7 @@ import { Logger } from 'shared/logger';
 
 import { UserSettings } from './user-settings';
 
-const logger = new Logger('inputType');
+const logger = new Logger('input');
 
 export const clientInputTypeAtom = atom<InputType>(InputType.Unknown);
 

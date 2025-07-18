@@ -1,7 +1,7 @@
 import { Logger } from 'shared/logger';
 import { Number } from 'shared/number';
 
-const logger = new Logger('areaManager');
+const logger = new Logger('area-manager');
 
 export namespace AreaManager {
 	export const enum Area {

@@ -12,7 +12,7 @@ interface DataTemplate {
 
 type LoadedProfile = Profile<DataTemplate>;
 
-const logger = new Logger('playerData');
+const logger = new Logger('player-data');
 
 let PlayerStore = ProfileStore.New<DataTemplate>('PlayerStore', {
 	color: undefined,
