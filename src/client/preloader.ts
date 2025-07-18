@@ -4,7 +4,9 @@ import { Atom, batch } from '@rbxts/charm';
 
 import { waitForChild } from 'shared/wait-for-child';
 import { TimeSpan } from 'shared/time-span';
+
 import { Assets } from 'shared/assets';
+import { InputPrompts } from 'shared/assets/input-prompts';
 
 const client = Players.LocalPlayer;
 
@@ -21,7 +23,7 @@ export namespace Preloader {
 		
 		loadingStatusAtom('preloading asset ids...');
 		
-		const contentList = new Array<Instance | string>();
+		const contentList = new Array<Instance>();
 		
 		const allImages = { ...Assets.Icons, ...Assets.Images };
 		for (const [name, id] of pairs(allImages)) {
@@ -46,8 +48,30 @@ export namespace Preloader {
 			contentList.push(textLabel);
 		}
 		
+		const keyPromptIcons = [ ...InputPrompts.Desktop.KeyboardMap, ...InputPrompts.Desktop.MouseMap ];
+		for (const [, [key, id]] of pairs(keyPromptIcons)) {
+			if (typeIs(id, 'string')) {
+				const decal = new Instance('Decal');
+				decal.Name = key.Name;
+				decal.Texture = id;
+				contentList.push(decal);
+			} else {
+				for (const subId of id) {
+					const decal = new Instance('Decal');
+					decal.Name = key.Name;
+					decal.Texture = subId;
+					contentList.push(decal);
+				}
+			}
+		}
+		
+		let done = false;
 		let loadedAssets = 0;
 		preload(contentList, (id, status) => {
+			if (done) {
+				return;
+			}
+			
 			if (status === Enum.AssetFetchStatus.Success) {
 				loadingStatusAtom(`${id} preloaded successfully`);
 			} else {
@@ -63,6 +87,8 @@ export namespace Preloader {
 				if (loadedAssets < contentList.size() && TimeSpan.timeSince(startTime) < 4) {
 					return;
 				}
+				
+				done = true;
 				
 				connection.Disconnect();
 				batch(() => {
