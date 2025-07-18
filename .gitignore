@@ -4,6 +4,6 @@
 *.tsbuildinfo
 
 /src/server/anticheat.ts
-/src/server/tophatApi.ts
+/src/server/tophat-api.ts
 
 .VSCodeCounter
