@@ -102,6 +102,7 @@ function onUnloadCharacter(player: Player): void {
 	}
 	
 	player.Character = undefined;
+	characterData.delete(character);
 	
 	character.SetAttribute('unloading', true);
 	character.Destroy();
