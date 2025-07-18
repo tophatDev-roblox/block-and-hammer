@@ -1,15 +1,24 @@
-import { useBinding, useEffect } from '@rbxts/react';
+import { useBinding, useRef } from '@rbxts/react';
+import { useMountEffect, useUnmountEffect } from '@rbxts/pretty-react-hooks';
 
 import { peek, subscribe, Atom } from '@rbxts/charm';
 
 export function useAtomBinding<T>(atom: Atom<T>): React.Binding<T> {
-	const [binding, setBinding] = useBinding<T>(peek(atom));
+	const [value, setValue] = useBinding<T>(peek(atom));
 	
-	useEffect(() => {
-		return subscribe(atom, (value) => {
-			setBinding(value);
+	const cleanupRef = useRef<() => void>();
+	
+	useMountEffect(() => {
+		const cleanup = subscribe(atom, (value) => {
+			setValue(value);
 		});
-	}, []);
+		
+		cleanupRef.current = cleanup;
+	});
 	
-	return binding;
+	useUnmountEffect(() => {
+		cleanupRef.current?.();
+	});
+	
+	return value;
 }
