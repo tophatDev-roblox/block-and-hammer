@@ -5,12 +5,12 @@ import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { StyleParse, Styles } from 'shared/styles';
-import { TimeSpan } from 'shared/timeSpan';
+import { TimeSpan } from 'shared/time-span';
 import { Assets } from 'shared/assets';
 
 import { CharacterState } from 'client/character/state';
-import { StatusEffect } from 'client/statusEffect';
-import { usePx } from 'client/ui/hooks/usePx';
+import { StatusEffect } from 'client/status-effect';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import RadialProgress from '../../RadialProgress';
 import Gradient from '../../Gradient';

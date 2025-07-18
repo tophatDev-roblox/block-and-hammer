@@ -2,9 +2,9 @@ import React, { useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { usePx } from 'client/ui/hooks/usePx';
+import { usePx } from 'client/ui/hooks/use-px';
 
-import { StartScreenState } from 'client/ui/startScreenState';
+import { StartScreenState } from 'client/ui/start-screen-state';
 
 import SideButton, { InheritedProps } from '../SideButton';
 

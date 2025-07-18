@@ -2,11 +2,11 @@ import { Workspace } from '@rbxts/services';
 import { setInterval } from '@rbxts/set-timeout';
 import { effect } from '@rbxts/charm';
 
-import { waitForChild } from 'shared/waitForChild';
-import { AreaManager } from 'shared/areaManager';
+import { waitForChild } from 'shared/wait-for-child';
+import { AreaManager } from 'shared/area-manager';
 import { Logger } from 'shared/logger';
 
-import { UserSettings } from 'client/userSettings';
+import { UserSettings } from 'client/user-settings';
 import { Leaderstats } from 'client/leaderstats';
 
 import { CharacterState } from 'client/character/state';

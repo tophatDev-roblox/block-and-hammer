@@ -11,11 +11,11 @@ import { clientInputTypeAtom } from 'client/input';
 import { InputType } from 'shared/inputType';
 import { Styles } from 'shared/styles';
 
-import { StartScreenState } from 'client/ui/startScreenState';
-import { SideMenuState } from 'client/ui/sideMenuState';
-import { ModalState } from 'client/ui/modalState';
+import { StartScreenState } from 'client/ui/start-screen-state';
+import { SideMenuState } from 'client/ui/side-menu-state';
+import { ModalState } from 'client/ui/modal-state';
 
-import { DebugPanelState } from './debugPanel/state';
+import { DebugPanelState } from './debug-panel/state';
 
 const client = Players.LocalPlayer;
 

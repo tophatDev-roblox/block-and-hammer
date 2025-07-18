@@ -7,7 +7,7 @@ import { InputType } from 'shared/inputType';
 import { Remotes } from 'shared/remotes';
 import { Logger } from 'shared/logger';
 
-import { UserSettings } from './userSettings';
+import { UserSettings } from './user-settings';
 
 const logger = new Logger('inputType');
 

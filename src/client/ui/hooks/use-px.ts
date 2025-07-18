@@ -3,7 +3,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { atom, effect } from '@rbxts/charm';
 
-import { PixelScale } from 'shared/pixelScale';
+import { PixelScale } from 'shared/pixel-scale';
 
 import { Camera } from 'client/camera';
 

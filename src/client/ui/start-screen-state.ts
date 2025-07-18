@@ -6,7 +6,7 @@ import { Remotes } from 'shared/remotes';
 
 import { CharacterState } from 'client/character/state';
 import { Preloader } from 'client/preloader';
-import { CoreGuis } from 'client/coreGuis';
+import { CoreGuis } from 'client/core-guis';
 
 export namespace StartScreenState {
 	export const isVisibleAtom = atom<boolean>(true);

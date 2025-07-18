@@ -3,13 +3,13 @@ import { GuiService, RunService, Workspace } from '@rbxts/services';
 import { createMotion } from '@rbxts/ripple';
 import { atom, peek } from '@rbxts/charm';
 
-import { waitForChild } from 'shared/waitForChild';
-import { TimeSpan } from 'shared/timeSpan';
+import { waitForChild } from 'shared/wait-for-child';
+import { TimeSpan } from 'shared/time-span';
 import { Shake } from 'shared/shake';
 
 import { CharacterState } from 'client/character/state';
 
-import { StartScreenState } from 'client/ui/startScreenState';
+import { StartScreenState } from 'client/ui/start-screen-state';
 
 export namespace Camera {
 	export const instanceAtom = atom<Camera>();

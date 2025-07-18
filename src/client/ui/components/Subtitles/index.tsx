@@ -1,7 +1,7 @@
 import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { usePx } from 'client/ui/hooks/usePx';
+import { usePx } from 'client/ui/hooks/use-px';
 import { SFX } from 'client/sfx';
 
 import Subtitle from './Subtitle';

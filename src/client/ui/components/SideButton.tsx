@@ -10,7 +10,7 @@ import { Assets } from 'shared/assets';
 
 import { clientInputTypeAtom } from 'client/input';
 
-import { usePx } from 'client/ui/hooks/usePx';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from './UIListLayout';
 import UIPadding from './UIPadding';

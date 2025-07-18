@@ -1,7 +1,7 @@
 import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { StartScreenState } from 'client/ui/startScreenState';
+import { StartScreenState } from 'client/ui/start-screen-state';
 
 import SpeedEffectGUI from './SpeedEffect';
 import StartScreenGUI from './StartScreen';

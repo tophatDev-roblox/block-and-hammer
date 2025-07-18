@@ -3,8 +3,8 @@ import { RunService, SoundService, Workspace } from '@rbxts/services';
 import { atom, subscribe } from '@rbxts/charm';
 import Immut, { produce } from '@rbxts/immut';
 
-import { waitForChild } from 'shared/waitForChild';
-import { TimeSpan } from 'shared/timeSpan';
+import { waitForChild } from 'shared/wait-for-child';
+import { TimeSpan } from 'shared/time-span';
 
 const RNG = new Random();
 

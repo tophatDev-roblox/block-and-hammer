@@ -4,7 +4,7 @@ import React, { useBinding, useRef } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { TimeSpan } from 'shared/timeSpan';
+import { TimeSpan } from 'shared/time-span';
 
 import { CharacterState } from 'client/character/state';
 

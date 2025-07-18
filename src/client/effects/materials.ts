@@ -1,26 +1,11 @@
 import { SoundService } from '@rbxts/services';
 
-import { waitForChild } from 'shared/waitForChild';
+import { waitForChild } from 'shared/wait-for-child';
 
 import { SFX } from 'client/sfx';
 
-export interface ParticleData {
-	totalParticles: number;
-	colorMultiplier: number;
-	duration: number;
-}
-
-export interface MaterialConfig {
-	sound?: SFX.Configuration & {
-		instance: Sound;
-	};
-	getData: () => ParticleData;
-	style: (particle: BasePart) => void;
-}
-
+const materialConfiguration = new Map<Enum.Material, Materials.Configuration>();
 const RNG = new Random();
-
-export const materialConfiguration = new Map<Enum.Material, MaterialConfig>();
 
 (async () => {
 	materialConfiguration.set(Enum.Material.Grass, {
@@ -131,3 +116,23 @@ export const materialConfiguration = new Map<Enum.Material, MaterialConfig>();
 		},
 	});
 })();
+
+export namespace Materials {
+	export interface ParticleData {
+		totalParticles: number;
+		colorMultiplier: number;
+		duration: number;
+	}
+	
+	export interface Configuration {
+		sound?: SFX.Configuration & {
+			instance: Sound;
+		};
+		getData: () => ParticleData;
+		style: (particle: BasePart) => void;
+	}
+	
+	export function get(material: Enum.Material): Configuration | undefined {
+		return materialConfiguration.get(material);
+	}
+}

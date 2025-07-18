@@ -9,10 +9,10 @@ import { setTimeout } from '@rbxts/set-timeout';
 import { Assets } from 'shared/assets';
 import { Styles } from 'shared/styles';
 
-import { StartScreenState } from 'client/ui/startScreenState';
-import { SideMenuState } from 'client/ui/sideMenuState';
-import { ModalState } from 'client/ui/modalState';
-import { usePx } from 'client/ui/hooks/usePx';
+import { StartScreenState } from 'client/ui/start-screen-state';
+import { SideMenuState } from 'client/ui/side-menu-state';
+import { ModalState } from 'client/ui/modal-state';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import ContainerImage from '../ContainerImage';
 import UIListLayout from '../UIListLayout';

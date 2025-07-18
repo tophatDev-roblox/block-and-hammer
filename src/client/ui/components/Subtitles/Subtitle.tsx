@@ -2,10 +2,10 @@ import React, { useEffect, useRef } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { TimeSpan } from 'shared/timeSpan';
+import { TimeSpan } from 'shared/time-span';
 import { Styles } from 'shared/styles';
 
-import { usePx } from 'client/ui/hooks/usePx';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import UIPadding from '../UIPadding';
 import Container from '../Container';

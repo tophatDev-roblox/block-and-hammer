@@ -2,8 +2,8 @@ import { ContentProvider, Players, RunService } from '@rbxts/services';
 
 import { Atom, batch } from '@rbxts/charm';
 
-import { waitForChild } from 'shared/waitForChild';
-import { TimeSpan } from 'shared/timeSpan';
+import { waitForChild } from 'shared/wait-for-child';
+import { TimeSpan } from 'shared/time-span';
 import { Assets } from 'shared/assets';
 
 const client = Players.LocalPlayer;

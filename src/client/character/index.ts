@@ -4,23 +4,23 @@ import { table as ImmutTable, produce } from '@rbxts/immut';
 import { effect, peek, subscribe } from '@rbxts/charm';
 import { setTimeout } from '@rbxts/set-timeout';
 
-import { waitForChild } from 'shared/waitForChild';
-import { AreaManager } from 'shared/areaManager';
+import { waitForChild } from 'shared/wait-for-child';
+import { AreaManager } from 'shared/area-manager';
 import { Controller } from 'shared/controller';
 import { InputType } from 'shared/inputType';
-import { TimeSpan } from 'shared/timeSpan';
+import { TimeSpan } from 'shared/time-span';
 import { Raycast } from 'shared/raycast';
 import { Logger } from 'shared/logger';
 import { Units } from 'shared/units';
 
 import { clientInputTypeAtom } from 'client/input';
-import { UserSettings } from 'client/userSettings';
+import { UserSettings } from 'client/user-settings';
 import { Leaderstats } from 'client/leaderstats';
 import { Camera } from 'client/camera';
 
-import { SideMenuState } from 'client/ui/sideMenuState';
-import { StatusEffect } from 'client/statusEffect';
-import { ModalState } from 'client/ui/modalState';
+import { SideMenuState } from 'client/ui/side-menu-state';
+import { StatusEffect } from 'client/status-effect';
+import { ModalState } from 'client/ui/modal-state';
 
 import { CharacterState } from './state';
 

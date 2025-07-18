@@ -1,7 +1,7 @@
 import { Players, TextChatService } from '@rbxts/services';
 
 import { Remotes } from 'shared/remotes';
-import { waitForChild } from 'shared/waitForChild';
+import { waitForChild } from 'shared/wait-for-child';
 
 (async () => {
 	const textChannels = await waitForChild(TextChatService, 'TextChannels', 'Folder');

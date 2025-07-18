@@ -9,8 +9,8 @@ import { StyleParse, Styles } from 'shared/styles';
 import { InputType } from 'shared/inputType';
 import { Assets } from 'shared/assets';
 
-import { OtherCharacters } from 'client/otherCharacters';
-import { usePx } from 'client/ui/hooks/usePx';
+import { OtherCharacters } from 'client/other-characters';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../UIListLayout';
 import Text from '../Text';

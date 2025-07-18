@@ -9,6 +9,7 @@ export function useAtomBinding<T>(atom: Atom<T>): React.Binding<T> {
 	const cleanupRef = useRef<() => void>();
 	
 	useMountEffect(() => {
+		print('mount');
 		const cleanup = subscribe(atom, (value) => {
 			setValue(value);
 		});
@@ -17,6 +18,7 @@ export function useAtomBinding<T>(atom: Atom<T>): React.Binding<T> {
 	});
 	
 	useUnmountEffect(() => {
+		print('ummount');
 		cleanupRef.current?.();
 	});
 	

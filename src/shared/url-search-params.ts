@@ -1,4 +1,4 @@
-import { encodeURIComponent } from 'shared/encodeURIComponent';
+import { encodeURIComponent } from 'shared/encode-uri-component';
 import { String } from 'shared/string';
 
 type ParamEntry = [string, string];

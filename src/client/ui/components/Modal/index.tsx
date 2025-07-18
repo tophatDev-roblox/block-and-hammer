@@ -1,7 +1,7 @@
 import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { ModalState } from 'client/ui/modalState';
+import { ModalState } from 'client/ui/modal-state';
 
 import Modal from './Modal';
 

@@ -8,12 +8,12 @@ import { createMotion } from '@rbxts/ripple';
 import { setTimeout } from '@rbxts/set-timeout';
 
 import { StyleParse, Styles } from 'shared/styles';
-import { waitForChild } from 'shared/waitForChild';
+import { waitForChild } from 'shared/wait-for-child';
 
-import { StartScreenState } from 'client/ui/startScreenState';
+import { StartScreenState } from 'client/ui/start-screen-state';
 import { Effects } from 'client/effects';
 import { Camera } from 'client/camera';
-import { usePx } from 'client/ui/hooks/usePx';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';

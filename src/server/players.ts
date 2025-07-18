@@ -4,17 +4,17 @@ import { debounce, setInterval, throttle } from '@rbxts/set-timeout';
 
 import computeNameColor from 'shared/NameColor';
 import { MaxDollars, MinDollars } from 'shared/constants';
-import { waitForChild } from 'shared/waitForChild';
-import { AreaManager } from 'shared/areaManager';
+import { waitForChild } from 'shared/wait-for-child';
+import { AreaManager } from 'shared/area-manager';
 import { InputType } from 'shared/inputType';
-import { RichText } from 'shared/richText';
+import { RichText } from 'shared/rich-text';
 import { Remotes } from 'shared/remotes';
 import { Number } from 'shared/number';
 import { Logger } from 'shared/logger';
 import { Units } from 'shared/units';
 
 import { Leaderstats } from 'server/leaderstats';
-import { PlayerData } from 'server/playerData';
+import { PlayerData } from 'server/player-data';
 import { Badge } from 'server/badge';
 
 interface CharacterData {

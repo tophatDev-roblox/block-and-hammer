@@ -2,7 +2,7 @@ import { Players } from '@rbxts/services';
 
 import { atom } from '@rbxts/charm';
 
-import { waitForChild } from 'shared/waitForChild';
+import { waitForChild } from 'shared/wait-for-child';
 
 const client = Players.LocalPlayer;
 

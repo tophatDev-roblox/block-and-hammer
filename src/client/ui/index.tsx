@@ -3,7 +3,7 @@ import { Players } from '@rbxts/services';
 import React from '@rbxts/react';
 import ReactRoblox from '@rbxts/react-roblox';
 
-import { waitForChild } from 'shared/waitForChild';
+import { waitForChild } from 'shared/wait-for-child';
 
 import App from './components/App';
 

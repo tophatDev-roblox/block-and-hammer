@@ -3,20 +3,20 @@ import { RunService, SoundService, Workspace } from '@rbxts/services';
 import { createMotion } from '@rbxts/ripple';
 import { effect, peek } from '@rbxts/charm';
 
-import { waitForChild } from 'shared/waitForChild';
+import { waitForChild } from 'shared/wait-for-child';
 import { InputType } from 'shared/inputType';
-import { TimeSpan } from 'shared/timeSpan';
+import { TimeSpan } from 'shared/time-span';
 import { Raycast } from 'shared/raycast';
 import { Logger } from 'shared/logger';
 
 import { clientInputTypeAtom } from 'client/input';
-import { UserSettings } from 'client/userSettings';
+import { UserSettings } from 'client/user-settings';
 import { SFX } from 'client/sfx';
 
 import { CharacterState } from 'client/character/state';
 import { Character } from 'client/character';
 
-import { materialConfiguration } from './materials';
+import { Materials } from './materials';
 
 const logger = new Logger();
 const RNG = new Random();
@@ -62,7 +62,7 @@ export namespace Effects {
 	}
 	
 	export function makeHitParticles(partMaterial: Enum.Material, baseParticle: BasePart, point: Vector3, normalVector: Vector3, inheritedVelocity: Vector3): void {
-		const material = materialConfiguration.get(partMaterial);
+		const material = Materials.get(partMaterial);
 		if (material === undefined) {
 			logger.warn('unsupported material:', partMaterial);
 			return;

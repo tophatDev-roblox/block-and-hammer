@@ -8,7 +8,7 @@ import { StyleParse, Styles } from 'shared/styles';
 import { InputType } from 'shared/inputType';
 
 import { clientInputTypeAtom } from 'client/input';
-import { usePx } from 'client/ui/hooks/usePx';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import UIPadding from '../UIPadding';
 import Outline from '../Outline';

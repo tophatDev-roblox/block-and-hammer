@@ -1,6 +1,6 @@
 import { SoundService } from '@rbxts/services';
 
-import { waitForChild } from 'shared/waitForChild';
+import { waitForChild } from 'shared/wait-for-child';
 
 (async () => {
 	const sound = await waitForChild(SoundService, 'Leave', 'Sound');

@@ -1,9 +1,9 @@
 import React, { forwardRef, useMemo } from '@rbxts/react';
 
 import { Styles, StyleParse } from 'shared/styles';
-import { getAutomaticSize } from 'shared/getAutomaticSize';
+import { getAutomaticSize } from 'client/get-automatic-size';
 
-import { usePx } from 'client/ui/hooks/usePx';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import Gradient from './Gradient';
 import Outline from './Outline';

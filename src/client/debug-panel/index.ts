@@ -5,10 +5,10 @@ import Iris from '@rbxts/iris';
 import { peek, subscribe } from '@rbxts/charm';
 
 import { IsDebugPanelEnabled } from 'shared/constants';
-import { TimeSpan } from 'shared/timeSpan';
+import { TimeSpan } from 'shared/time-span';
 
 import { CharacterState } from 'client/character/state';
-import { StatusEffect } from 'client/statusEffect';
+import { StatusEffect } from 'client/status-effect';
 
 import { DebugPanelState } from './state';
 

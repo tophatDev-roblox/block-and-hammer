@@ -5,12 +5,12 @@ import { createMotion } from '@rbxts/ripple';
 import { atom, peek } from '@rbxts/charm';
 
 import { IsDebugPanelEnabled } from 'shared/constants';
-import { waitForChild } from 'shared/waitForChild';
-import { AreaManager } from 'shared/areaManager';
-import { TimeSpan } from 'shared/timeSpan';
+import { waitForChild } from 'shared/wait-for-child';
+import { AreaManager } from 'shared/area-manager';
+import { TimeSpan } from 'shared/time-span';
 
-import { DebugPanelState } from 'client/debugPanel/state';
-import { StatusEffect } from 'client/statusEffect';
+import { DebugPanelState } from 'client/debug-panel/state';
+import { StatusEffect } from 'client/status-effect';
 
 const RNG = new Random();
 

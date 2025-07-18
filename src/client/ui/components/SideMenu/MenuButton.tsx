@@ -10,8 +10,8 @@ import { InputType } from 'shared/inputType';
 
 import { clientInputTypeAtom } from 'client/input';
 
-import { SideMenuState } from 'client/ui/sideMenuState';
-import { usePx } from 'client/ui/hooks/usePx';
+import { SideMenuState } from 'client/ui/side-menu-state';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import SideButton, { InheritedProps } from '../SideButton';
 

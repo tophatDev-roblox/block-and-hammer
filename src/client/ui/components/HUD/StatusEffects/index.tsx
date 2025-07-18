@@ -4,7 +4,7 @@ import { useAtom } from '@rbxts/react-charm';
 import { StyleParse, Styles } from 'shared/styles';
 
 import { CharacterState } from 'client/character/state';
-import { usePx } from 'client/ui/hooks/usePx';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../../UIListLayout';
 

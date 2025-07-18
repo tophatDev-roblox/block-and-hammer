@@ -3,9 +3,9 @@ import { GuiService } from '@rbxts/services';
 import { atom, effect } from '@rbxts/charm';
 import { setTimeout } from '@rbxts/set-timeout';
 
-import { CoreGuis } from 'client/coreGuis';
+import { CoreGuis } from 'client/core-guis';
 
-import { StartScreenState } from './startScreenState';
+import { StartScreenState } from './start-screen-state';
 
 export namespace SideMenuState {
 	export const isOpenAtom = atom<boolean>(false);

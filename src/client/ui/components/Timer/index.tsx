@@ -6,13 +6,13 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { peek } from '@rbxts/charm';
 
-import { TimeSpan } from 'shared/timeSpan';
-import { RichText } from 'shared/richText';
+import { TimeSpan } from 'shared/time-span';
+import { RichText } from 'shared/rich-text';
 import { Styles } from 'shared/styles';
 import { Shake } from 'shared/shake';
 
 import { CharacterState } from 'client/character/state';
-import { usePx } from 'client/ui/hooks/usePx';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';

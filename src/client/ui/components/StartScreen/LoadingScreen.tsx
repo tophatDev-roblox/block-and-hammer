@@ -8,9 +8,9 @@ import { computed } from '@rbxts/charm';
 
 import { Styles } from 'shared/styles';
 
-import { StartScreenState } from 'client/ui/startScreenState';
-import { useAtomBinding } from 'client/ui/hooks/useAtomBinding';
-import { usePx } from 'client/ui/hooks/usePx';
+import { StartScreenState } from 'client/ui/start-screen-state';
+import { useAtomBinding } from 'client/ui/hooks/use-atom-binding';
+import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../UIListLayout';
 import Text from '../Text';

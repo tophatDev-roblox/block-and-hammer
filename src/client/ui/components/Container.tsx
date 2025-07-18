@@ -1,7 +1,7 @@
 import React, { forwardRef } from '@rbxts/react';
 
 import { StyleParse, Styles } from 'shared/styles';
-import { getAutomaticSize } from 'shared/getAutomaticSize';
+import { getAutomaticSize } from 'client/get-automatic-size';
 
 import Gradient from './Gradient';
 import Outline from './Outline';
