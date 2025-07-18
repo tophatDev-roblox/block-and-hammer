@@ -3,10 +3,13 @@ import { GuiService } from '@rbxts/services';
 import { atom, batch, effect, peek } from '@rbxts/charm';
 
 import { Remotes } from 'shared/remotes';
+import { Logger } from 'shared/logger';
 
 import { CharacterState } from 'client/character/state';
 import { Preloader } from 'client/preloader';
 import { CoreGuis } from 'client/core-guis';
+
+const logger = new Logger('ui/start-screen-state');
 
 export namespace StartScreenState {
 	export const isVisibleAtom = atom<boolean>(true);
@@ -14,10 +17,6 @@ export namespace StartScreenState {
 	export const isLoadingFinishedAtom = atom<boolean>(false);
 	export const loadingPercentageAtom = atom<number>(0);
 }
-
-async function fullReset(): Promise<void> {
-	await Remotes.fullReset();
-};
 
 Preloader.preloadAtom(StartScreenState.loadingStatusAtom, StartScreenState.loadingPercentageAtom, StartScreenState.isLoadingFinishedAtom);
 
@@ -40,6 +39,7 @@ effect(() => {
 			CharacterState.partsAtom(undefined);
 		}
 	} else {
-		fullReset();
+		Remotes.fullReset()
+			.catch((err) => logger.warn('failed to fire `fullReset` -', err));
 	}
 });
