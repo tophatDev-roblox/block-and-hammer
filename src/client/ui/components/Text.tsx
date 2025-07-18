@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo } from '@rbxts/react';
 
 import { Styles, StyleParse } from 'shared/styles';
-import { getAutomaticSize } from 'client/get-automatic-size';
+import { getAutomaticSize } from 'client/ui/get-automatic-size';
 
 import { usePx } from 'client/ui/hooks/use-px';
 
