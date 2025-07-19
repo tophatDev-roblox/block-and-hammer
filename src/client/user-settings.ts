@@ -17,7 +17,7 @@ export namespace UserSettings {
 		};
 	}
 	
-	export enum ControllerDetection {
+	export const enum ControllerDetection {
 		None,
 		OnInput,
 		LastInput,
