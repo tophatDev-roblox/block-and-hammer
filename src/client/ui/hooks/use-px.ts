@@ -9,7 +9,9 @@ import { Camera } from 'client/camera';
 
 const scaleAtom = atom<number>(1);
 
-export function usePx(): (px: number, rounded?: boolean) => number {
+export type PxFunction = (px: number, rounded?: boolean) => number;
+
+export function usePx(): PxFunction {
 	const scale = useAtom(scaleAtom);
 	return useCallback((px, rounded = true) => rounded ? math.round(px * scale) : px * scale, [scale]);
 }

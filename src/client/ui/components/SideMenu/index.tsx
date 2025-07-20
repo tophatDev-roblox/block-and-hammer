@@ -6,17 +6,20 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { setTimeout } from '@rbxts/set-timeout';
 
+import { StyleParse, Styles } from 'shared/styles';
 import { Assets } from 'shared/assets';
-import { Styles } from 'shared/styles';
 
 import { StartScreenState } from 'client/ui/start-screen-state';
 import { SideMenuState } from 'client/ui/side-menu-state';
 import { ModalState } from 'client/ui/modal-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
-import ContainerImage from '../ContainerImage';
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
+import Gradient from '../Gradient';
+import Outline from '../Outline';
+
+import { getSideButtonSizes } from '../SideButton';
 
 import MenuButton from './MenuButton';
 
@@ -26,19 +29,44 @@ const SideMenuGUI: React.FC = () => {
 	const styles = useAtom(Styles.stateAtom);
 	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
 	
-	const px = usePx();
 	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromScale(1.5, 0));
+	const [rotation, rotationMotion] = useMotion<number>(20);
 	
-	const containerWidth = 750;
-	const buttonGapOffset = -9 / containerWidth;
+	const px = usePx();
+	
+	const {
+		background,
+		outline,
+	} = styles.sideMenu.container;
+	
+	const isBackgroundRGBA = StyleParse.isRGBA(background);
+	
+	const buttonPadding = px(12);
+	const [, height] = getSideButtonSizes(px, styles.sideMenu.button.text, buttonPadding);
+	
+	const baseMenuRotation = -10;
+	const listPadding = px(12);
+	const buttonGapOffset = (height + listPadding) * math.tan(math.rad(baseMenuRotation));
 	const totalButtons = 6;
 	
 	useEffect(() => {
-		const openPosition = UDim2.fromScale(1, 0);
-		const closePosition = UDim2.fromScale(1.5, 0);
+		const target = sideMenuOpened ? {
+			position: UDim2.fromScale(1, 0),
+			rotation: baseMenuRotation,
+		} : {
+			position: UDim2.fromScale(2, 0),
+			rotation: 20,
+		};
+		
 		if (!GuiService.ReducedMotionEnabled) {
 			if (sideMenuOpened) {
-				positionMotion.tween(openPosition, {
+				positionMotion.tween(target.position, {
+					time: 0.6,
+					style: Enum.EasingStyle.Back,
+					direction: Enum.EasingDirection.Out,
+				});
+				
+				rotationMotion.tween(target.rotation, {
 					time: 0.6,
 					style: Enum.EasingStyle.Back,
 					direction: Enum.EasingDirection.Out,
@@ -50,7 +78,13 @@ const SideMenuGUI: React.FC = () => {
 					clearTimeout();
 				};
 			} else {
-				positionMotion.tween(closePosition, {
+				positionMotion.tween(target.position, {
+					time: 0.6,
+					style: Enum.EasingStyle.Back,
+					direction: Enum.EasingDirection.In,
+				});
+				
+				rotationMotion.tween(target.rotation, {
 					time: 0.6,
 					style: Enum.EasingStyle.Back,
 					direction: Enum.EasingDirection.In,
@@ -60,7 +94,8 @@ const SideMenuGUI: React.FC = () => {
 			}
 		} else {
 			if (sideMenuOpened) {
-				positionMotion.immediate(openPosition);
+				positionMotion.immediate(target.position);
+				rotationMotion.immediate(target.rotation);
 				
 				const clearTimeout = setTimeout(() => setSelectable(true), 0.05);
 				
@@ -68,7 +103,8 @@ const SideMenuGUI: React.FC = () => {
 					clearTimeout();
 				};
 			} else {
-				positionMotion.immediate(closePosition);
+				positionMotion.immediate(target.position);
+				rotationMotion.immediate(target.rotation);
 				setSelectable(false);
 			}
 		}
@@ -85,28 +121,44 @@ const SideMenuGUI: React.FC = () => {
 		>
 			<frame
 				BackgroundTransparency={1}
-				Size={UDim2.fromScale(1, 1)}
+				Size={new UDim2(0, px(700), 1, 0)}
 				Position={position}
 				AnchorPoint={new Vector2(1, 0)}
 			>
-				<uiaspectratioconstraint
-					AspectRatio={containerWidth / 1080}
-				/>
-				<ContainerImage
-					styles={styles.sideMenu.container}
-					width={new UDim(1.5, 0)}
-					height={new UDim(1, 0)}
-					imageProps={{
-						Image: Assets.Images.SideMenuBackground,
-					}}
+				<frame
+					BackgroundTransparency={1}
+					Size={UDim2.fromScale(2, 1)}
 				>
-					<>
-						{/* wrapping in fragment for workaround: https://github.com/jsdotlua/react-lua/issues/42 */}
+					<frame
+						BackgroundColor3={isBackgroundRGBA ? StyleParse.color(background) : Color3.fromRGB(255, 255, 255)}
+						BackgroundTransparency={isBackgroundRGBA ? 1 - background.alpha : 0}
+						BorderSizePixel={0}
+						Size={UDim2.fromScale(1, 2)}
+						Position={UDim2.fromScale(0.5, 0.5)}
+						AnchorPoint={new Vector2(0.5, 0.5)}
+						Rotation={rotation}
+					>
+						{!isBackgroundRGBA && (
+							<Gradient
+								styles={background}
+							/>
+						)}
+						{outline !== undefined && (
+							<Outline
+								styles={outline}
+								applyStrokeMode={Enum.ApplyStrokeMode.Contextual}
+							/>
+						)}
+					</frame>
+					<frame
+						BackgroundTransparency={1}
+						Size={UDim2.fromScale(1, 1)}
+					>
 						<UIListLayout
 							fillDirection={Enum.FillDirection.Vertical}
 						/>
 						<UIPadding
-							padding={[0, 0, 0, px(80)]}
+							padding={[0, 0, 0, px(20)]}
 						/>
 						<frame
 							BackgroundTransparency={1}
@@ -119,7 +171,7 @@ const SideMenuGUI: React.FC = () => {
 							<UIListLayout
 								fillDirection={Enum.FillDirection.Vertical}
 								alignY={Enum.VerticalAlignment.Bottom}
-								padding={px(12)}
+								padding={listPadding}
 							/>
 							<UIPadding
 								padding={[px(12), 0, px(42), px(12)]}
@@ -129,6 +181,7 @@ const SideMenuGUI: React.FC = () => {
 								text={'Inventory'}
 								iconId={Assets.Icons.InventoryIcon}
 								index={0}
+								padding={buttonPadding}
 								totalButtons={totalButtons}
 								selectable={selectable}
 								autoSelect
@@ -137,8 +190,9 @@ const SideMenuGUI: React.FC = () => {
 								styles={styles.sideMenu.button}
 								text={'Badges'}
 								iconId={Assets.Icons.BadgesIcon}
-								widthScale={buttonGapOffset}
+								widthOffset={buttonGapOffset}
 								index={1}
+								padding={buttonPadding}
 								totalButtons={totalButtons}
 								selectable={selectable}
 							/>
@@ -146,8 +200,9 @@ const SideMenuGUI: React.FC = () => {
 								styles={styles.sideMenu.button}
 								text={'Settings'}
 								iconId={Assets.Icons.SettingsIcon}
-								widthScale={buttonGapOffset * 2}
+								widthOffset={buttonGapOffset * 2}
 								index={2}
+								padding={buttonPadding}
 								totalButtons={totalButtons}
 								selectable={selectable}
 							/>
@@ -155,8 +210,9 @@ const SideMenuGUI: React.FC = () => {
 								styles={styles.sideMenu.button}
 								text={'Customize'}
 								iconId={Assets.Icons.CustomizeIcon}
-								widthScale={buttonGapOffset * 3}
+								widthOffset={buttonGapOffset * 3}
 								index={3}
+								padding={buttonPadding}
 								totalButtons={totalButtons}
 								selectable={selectable}
 							/>
@@ -164,8 +220,9 @@ const SideMenuGUI: React.FC = () => {
 								styles={styles.sideMenu.button}
 								text={'Spectate'}
 								iconId={Assets.Icons.SpectateIcon}
-								widthScale={buttonGapOffset * 4}
+								widthOffset={buttonGapOffset * 4}
 								index={4}
+								padding={buttonPadding}
 								totalButtons={totalButtons}
 								selectable={selectable}
 							/>
@@ -173,8 +230,9 @@ const SideMenuGUI: React.FC = () => {
 								styles={styles.sideMenu.button}
 								text={'Switch Level'}
 								iconId={Assets.Icons.SwitchLevelIcon}
-								widthScale={buttonGapOffset * 5}
+								widthOffset={buttonGapOffset * 5}
 								index={5}
+								padding={buttonPadding}
 								totalButtons={totalButtons}
 								selectable={selectable}
 							/>
@@ -182,8 +240,9 @@ const SideMenuGUI: React.FC = () => {
 								styles={styles.sideMenu.button}
 								text={'Start Screen'}
 								iconId={Assets.Icons.StartMenuIcon}
-								widthScale={buttonGapOffset * 6}
+								widthOffset={buttonGapOffset * 6}
 								index={6}
+								padding={buttonPadding}
 								totalButtons={totalButtons}
 								selectable={selectable}
 								onClick={async () => {
@@ -208,8 +267,8 @@ const SideMenuGUI: React.FC = () => {
 								}}
 							/>
 						</frame>
-					</>
-				</ContainerImage>
+					</frame>
+				</frame>
 			</frame>
 		</screengui>
 	);
