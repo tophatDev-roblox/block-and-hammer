@@ -15,12 +15,12 @@ import { Units } from 'shared/units';
 
 import { clientInputTypeAtom } from 'client/input';
 import { UserSettings } from 'client/user-settings';
+import { StatusEffect } from 'client/status-effect';
 import { Leaderstats } from 'client/leaderstats';
 import { Camera } from 'client/camera';
 
-import { SideMenuState } from 'client/ui/side-menu-state';
-import { StatusEffect } from 'client/status-effect';
 import { ModalState } from 'client/ui/modal-state';
+import { PathState } from 'client/ui/path-state';
 
 import { CharacterState } from './state';
 
@@ -180,7 +180,8 @@ function moveTargetAttachment(position: Vector3): void {
 function processInput(input: InputObject): void {
 	const camera = peek(Camera.instanceAtom);
 	const characterParts = peek(CharacterState.partsAtom);
-	const sideMenuOpen = peek(SideMenuState.isOpenAtom);
+	const path = peek(PathState.valueAtom);
+	const sideMenuOpen = PathState.isAt(PathState.Location.SideMenu, path);
 	const modal = peek(ModalState.stateAtom);
 	if (camera === undefined || characterParts === undefined || sideMenuOpen || modal !== undefined) {
 		return;

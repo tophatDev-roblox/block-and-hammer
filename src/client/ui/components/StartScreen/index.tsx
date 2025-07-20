@@ -1,6 +1,6 @@
 import { GuiService, RunService, Workspace } from '@rbxts/services';
 
-import React, { useEffect, useState } from '@rbxts/react';
+import React, { useEffect, useMemo, useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
@@ -10,9 +10,11 @@ import { setTimeout } from '@rbxts/set-timeout';
 import { StyleParse, Styles } from 'shared/styles';
 import { waitForChild } from 'shared/wait-for-child';
 
-import { StartScreenState } from 'client/ui/start-screen-state';
 import { Effects } from 'client/effects';
 import { Camera } from 'client/camera';
+
+import { LoadingState } from 'client/ui/loading-state';
+import { PathState } from 'client/ui/path-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../UIListLayout';
@@ -45,9 +47,11 @@ let cameraPart: Part;
 const StartScreenGUI: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);
 	
-	const isVisible = useAtom(StartScreenState.isVisibleAtom);
+	const path = useAtom(PathState.valueAtom);
 	const styles = useAtom(Styles.stateAtom);
-	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinishedAtom);
+	const isLoadingFinished = useAtom(LoadingState.isFinishedAtom);
+	
+	const isVisible = useMemo(() => PathState.isAt(PathState.Location.StartScreen, path), [path]);
 	
 	const [logoTransparency, logoTransparencyMotion] = useMotion<number>(1);
 	const [logoAnchorPoint, logoAnchorPointMotion] = useMotion<Vector2>(new Vector2(1, 0));
@@ -182,7 +186,7 @@ const StartScreenGUI: React.FC = () => {
 					autoSelect
 					onClick={() => {
 						GuiService.SelectedObject = undefined;
-						StartScreenState.isVisibleAtom(false);
+						PathState.valueAtom([]);
 					}}
 				/>
 			</frame>

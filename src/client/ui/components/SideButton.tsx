@@ -10,7 +10,7 @@ import { Assets } from 'shared/assets';
 
 import { clientInputTypeAtom } from 'client/input';
 
-import { usePx } from 'client/ui/hooks/use-px';
+import { PxFunction, usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from './UIListLayout';
 import UIPadding from './UIPadding';
@@ -53,6 +53,11 @@ export interface InheritedProps {
 	onClick?: () => void;
 }
 
+export function getSideButtonSizes(px: PxFunction, textStyles: Styles.Text, padding: number = px(12)): LuaTuple<[iconSize: number, height: number]> {
+	const iconSize = StyleParse.px(px, textStyles.size, textStyles.autoScale);
+	return $tuple(iconSize, iconSize + padding * 2);
+}
+
 const SideButton: React.FC<SideButtonProps> = (props) => {
 	const {
 		styles: {
@@ -77,7 +82,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 		widthScale = 0,
 		widthOffset = 0,
 		iconScale = 0.8,
-		padding = 12,
+		padding,
 		onClick = () => {},
 		onHover = () => {},
 		onPress = () => {},
@@ -98,7 +103,9 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 	const isBackgroundRGBA = StyleParse.isRGBA(background);
 	const isIconBackgroundRGBA = StyleParse.isRGBA(iconBackground);
 	const isIconColorRGBA = StyleParse.isRGBA(iconColor);
-	const iconSize = StyleParse.px(px, textStyles.size, textStyles.autoScale);
+	
+	const defaultPadding = px(12);
+	const [iconSize, height] = getSideButtonSizes(px, textStyles, padding);
 	
 	useEventListener(GuiService.GetPropertyChangedSignal('SelectedObject'), () => {
 		if (GuiService.SelectedObject === buttonRef.current) {
@@ -173,7 +180,7 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 		<frame
 			key={'SideButton'}
 			BackgroundTransparency={1}
-			Size={new UDim2(1, 0, 0, iconSize + px(padding) * 2)}
+			Size={new UDim2(1, 0, 0, height)}
 			LayoutOrder={order}
 		>
 			<imagebutton
@@ -238,10 +245,10 @@ const SideButton: React.FC<SideButtonProps> = (props) => {
 						)}
 						<UIListLayout
 							fillDirection={Enum.FillDirection.Horizontal}
-							padding={px(padding)}
+							padding={padding ?? defaultPadding}
 						/>
 						<UIPadding
-							padding={px(padding)}
+							padding={padding ?? defaultPadding}
 						/>
 						<frame
 							BackgroundColor3={isIconBackgroundRGBA ? StyleParse.color(iconBackground) : Color3.fromRGB(255, 255, 255)}

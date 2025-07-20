@@ -1,20 +1,21 @@
 import { GuiService } from '@rbxts/services';
 
-import { atom, effect } from '@rbxts/charm';
+import { subscribe } from '@rbxts/charm';
 import { setTimeout } from '@rbxts/set-timeout';
 
 import { CoreGuis } from 'client/core-guis';
 
-import { StartScreenState } from './start-screen-state';
+import { PathState } from './path-state';
 
-export namespace SideMenuState {
-	export const isOpenAtom = atom<boolean>(false);
-}
-
-effect(() => {
-	const sideMenuOpen = SideMenuState.isOpenAtom();
-	const isInStartScreen = StartScreenState.isVisibleAtom();
+subscribe(PathState.valueAtom, (path, previousPath) => {
+	const isInStartScreen = PathState.isAt(PathState.Location.StartScreen, path);
 	if (isInStartScreen) {
+		return;
+	}
+	
+	const sideMenuOpen = PathState.isAt(PathState.Location.SideMenu, path);
+	const wasSideMenuOpen = PathState.isAt(PathState.Location.SideMenu, previousPath);
+	if (sideMenuOpen === wasSideMenuOpen) {
 		return;
 	}
 	
@@ -22,7 +23,6 @@ effect(() => {
 		CoreGuis.playerListAtom(false);
 		return;
 	}
-	
 	if (sideMenuOpen) {
 		CoreGuis.playerListAtom(false);
 	} else {

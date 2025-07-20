@@ -9,7 +9,7 @@ import { Shake } from 'shared/shake';
 
 import { CharacterState } from 'client/character/state';
 
-import { StartScreenState } from 'client/ui/start-screen-state';
+import { PathState } from 'client/ui/path-state';
 
 export namespace Camera {
 	export const instanceAtom = atom<Camera>();
@@ -63,7 +63,7 @@ function onCameraTypeChange(): void {
 				camera.FieldOfView = math.min(camera.FieldOfView, 80);
 			}
 		} else {
-			const isInStartScreen = peek(StartScreenState.isVisibleAtom);
+			const isInStartScreen = PathState.isAt(PathState.Location.StartScreen, PathState.valueAtom());
 			if (isInStartScreen) {
 				camera.FieldOfView = 45;
 			} else {

@@ -1,7 +1,7 @@
-import React from '@rbxts/react';
+import React, { useMemo } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { StartScreenState } from 'client/ui/start-screen-state';
+import { PathState } from 'client/ui/path-state';
 
 import SpeedEffectGUI from './SpeedEffect';
 import StartScreenGUI from './StartScreen';
@@ -14,7 +14,9 @@ import HudGUI from './HUD';
 import World from './World';
 
 const App: React.FC = () => {
-	const isInStartScreen = useAtom(StartScreenState.isVisibleAtom);
+	const path = useAtom(PathState.valueAtom);
+	
+	const isInStartScreen = useMemo(() => PathState.isAt(PathState.Location.StartScreen, path), [path]);
 	if (isInStartScreen) {
 		return (
 			<>

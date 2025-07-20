@@ -1,6 +1,6 @@
 import { GuiService } from '@rbxts/services';
 
-import React, { useEffect, useState } from '@rbxts/react';
+import React, { useEffect, useMemo, useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
@@ -9,8 +9,7 @@ import { setTimeout } from '@rbxts/set-timeout';
 import { StyleParse, Styles } from 'shared/styles';
 import { Assets } from 'shared/assets';
 
-import { StartScreenState } from 'client/ui/start-screen-state';
-import { SideMenuState } from 'client/ui/side-menu-state';
+import { PathState } from 'client/ui/path-state';
 import { ModalState } from 'client/ui/modal-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
@@ -27,7 +26,9 @@ const SideMenuGUI: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);
 	
 	const styles = useAtom(Styles.stateAtom);
-	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
+	const path = useAtom(PathState.valueAtom);
+	
+	const sideMenuOpened = useMemo(() => PathState.isAt(PathState.Location.SideMenu, path), [path]);
 	
 	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromScale(1.5, 0));
 	const [rotation, rotationMotion] = useMotion<number>(20);
@@ -246,7 +247,7 @@ const SideMenuGUI: React.FC = () => {
 								totalButtons={totalButtons}
 								selectable={selectable}
 								onClick={async () => {
-									SideMenuState.isOpenAtom(false);
+									PathState.valueAtom([]);
 									
 									const action = await ModalState.create({
 										title: 'Start Screen',
@@ -263,7 +264,7 @@ const SideMenuGUI: React.FC = () => {
 										return;
 									}
 									
-									StartScreenState.isVisibleAtom(true);
+									PathState.valueAtom([PathState.Location.StartScreen]);
 								}}
 							/>
 						</frame>

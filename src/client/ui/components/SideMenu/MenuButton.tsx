@@ -1,6 +1,6 @@
 import { GuiService } from '@rbxts/services';
 
-import React, { useEffect, useState } from '@rbxts/react';
+import React, { useEffect, useMemo, useState } from '@rbxts/react';
 import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
@@ -10,7 +10,7 @@ import { InputType } from 'shared/input-type';
 
 import { clientInputTypeAtom } from 'client/input';
 
-import { SideMenuState } from 'client/ui/side-menu-state';
+import { PathState } from 'client/ui/path-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
 import SideButton, { InheritedProps } from '../SideButton';
@@ -39,8 +39,10 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 	const [isHovered, setHovered] = useState<boolean>(false);
 	const [isPressed, setPressed] = useState<boolean>(false);
 	
-	const sideMenuOpened = useAtom(SideMenuState.isOpenAtom);
+	const path = useAtom(PathState.valueAtom);
 	const inputType = useAtom(clientInputTypeAtom);
+	
+	const sideMenuOpen = useMemo(() => PathState.isAt(PathState.Location.SideMenu, path), [path]);
 	
 	const px = usePx();
 	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
@@ -51,7 +53,7 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 		}
 		
 		if (GuiService.SelectedObject === undefined) {
-			SideMenuState.isOpenAtom(false);
+			PathState.valueAtom([]);
 		}
 	});
 	
@@ -59,7 +61,7 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 		const openSize = new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0);
 		const closeSize = new UDim2(widthScale, widthOffset, 1, 0);
 		if (!GuiService.ReducedMotionEnabled) {
-			if (sideMenuOpened) {
+			if (sideMenuOpen) {
 				const delay = (totalButtons - index - 1) / 30;
 				
 				const clearTimeout = setTimeout(() => {
@@ -94,7 +96,7 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 				};
 			}
 		} else {
-			if (sideMenuOpened) {
+			if (sideMenuOpen) {
 				sizeMotion.immediate(openSize);
 				setCanAnimate(true);
 			} else {
@@ -102,7 +104,7 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 				setCanAnimate(false);
 			}
 		}
-	}, [sideMenuOpened]);
+	}, [sideMenuOpen]);
 	
 	return (
 		<SideButton
@@ -116,7 +118,7 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 			isPressed={isPressed}
 			canAnimate={canAnimate}
 			selectable={selectable}
-			autoSelect={sideMenuOpened && autoSelect}
+			autoSelect={sideMenuOpen && autoSelect}
 			widthOffset={widthOffset}
 			widthScale={widthScale}
 			iconScale={iconScale}

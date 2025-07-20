@@ -8,8 +8,8 @@ import { computed } from '@rbxts/charm';
 
 import { Styles } from 'shared/styles';
 
-import { StartScreenState } from 'client/ui/start-screen-state';
 import { useAtomBinding } from 'client/ui/hooks/use-atom-binding';
+import { LoadingState } from 'client/ui/loading-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../UIListLayout';
@@ -17,11 +17,11 @@ import Text from '../Text';
 
 const LoadingScreen: React.FC= () => {
 	const styles = useAtom(Styles.stateAtom);
-	const isLoadingFinished = useAtom(StartScreenState.isLoadingFinishedAtom);
+	const isLoadingFinished = useAtom(LoadingState.isFinishedAtom);
 	
-	const loadingStatus = useAtomBinding(StartScreenState.loadingStatusAtom);
-	const percentageSize = useAtomBinding(computed(() => UDim2.fromScale(StartScreenState.loadingPercentageAtom(), 1)));
-	const percentageText = useAtomBinding(computed(() => '%.1f%%'.format(StartScreenState.loadingPercentageAtom() * 100)));
+	const loadingStatus = useAtomBinding(LoadingState.statusAtom);
+	const percentageSize = useAtomBinding(computed(() => UDim2.fromScale(LoadingState.percentageAtom(), 1)));
+	const percentageText = useAtomBinding(computed(() => '%.1f%%'.format(LoadingState.percentageAtom() * 100)));
 	
 	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? UDim2.fromScale(0.5, -2) : UDim2.fromScale(0.5, 0.5));
 	
