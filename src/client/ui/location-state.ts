@@ -8,7 +8,9 @@ export namespace LocationState {
 		| '/game'
 		| '/game/side-menu';
 	
-	export const pathAtom = atom<Path>('/start-screen');
+	export const pathAtom = atom<Path>('/start-screen', {
+		equals: (_previousValue, value) => value.match('^/[a-zA-Z-/]*[a-zA-Z]$')[0] !== undefined,
+	});
 	
 	type RouteParams<Path extends string> = Path extends `${string}:${infer Param}/${infer Rest}`
 		? { [k in Param | keyof RouteParams<`/${Rest}`>]: string } : Path extends `${string}:${infer Param}`
