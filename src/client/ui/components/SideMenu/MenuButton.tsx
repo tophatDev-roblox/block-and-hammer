@@ -10,7 +10,7 @@ import { InputType } from 'shared/input-type';
 
 import { clientInputTypeAtom } from 'client/input';
 
-import { PathState } from 'client/ui/path-state';
+import { LocationState } from 'client/ui/location-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
 import SideButton, { InheritedProps } from '../SideButton';
@@ -39,10 +39,10 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 	const [isHovered, setHovered] = useState<boolean>(false);
 	const [isPressed, setPressed] = useState<boolean>(false);
 	
-	const path = useAtom(PathState.valueAtom);
+	const path = useAtom(LocationState.pathAtom);
 	const inputType = useAtom(clientInputTypeAtom);
 	
-	const sideMenuOpen = useMemo(() => PathState.isAt(PathState.Location.SideMenu, path), [path]);
+	const sideMenuOpen = useMemo(() => LocationState.isAt('/game/side-menu', path), [path]);
 	
 	const px = usePx();
 	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
@@ -53,7 +53,7 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
 		}
 		
 		if (GuiService.SelectedObject === undefined) {
-			PathState.valueAtom([]);
+			LocationState.pathAtom('/game');
 		}
 	});
 	

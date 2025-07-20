@@ -9,7 +9,7 @@ import { CharacterState } from 'client/character/state';
 import { Preloader } from 'client/preloader';
 import { CoreGuis } from 'client/core-guis';
 
-import { PathState } from './path-state';
+import { LocationState } from './location-state';
 
 const logger = new Logger('ui/start-screen-state');
 
@@ -21,9 +21,9 @@ export namespace LoadingState {
 
 Preloader.preloadAtom(LoadingState.statusAtom, LoadingState.percentageAtom, LoadingState.isFinishedAtom);
 
-subscribe(PathState.valueAtom, (path, previousPath) => {
-	const isInStartScreen = PathState.isAt(PathState.Location.StartScreen, path);
-	const wasInStartScreen = PathState.isAt(PathState.Location.StartScreen, previousPath);
+subscribe(LocationState.pathAtom, (path, previousPath) => {
+	const isInStartScreen = LocationState.isAt('/start-screen', path);
+	const wasInStartScreen = LocationState.isAt('/start-screen', previousPath);
 	if (isInStartScreen === wasInStartScreen) {
 		return;
 	}

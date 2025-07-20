@@ -19,8 +19,8 @@ import { StatusEffect } from 'client/status-effect';
 import { Leaderstats } from 'client/leaderstats';
 import { Camera } from 'client/camera';
 
+import { LocationState } from 'client/ui/location-state';
 import { ModalState } from 'client/ui/modal-state';
-import { PathState } from 'client/ui/path-state';
 
 import { CharacterState } from './state';
 
@@ -180,8 +180,7 @@ function moveTargetAttachment(position: Vector3): void {
 function processInput(input: InputObject): void {
 	const camera = peek(Camera.instanceAtom);
 	const characterParts = peek(CharacterState.partsAtom);
-	const path = peek(PathState.valueAtom);
-	const sideMenuOpen = PathState.isAt(PathState.Location.SideMenu, path);
+	const sideMenuOpen = LocationState.isAt('/game/side-menu', peek(LocationState.pathAtom));
 	const modal = peek(ModalState.stateAtom);
 	if (camera === undefined || characterParts === undefined || sideMenuOpen || modal !== undefined) {
 		return;

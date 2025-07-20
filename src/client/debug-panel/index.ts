@@ -11,6 +11,7 @@ import { CharacterState } from 'client/character/state';
 import { StatusEffect } from 'client/status-effect';
 
 import { DebugPanelState } from './state';
+import { LocationState } from 'client/ui/location-state';
 
 export namespace DebugPanel {
 	export function render(): void {
@@ -33,9 +34,11 @@ export namespace DebugPanel {
 				Iris.CollapsingHeader(['Info']); {
 					const timeStart = peek(CharacterState.timeStartAtom);
 					const shakeStrength = peek(CharacterState.shakeStrengthAtom);
+					const path = peek(LocationState.pathAtom);
 					
 					Iris.Text(['Time: %.3fs'.format(timeStart !== undefined ? TimeSpan.timeSince(timeStart) : 0)]);
 					Iris.Text(['Shake Strength: %.4f'.format(shakeStrength)]);
+					Iris.Text(['UI Path: %s'.format(path)]);
 				} Iris.End();
 				
 				Iris.CollapsingHeader(['Input']); {

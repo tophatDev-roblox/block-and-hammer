@@ -5,16 +5,15 @@ import { setTimeout } from '@rbxts/set-timeout';
 
 import { CoreGuis } from 'client/core-guis';
 
-import { PathState } from './path-state';
+import { LocationState } from './location-state';
 
-subscribe(PathState.valueAtom, (path, previousPath) => {
-	const isInStartScreen = PathState.isAt(PathState.Location.StartScreen, path);
-	if (isInStartScreen) {
+subscribe(LocationState.pathAtom, (path, previousPath) => {
+	if (LocationState.isAt('/start-screen', path)) {
 		return;
 	}
 	
-	const sideMenuOpen = PathState.isAt(PathState.Location.SideMenu, path);
-	const wasSideMenuOpen = PathState.isAt(PathState.Location.SideMenu, previousPath);
+	const sideMenuOpen = LocationState.isAt('/game/side-menu', path);
+	const wasSideMenuOpen = LocationState.isAt('/game/side-menu', previousPath);
 	if (sideMenuOpen === wasSideMenuOpen) {
 		return;
 	}

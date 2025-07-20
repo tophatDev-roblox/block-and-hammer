@@ -9,7 +9,7 @@ import { setTimeout } from '@rbxts/set-timeout';
 import { StyleParse, Styles } from 'shared/styles';
 import { Assets } from 'shared/assets';
 
-import { PathState } from 'client/ui/path-state';
+import { LocationState } from 'client/ui/location-state';
 import { ModalState } from 'client/ui/modal-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
@@ -26,9 +26,9 @@ const SideMenuGUI: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);
 	
 	const styles = useAtom(Styles.stateAtom);
-	const path = useAtom(PathState.valueAtom);
+	const path = useAtom(LocationState.pathAtom);
 	
-	const sideMenuOpened = useMemo(() => PathState.isAt(PathState.Location.SideMenu, path), [path]);
+	const sideMenuOpened = useMemo(() => LocationState.isAt('/game/side-menu', path), [path]);
 	
 	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromScale(1.5, 0));
 	const [rotation, rotationMotion] = useMotion<number>(20);
@@ -247,7 +247,7 @@ const SideMenuGUI: React.FC = () => {
 								totalButtons={totalButtons}
 								selectable={selectable}
 								onClick={async () => {
-									PathState.valueAtom([]);
+									LocationState.pathAtom('/game');
 									
 									const action = await ModalState.create({
 										title: 'Start Screen',
@@ -264,7 +264,7 @@ const SideMenuGUI: React.FC = () => {
 										return;
 									}
 									
-									PathState.valueAtom([PathState.Location.StartScreen]);
+									LocationState.pathAtom('/start-screen');
 								}}
 							/>
 						</frame>

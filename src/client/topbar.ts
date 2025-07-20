@@ -11,8 +11,8 @@ import { clientInputTypeAtom } from 'client/input';
 import { InputType } from 'shared/input-type';
 import { Styles } from 'shared/styles';
 
+import { LocationState } from 'client/ui/location-state';
 import { ModalState } from 'client/ui/modal-state';
-import { PathState } from 'client/ui/path-state';
 
 import { DebugPanelState } from './debug-panel/state';
 
@@ -62,23 +62,22 @@ new Icon()
 
 menuIcon.toggled.Connect((toggled) => {
 	if (toggled) {
-		PathState.valueAtom([PathState.Location.SideMenu]);
+		LocationState.pathAtom('/game/side-menu');
 	} else {
-		PathState.valueAtom([]);
+		LocationState.pathAtom('/game');
 	}
 });
 
-subscribe(PathState.valueAtom, (path) => {
-	const isInStartScreen = PathState.isAt(PathState.Location.StartScreen, path);
-	Icon.setTopbarEnabled(!isInStartScreen);
-	if (isInStartScreen) {
+subscribe(LocationState.pathAtom, (path) => {
+	if (LocationState.isAt('/start-screen', path)) {
 		menuIcon.lock();
+		Icon.setTopbarEnabled(false);
 	} else {
 		menuIcon.unlock();
+		Icon.setTopbarEnabled(true);
 	}
 	
-	const sideMenuOpen = PathState.isAt(PathState.Location.SideMenu, path);
-	if (sideMenuOpen) {
+	if (LocationState.isAt('/game/side-menu', path)) {
 		menuIcon.select();
 	} else {
 		menuIcon.deselect();

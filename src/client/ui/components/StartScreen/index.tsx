@@ -13,8 +13,8 @@ import { waitForChild } from 'shared/wait-for-child';
 import { Effects } from 'client/effects';
 import { Camera } from 'client/camera';
 
+import { LocationState } from 'client/ui/location-state';
 import { LoadingState } from 'client/ui/loading-state';
-import { PathState } from 'client/ui/path-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../UIListLayout';
@@ -47,11 +47,11 @@ let cameraPart: Part;
 const StartScreenGUI: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);
 	
-	const path = useAtom(PathState.valueAtom);
+	const path = useAtom(LocationState.pathAtom);
 	const styles = useAtom(Styles.stateAtom);
 	const isLoadingFinished = useAtom(LoadingState.isFinishedAtom);
 	
-	const isVisible = useMemo(() => PathState.isAt(PathState.Location.StartScreen, path), [path]);
+	const isVisible = useMemo(() => LocationState.isAt('/start-screen', path), [path]);
 	
 	const [logoTransparency, logoTransparencyMotion] = useMotion<number>(1);
 	const [logoAnchorPoint, logoAnchorPointMotion] = useMotion<Vector2>(new Vector2(1, 0));
@@ -186,7 +186,7 @@ const StartScreenGUI: React.FC = () => {
 					autoSelect
 					onClick={() => {
 						GuiService.SelectedObject = undefined;
-						PathState.valueAtom([]);
+						LocationState.pathAtom('/game');
 					}}
 				/>
 			</frame>

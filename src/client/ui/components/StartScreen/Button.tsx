@@ -2,7 +2,7 @@ import React, { useMemo, useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { PathState } from 'client/ui/path-state';
+import { LocationState } from 'client/ui/location-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
 import SideButton, { InheritedProps } from '../SideButton';
@@ -25,9 +25,9 @@ const Button: React.FC<InheritedProps> = (props) => {
 	const [isHovered, setHovered] = useState<boolean>(false);
 	const [isPressed, setPressed] = useState<boolean>(false);
 	
-	const path = useAtom(PathState.valueAtom);
+	const path = useAtom(LocationState.pathAtom);
 	
-	const isInStartScreen = useMemo(() => PathState.isAt(PathState.Location.StartScreen, path), [path]);
+	const isInStartScreen = useMemo(() => LocationState.isAt('/start-screen', path), [path]);
 	
 	const px = usePx();
 	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1 + widthScale, px(-30) + widthOffset, 1, 0));
