@@ -78,8 +78,9 @@ const SideMenuGUI: React.FC = () => {
 		<screengui
 			key={'SideMenuGUI'}
 			DisplayOrder={3}
-			ScreenInsets={Enum.ScreenInsets.None}
+			ScreenInsets={Enum.ScreenInsets.DeviceSafeInsets}
 			ResetOnSpawn={false}
+			ClipToDeviceSafeArea={false}
 			IgnoreGuiInset
 		>
 			<frame

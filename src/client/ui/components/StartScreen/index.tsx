@@ -104,7 +104,7 @@ const StartScreenGUI: React.FC = () => {
 			logoTransparencyMotion.tween(0, tweenOptions);
 			
 			const logoAnchorPoint = new Vector2(1, 1);
-			const buttonsAnchorPoint = new Vector2(0.8, 1);
+			const buttonsAnchorPoint = new Vector2(0.3, 1);
 			if (!GuiService.ReducedMotionEnabled) {
 				logoAnchorPointMotion.tween(logoAnchorPoint, tweenOptions);
 				
@@ -136,9 +136,10 @@ const StartScreenGUI: React.FC = () => {
 		<screengui
 			key={'StartScreenGUI'}
 			DisplayOrder={50}
-			ScreenInsets={Enum.ScreenInsets.None}
+			ScreenInsets={Enum.ScreenInsets.DeviceSafeInsets}
 			ZIndexBehavior={Enum.ZIndexBehavior.Sibling}
 			ResetOnSpawn={false}
+			ClipToDeviceSafeArea={false}
 			Enabled={isVisible}
 		>
 			<LoadingScreen />
@@ -162,7 +163,7 @@ const StartScreenGUI: React.FC = () => {
 			</canvasgroup>
 			<frame
 				BackgroundTransparency={1}
-				Size={UDim2.fromOffset(px(600), 0)}
+				Size={UDim2.fromScale(1, 0)}
 				AutomaticSize={Enum.AutomaticSize.Y}
 				Position={new UDim2(1, 0, 1, px(-80))}
 				AnchorPoint={buttonsAnchorPoint}

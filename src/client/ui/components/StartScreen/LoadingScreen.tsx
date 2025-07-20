@@ -23,7 +23,7 @@ const LoadingScreen: React.FC= () => {
 	const percentageSize = useAtomBinding(computed(() => UDim2.fromScale(StartScreenState.loadingPercentageAtom(), 1)));
 	const percentageText = useAtomBinding(computed(() => '%.1f%%'.format(StartScreenState.loadingPercentageAtom() * 100)));
 	
-	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? UDim2.fromScale(0, -1) : UDim2.fromScale(0, 0));
+	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? UDim2.fromScale(0.5, -2) : UDim2.fromScale(0.5, 0.5));
 	
 	const px = usePx();
 	
@@ -32,7 +32,7 @@ const LoadingScreen: React.FC= () => {
 			return;
 		}
 		
-		const position = UDim2.fromScale(0, -1);
+		const position = UDim2.fromScale(0.5, -2);
 		if (!GuiService.ReducedMotionEnabled) {
 			positionMotion.tween(position, {
 				time: 0.5,
@@ -49,8 +49,9 @@ const LoadingScreen: React.FC= () => {
 			key={'LoadingScreen'}
 			BackgroundColor3={Color3.fromRGB(0, 0, 0)}
 			BorderSizePixel={0}
-			Size={UDim2.fromScale(1, 1)}
+			Size={UDim2.fromScale(2, 2)}
 			Position={position}
+			AnchorPoint={new Vector2(0.5, 0.5)}
 			ZIndex={2}
 		>
 			<frame
