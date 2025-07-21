@@ -28,7 +28,7 @@ const SideMenuGUI: React.FC = () => {
 	const styles = useAtom(Styles.stateAtom);
 	const path = useAtom(LocationState.pathAtom);
 	
-	const sideMenuOpened = useMemo(() => LocationState.isAt('/game/side-menu', path), [path]);
+	const sideMenuOpened = useMemo<boolean>(() => LocationState.isAt('/game/side-menu', path), [path]);
 	
 	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromScale(1.5, 0));
 	const [rotation, rotationMotion] = useMotion<number>(20);
@@ -43,12 +43,13 @@ const SideMenuGUI: React.FC = () => {
 	const isBackgroundRGBA = StyleParse.isRGBA(background);
 	
 	const buttonPadding = px(12);
-	const [, height] = getSideButtonSizes(px, styles.sideMenu.button.text, buttonPadding);
+	const buttonHeight = useMemo<number>(() => getSideButtonSizes(px, styles.sideMenu.button.text, buttonPadding)[1], [px, styles, buttonPadding]);
 	
 	const baseMenuRotation = -10;
-	const listPadding = px(12);
-	const buttonGapOffset = (height + listPadding) * math.tan(math.rad(baseMenuRotation));
 	const totalButtons = 6;
+	
+	const listPadding = px(12);
+	const buttonGapOffset = useMemo<number>(() => (buttonHeight + listPadding) * math.tan(math.rad(baseMenuRotation)), [buttonHeight, listPadding]);
 	
 	useEffect(() => {
 		const target = sideMenuOpened ? {
