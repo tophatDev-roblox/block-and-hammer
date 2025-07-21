@@ -1,7 +1,14 @@
-import React from '@rbxts/react';
+import { RunService } from '@rbxts/services';
+
+import React, { useBinding } from '@rbxts/react';
+import { useEventListener } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
+import { peek } from '@rbxts/charm';
+
 import { StyleParse, Styles } from 'shared/styles';
+import { TimeSpan } from 'shared/time-span';
+import { Shake } from 'shared/shake';
 
 import { CharacterState } from 'client/character/state';
 import { usePx } from 'client/ui/hooks/use-px';
@@ -11,10 +18,17 @@ import UIListLayout from '../../UIListLayout';
 import Effect from './Effect';
 
 const StatusEffects: React.FC = () => {
+	const [rotation, setRotation] = useBinding<number>(0);
+	
 	const statusEffects = useAtom(CharacterState.statusEffectsAtom);
 	const styles = useAtom(Styles.stateAtom);
 	
 	const px = usePx();
+	
+	useEventListener(RunService.PreSimulation, () => {
+		const time = TimeSpan.now();
+		setRotation(Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 4));
+	});
 	
 	return (
 		<frame
@@ -28,7 +42,7 @@ const StatusEffects: React.FC = () => {
 				BackgroundTransparency={1}
 				Size={UDim2.fromScale(0, 1)}
 				AutomaticSize={Enum.AutomaticSize.X}
-				// cant set `Rotation` because it breaks the `RadialProgress` component for some reason
+				Rotation={rotation}
 			>
 				<UIListLayout
 					fillDirection={Enum.FillDirection.Horizontal}

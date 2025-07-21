@@ -16,6 +16,7 @@ const HudGUI: React.FC = () => {
 	return (
 		<screengui
 			key={'HudGUI'}
+			ZIndexBehavior={Enum.ZIndexBehavior.Sibling}
 			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>
