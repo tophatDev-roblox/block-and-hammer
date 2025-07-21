@@ -22,6 +22,7 @@ subscribe(LocationState.pathAtom, (path, previousPath) => {
 		CoreGuis.playerListAtom(false);
 		return;
 	}
+	
 	if (sideMenuOpen) {
 		CoreGuis.playerListAtom(false);
 	} else {
@@ -30,9 +31,7 @@ subscribe(LocationState.pathAtom, (path, previousPath) => {
 				CoreGuis.playerListAtom(true);
 			}, 0.6);
 			
-			return () => {
-				clearTimeout();
-			};
+			return clearTimeout;
 		} else {
 			CoreGuis.playerListAtom(true);
 		}
