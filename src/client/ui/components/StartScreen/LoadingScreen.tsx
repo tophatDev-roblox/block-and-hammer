@@ -4,8 +4,6 @@ import React, { useEffect } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 
-import { computed } from '@rbxts/charm';
-
 import { Styles } from 'shared/styles';
 
 import { useAtomBinding } from 'client/ui/hooks/use-atom-binding';
@@ -20,8 +18,7 @@ const LoadingScreen: React.FC= () => {
 	const isLoadingFinished = useAtom(LoadingState.isFinishedAtom);
 	
 	const loadingStatus = useAtomBinding(LoadingState.statusAtom);
-	const percentageSize = useAtomBinding(computed(() => UDim2.fromScale(LoadingState.percentageAtom(), 1)));
-	const percentageText = useAtomBinding(computed(() => '%.1f%%'.format(LoadingState.percentageAtom() * 100)));
+	const percentageBinding = useAtomBinding(LoadingState.percentageAtom);
 	
 	const [position, positionMotion] = useMotion<UDim2>(isLoadingFinished ? UDim2.fromScale(0.5, -2) : UDim2.fromScale(0.5, 0.5));
 	
@@ -70,7 +67,16 @@ const LoadingScreen: React.FC= () => {
 					order={0}
 					automaticWidth
 					automaticHeight
-				/>
+				>
+					<uigradient
+						Transparency={percentageBinding.map((percentage) => new NumberSequence([
+							new NumberSequenceKeypoint(0, 0),
+							new NumberSequenceKeypoint(math.clamp(percentage, 0, 0.999), 0),
+							new NumberSequenceKeypoint(math.clamp(percentage + 0.001, 0, 0.999), 0.5),
+							new NumberSequenceKeypoint(1, 0.5),
+						]))}
+					/>
+				</Text>
 				<Text
 					styles={styles.startScreen.loading.status}
 					text={loadingStatus}
@@ -78,32 +84,6 @@ const LoadingScreen: React.FC= () => {
 					automaticWidth
 					automaticHeight
 				/>
-			</frame>
-			<frame
-				BackgroundTransparency={1}
-				Size={new UDim2(1, 0, 0, px(30))}
-				Position={UDim2.fromScale(0, 1)}
-				AnchorPoint={new Vector2(0, 1)}
-			>
-				<frame
-					BackgroundColor3={Color3.fromRGB(255, 255, 255)}
-					BackgroundTransparency={0}
-					BorderSizePixel={0}
-					Size={percentageSize}
-				/>
-				<frame
-					BackgroundTransparency={1}
-					Size={UDim2.fromScale(1, 0)}
-					AutomaticSize={Enum.AutomaticSize.Y}
-					Position={UDim2.fromOffset(0, px(-10))}
-					AnchorPoint={new Vector2(0, 1)}
-				>
-					<Text
-						styles={styles.startScreen.loading.percentage}
-						text={percentageText}
-						automaticHeight
-					/>
-				</frame>
 			</frame>
 		</frame>
 	);
