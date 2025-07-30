@@ -1,4 +1,4 @@
-import { atom, peek } from '@rbxts/charm';
+import { atom } from '@rbxts/charm';
 
 import { String } from 'shared/string';
 
@@ -6,15 +6,22 @@ export namespace LocationState {
 	export type Path =
 		| '/start-screen'
 		| '/game'
-		| '/game/side-menu';
+		| '/game/side-menu'
+		| '/game/side-menu/:panel'
+		| '/game/side-menu/settings';
 	
 	export const pathAtom = atom<Path>('/start-screen', {
 		equals: (_previousValue, value) => value.match('^/[a-zA-Z-/]*[a-zA-Z]$')[0] === undefined,
 	});
 	
-	type RouteParams<Path extends string> = Path extends `${string}:${infer Param}/${infer Rest}`
-		? { [k in Param | keyof RouteParams<`/${Rest}`>]: string } : Path extends `${string}:${infer Param}`
-		? { [k in Param]: string } : {};
+	type RouteParamsKey<Path extends string> =
+		Path extends `${string}:${infer Param}/${infer Rest}`
+			? Param | RouteParamsKey<`/${Rest}`>
+			: Path extends `${string}:${infer Param}`
+			? Param
+			: never;
+	
+	type RouteParams<Path extends string> = ReadonlyMap<RouteParamsKey<Path>, string>;
 	
 	export function segments(path: string): ReadonlyArray<string> {
 		return path.split('/');
@@ -28,9 +35,8 @@ export namespace LocationState {
 		return String.startsWith(path, current);
 	}
 	
-	export function match<T extends Path>(match: T): RouteParams<T> | undefined {
-		const params = {} as any;
-		const path = peek(pathAtom);
+	export function match<T extends Path>(match: T, path: Path): RouteParams<T> | undefined {
+		const params = new Map<string, string>();
 		
 		const pathSegments = segments(path);
 		const matchSegments = segments(match);
@@ -38,12 +44,10 @@ export namespace LocationState {
 			return undefined;
 		}
 		
-		for (const i of $range(0, matchSegments.size() - 1)) {
-			const segment = pathSegments[i];
-			
-			const value = matchSegments[i];
+		for (const [i, segment] of pairs(pathSegments)) {
+			const value = matchSegments[i - 1];
 			if (String.startsWith(':', value)) {
-				params[value.sub(2)] = segment;
+				params.set(value.sub(2), segment);
 			} else {
 				if (segment !== value) {
 					return undefined;
@@ -51,6 +55,6 @@ export namespace LocationState {
 			}
 		}
 		
-		return params;
+		return params as any as RouteParams<T>;
 	}
 }

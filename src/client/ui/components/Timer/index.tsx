@@ -1,10 +1,11 @@
-import { RunService } from '@rbxts/services';
+import { GuiService, RunService } from '@rbxts/services';
 
-import React, { useBinding, useMemo } from '@rbxts/react';
-import { useEventListener } from '@rbxts/pretty-react-hooks';
+import React, { useBinding, useEffect, useMemo } from '@rbxts/react';
+import { useEventListener, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { peek } from '@rbxts/charm';
+import { peek, subscribe } from '@rbxts/charm';
+import { setTimeout } from '@rbxts/set-timeout';
 
 import { TimeSpan } from 'shared/time-span';
 import { RichText } from 'shared/rich-text';
@@ -12,6 +13,8 @@ import { Styles } from 'shared/styles';
 import { Shake } from 'shared/shake';
 
 import { CharacterState } from 'client/character/state';
+
+import { LocationState } from 'client/ui/location-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../UIListLayout';
@@ -21,6 +24,8 @@ import Text from '../Text';
 const TimerGUI: React.FC = () => {
 	const [text, setText] = useBinding<string>('--');
 	const [rotation, setRotation] = useBinding<number>(0);
+	
+	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromScale(0, 0));
 	
 	const timeStart = useAtom(CharacterState.timeStartAtom);
 	const styles = useAtom(Styles.stateAtom);
@@ -69,37 +74,79 @@ const TimerGUI: React.FC = () => {
 		setRotation(Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 1));
 	});
 	
+	useEffect(() => {
+		return subscribe(LocationState.pathAtom, (path, previousPath) => {
+			const isPanelOpen = LocationState.match('/game/side-menu/:panel', path) !== undefined;
+			const wasPanelOpen = LocationState.match('/game/side-menu/:panel', previousPath) !== undefined;
+			if (isPanelOpen === wasPanelOpen) {
+				return;
+			}
+			
+			const target = isPanelOpen ? {
+				position: UDim2.fromScale(-1, 0),
+			} : {
+				position: UDim2.fromScale(0, 0),
+			};
+			
+			if (!GuiService.ReducedMotionEnabled) {
+				if (isPanelOpen) {
+					positionMotion.tween(target.position, {
+						time: 0.6,
+						style: Enum.EasingStyle.Back,
+						direction: Enum.EasingDirection.In,
+					});
+				} else {
+					setTimeout(() => {
+						positionMotion.tween(target.position, {
+							time: 0.6,
+							style: Enum.EasingStyle.Back,
+							direction: Enum.EasingDirection.Out,
+						});
+					}, 0.4);
+				}
+			} else {
+				positionMotion.immediate(target.position);
+			}
+		});
+	}, []);
+	
 	return (
 		<screengui
 			key={'TimerGUI'}
 			DisplayOrder={2}
 			ResetOnSpawn={false}
 		>
-			<UIListLayout
-				fillDirection={Enum.FillDirection.Horizontal}
-				alignX={Enum.HorizontalAlignment.Left}
-				alignY={Enum.VerticalAlignment.Bottom}
-			/>
-			<UIPadding
-				padding={[px(8), px(12)]}
-			/>
 			<frame
 				BackgroundTransparency={1}
-				Size={UDim2.fromScale(0, 0)}
-				AutomaticSize={Enum.AutomaticSize.XY}
-				LayoutOrder={0}
+				Size={UDim2.fromScale(1, 1)}
+				Position={position}
 			>
-				<Text
-					styles={styles.timer.text}
-					text={text}
-					alignX={Enum.TextXAlignment.Left}
-					automaticHeight
-					automaticWidth
-					richText
-					properties={{
-						Rotation: rotation,
-					}}
+				<UIListLayout
+					fillDirection={Enum.FillDirection.Horizontal}
+					alignX={Enum.HorizontalAlignment.Left}
+					alignY={Enum.VerticalAlignment.Bottom}
 				/>
+				<UIPadding
+					padding={[px(8), px(12)]}
+				/>
+				<frame
+					BackgroundTransparency={1}
+					Size={UDim2.fromScale(0, 0)}
+					AutomaticSize={Enum.AutomaticSize.XY}
+					LayoutOrder={0}
+				>
+					<Text
+						styles={styles.timer.text}
+						text={text}
+						alignX={Enum.TextXAlignment.Left}
+						automaticHeight
+						automaticWidth
+						richText
+						properties={{
+							Rotation: rotation,
+						}}
+					/>
+				</frame>
 			</frame>
 		</screengui>
 	);

@@ -8,6 +8,7 @@ import { waitForChild } from 'shared/wait-for-child';
 import App from './components/App';
 
 import './side-menu';
+import './panel';
 
 const client = Players.LocalPlayer;
 

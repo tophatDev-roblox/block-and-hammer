@@ -182,6 +182,30 @@ const data: Styles.Data = {
 			outline: undefined,
 		},
 	},
+	panel: {
+		container: {
+			background: {
+				colors: [
+					{ position: 0, color: { red: 34, green: 34, blue: 34 } },
+					{ position: 0.6, color: { red: 0, green: 0, blue: 0 } },
+					{ position: 1, color: { red: 0, green: 0, blue: 0 } },
+				],
+				transparency: [
+					{ position: 0, transparency: 0.4 },
+					{ position: 1, transparency: 0.4 },
+				],
+				rotation: 60,
+			},
+			outline: undefined,
+		},
+		title: {
+			font: { fontId, weight: 700, italics: false },
+			color: { red: 255, green: 255, blue: 255, alpha: 1 },
+			size: 60,
+			outline: undefined,
+			autoScale: true,
+		},
+	},
 	startScreen: {
 		logo: {
 			font: { fontId, weight: 900, italics: false },

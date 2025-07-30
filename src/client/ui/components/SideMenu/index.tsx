@@ -10,6 +10,7 @@ import { StyleParse, Styles } from 'shared/styles';
 import { Assets } from 'shared/assets';
 
 import { LocationState } from 'client/ui/location-state';
+import { UIConstants } from 'client/ui/constants';
 import { ModalState } from 'client/ui/modal-state';
 import { usePx } from 'client/ui/hooks/use-px';
 
@@ -45,16 +46,17 @@ const SideMenuGUI: React.FC = () => {
 	const buttonPadding = px(12);
 	const buttonHeight = useMemo<number>(() => getSideButtonSizes(px, styles.sideMenu.button.text, buttonPadding)[1], [px, styles, buttonPadding]);
 	
-	const baseMenuRotation = -10;
 	const totalButtons = 6;
 	
 	const listPadding = px(12);
-	const buttonGapOffset = useMemo<number>(() => (buttonHeight + listPadding) * math.tan(math.rad(baseMenuRotation)), [buttonHeight, listPadding]);
+	const buttonGapOffset = useMemo<number>(() => {
+		return (buttonHeight + listPadding) * math.tan(math.rad(UIConstants.sideMenuRotation));
+	}, [buttonHeight, listPadding]);
 	
 	useEffect(() => {
 		const target = sideMenuOpened ? {
 			position: UDim2.fromScale(1, 0),
-			rotation: baseMenuRotation,
+			rotation: UIConstants.sideMenuRotation,
 		} : {
 			position: UDim2.fromScale(2, 0),
 			rotation: 20,
@@ -207,6 +209,7 @@ const SideMenuGUI: React.FC = () => {
 								padding={buttonPadding}
 								totalButtons={totalButtons}
 								selectable={selectable}
+								onClick={() => LocationState.navigate('/game/side-menu/settings')}
 							/>
 							<MenuButton
 								styles={styles.sideMenu.button}

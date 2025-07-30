@@ -178,6 +178,10 @@ export namespace Styles {
 			container: Container,
 			button: ButtonWithIcon,
 		}),
+		panel: t.interface({
+			container: Container,
+			title: Text,
+		}),
 		startScreen: t.interface({
 			logo: Text,
 			button: ButtonWithIcon,

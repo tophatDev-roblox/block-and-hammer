@@ -10,6 +10,7 @@ import SideMenuGUI from './SideMenu';
 import VersionGUI from './Version';
 import TimerGUI from './Timer';
 import ModalGUI from './Modal';
+import PanelGUI from './Panel';
 import HudGUI from './HUD';
 import World from './World';
 
@@ -35,6 +36,7 @@ const App: React.FC = () => {
 			<HudGUI />
 			<TimerGUI />
 			<SideMenuGUI />
+			<PanelGUI />
 			<ModalGUI />
 		</>
 	);
