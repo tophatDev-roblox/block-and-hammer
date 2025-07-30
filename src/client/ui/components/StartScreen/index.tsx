@@ -1,11 +1,12 @@
-import { GuiService, RunService, Workspace } from '@rbxts/services';
+import { GuiService, RunService, UserInputService, Workspace } from '@rbxts/services';
 
 import React, { useEffect, useMemo, useState } from '@rbxts/react';
-import { useEventListener, useMotion, useMountEffect, useMouse, useViewport } from '@rbxts/pretty-react-hooks';
+import { useEventListener, useMotion, useMountEffect } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { createMotion } from '@rbxts/ripple';
 import { setTimeout } from '@rbxts/set-timeout';
+import { peek } from '@rbxts/charm';
 
 import { StyleParse, Styles } from 'shared/styles';
 import { waitForChild } from 'shared/wait-for-child';
@@ -57,9 +58,6 @@ const StartScreenGUI: React.FC = () => {
 	const [logoAnchorPoint, logoAnchorPointMotion] = useMotion<Vector2>(new Vector2(1, 0));
 	const [buttonsAnchorPoint, buttonsAnchorPointMotion] = useMotion<Vector2>(new Vector2(0, 1));
 	
-	const viewportBinding = useViewport();
-	const mouseBinding = useMouse();
-	
 	const px = usePx();
 	
 	useMountEffect(() => {
@@ -72,12 +70,16 @@ const StartScreenGUI: React.FC = () => {
 			return;
 		}
 		
-		const mouse = mouseBinding.getValue();
-		const viewport = viewportBinding.getValue();
+		const camera = peek(Camera.instanceAtom);
+		if (camera === undefined) {
+			return;
+		}
+		
+		const mouse = UserInputService.GetMouseLocation();
 		
 		const angle = new Vector2(
-			math.map(mouse.X, 0, viewport.X, 1, -1) * math.rad(3),
-			math.map(mouse.Y, 0, viewport.Y, 1, -1) * math.rad(3),
+			math.map(mouse.X, 0, camera.ViewportSize.X, 1, -1) * math.rad(3),
+			math.map(mouse.Y, 0, camera.ViewportSize.Y, 1, -1) * math.rad(3),
 		);
 		
 		Camera.cframeMotion.spring(cameraPart.CFrame.mul(CFrame.fromEulerAnglesYXZ(angle.Y, angle.X, 0)), {
