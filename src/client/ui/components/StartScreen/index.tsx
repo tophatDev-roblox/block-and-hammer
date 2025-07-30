@@ -1,7 +1,7 @@
 import { GuiService, RunService, Workspace } from '@rbxts/services';
 
 import React, { useEffect, useMemo, useState } from '@rbxts/react';
-import { useMotion } from '@rbxts/pretty-react-hooks';
+import { useEventListener, useMotion, useMountEffect, useMouse, useViewport } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { createMotion } from '@rbxts/ripple';
@@ -47,9 +47,9 @@ let cameraPart: Part;
 const StartScreenGUI: React.FC = () => {
 	const [selectable, setSelectable] = useState<boolean>(false);
 	
+	const isLoadingFinished = useAtom(LoadingState.isFinishedAtom);
 	const path = useAtom(LocationState.pathAtom);
 	const styles = useAtom(Styles.stateAtom);
-	const isLoadingFinished = useAtom(LoadingState.isFinishedAtom);
 	
 	const isVisible = useMemo(() => LocationState.isAt('/start-screen', path), [path]);
 	
@@ -57,11 +57,34 @@ const StartScreenGUI: React.FC = () => {
 	const [logoAnchorPoint, logoAnchorPointMotion] = useMotion<Vector2>(new Vector2(1, 0));
 	const [buttonsAnchorPoint, buttonsAnchorPointMotion] = useMotion<Vector2>(new Vector2(0, 1));
 	
+	const viewportBinding = useViewport();
+	const mouseBinding = useMouse();
+	
 	const px = usePx();
 	
-	useEffect(() => {
+	useMountEffect(() => {
 		Camera.cframeMotion.immediate(cameraPart.CFrame);
-	}, []);
+	});
+	
+	useEventListener(RunService.PreRender, () => {
+		if (GuiService.ReducedMotionEnabled) {
+			Camera.cframeMotion.immediate(cameraPart.CFrame);
+			return;
+		}
+		
+		const mouse = mouseBinding.getValue();
+		const viewport = viewportBinding.getValue();
+		
+		const angle = new Vector2(
+			math.map(mouse.X, 0, viewport.X, 1, -1) * math.rad(3),
+			math.map(mouse.Y, 0, viewport.Y, 1, -1) * math.rad(3),
+		);
+		
+		Camera.cframeMotion.spring(cameraPart.CFrame.mul(CFrame.fromEulerAnglesYXZ(angle.Y, angle.X, 0)), {
+			tension: 250,
+			friction: 30,
+		});
+	});
 	
 	useEffect(() => {
 		if (!isLoadingFinished) {
