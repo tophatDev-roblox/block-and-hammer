@@ -29,7 +29,7 @@ function onPlayerAdded(player: Player): void {
 	};
 	
 	const onAttributeChanged = (): void => {
-		const inputType = (player.GetAttribute('InputType') ?? InputType.Unknown) as InputType;
+		const inputType = (player.GetAttribute('inputType') ?? InputType.Unknown) as InputType;
 		inputTypeAtom(inputType);
 	};
 	

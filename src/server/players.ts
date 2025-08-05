@@ -44,7 +44,7 @@ const onFullReset = throttle(async (player: Player): Promise<true> => {
 }, 0.2);
 
 const onInputTypeChanged = debounce((player: Player, inputType: InputType): void => {
-	player.SetAttribute('InputType', inputType);
+	player.SetAttribute('inputType', inputType);
 }, 1);
 
 async function respawn(player: Player): Promise<void> {
