@@ -26,6 +26,9 @@ importers:
       '@rbxts/iris':
         specifier: 2.3.1-ts.1
         version: 2.3.1-ts.1
+      '@rbxts/lapis':
+        specifier: ^0.3.8
+        version: 0.3.8(@rbxts/t@3.2.1)
       '@rbxts/pretty-react-hooks':
         specifier: ^0.6.4
         version: 0.6.4(@rbxts/react-roblox@17.2.3)(@rbxts/react@17.2.3)
@@ -90,6 +93,11 @@ packages:
 
   '@rbxts/iris@2.3.1-ts.1':
     resolution: {integrity: sha512-L/lja+ugKNH3ywdz5c8omXUS34L9oGKlul3yVifzTfQVJS4ryePU/hS6IdMaSbIwNda+qEOehXbSxglF9qxa/A==}
+
+  '@rbxts/lapis@0.3.8':
+    resolution: {integrity: sha512-SQTVdSp47Rh7nzuI/ArUsGssz2+KmciPlue4Qlj3i9iO2p3Xgf1ZsgfhvMemPih/kFdjSH47E8wHGA4dY/Y+AA==}
+    peerDependencies:
+      '@rbxts/t': '*'
 
   '@rbxts/pretty-react-hooks@0.6.4':
     resolution: {integrity: sha512-yiuM3kOD0s2x0GFCUVfFdeSDJRX2ZycS88WOvqydaYwPIZ5rYDjzHjOzRgSpAzGcTVOFXsO64QOtD6svAdadzg==}
@@ -363,6 +371,10 @@ snapshots:
   '@rbxts/immut@0.4.4-ts.0': {}
 
   '@rbxts/iris@2.3.1-ts.1': {}
+
+  '@rbxts/lapis@0.3.8(@rbxts/t@3.2.1)':
+    dependencies:
+      '@rbxts/t': 3.2.1
 
   '@rbxts/pretty-react-hooks@0.6.4(@rbxts/react-roblox@17.2.3)(@rbxts/react@17.2.3)':
     dependencies:

@@ -1,6 +1,8 @@
 import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/services';
 
 import { debounce, setInterval, throttle } from '@rbxts/set-timeout';
+import { peek } from '@rbxts/charm';
+import Immut from '@rbxts/immut';
 
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
@@ -15,7 +17,7 @@ import { Units } from 'shared/units';
 import computeNameColor from 'shared/NameColor';
 
 import { Leaderstats } from 'server/leaderstats';
-import { PlayerData } from 'server/player-data';
+import { PlayerData } from 'server/datastore';
 import { Badge } from 'server/badge';
 
 interface CharacterData {
@@ -109,17 +111,19 @@ function onUnloadCharacter(player: Player): void {
 }
 
 async function onPlayerAdded(player: Player): Promise<void> {
-	const profile = await PlayerData.load(player);
-	if (profile === undefined) {
+	const documentAtom = await PlayerData.load(player);
+	if (documentAtom === undefined) {
 		return;
 	}
 	
 	player.AttributeChanged.Connect((attribute) => {
+		const document = peek(documentAtom);
+		
 		switch (attribute) {
 			case 'color': {
 				const color = player.GetAttribute(attribute);
 				if (!typeIs(color, 'Color3')) {
-					player.SetAttribute(attribute, profile.Data.color);
+					player.SetAttribute(attribute, document.color);
 					return;
 				}
 				
@@ -129,27 +133,33 @@ async function onPlayerAdded(player: Player): Promise<void> {
 				}
 				
 				body.Color = color;
-				profile.Data.color = color;
+				
+				documentAtom(Immut.produce(document, (draft) => {
+					draft.color = color;
+				}));
 				
 				break;
 			}
 			case 'dollars': {
 				const dollars = tonumber(player.GetAttribute(attribute));
 				if (!typeIs(dollars, 'number') || Number.isNaN(dollars)) {
-					player.SetAttribute(attribute, profile.Data.dollars);
+					player.SetAttribute(attribute, document.dollars);
 					return;
 				}
 				
-				profile.Data.dollars = math.clamp(dollars, Constants.MinDollars, Constants.MaxDollars);
+				documentAtom(Immut.produce(document, (draft) => {
+					draft.dollars = math.clamp(dollars, Constants.MinDollars, Constants.MaxDollars);
+				}));
 				
 				break;
 			}
 		}
 	});
 	
-	profile.Data.color = profile.Data.color ?? computeNameColor(player.Name);
-	player.SetAttribute('dollars', profile.Data.dollars);
-	player.SetAttribute('color', profile.Data.color);
+	const document = peek(documentAtom);
+	
+	player.SetAttribute('dollars', document.dollars);
+	player.SetAttribute('color', document.color ?? computeNameColor(player.Name));
 	
 	Badge.award(Badge.Id.Welcome, player);
 	Leaderstats.apply(player);

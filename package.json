@@ -18,6 +18,7 @@
     "@rbxts/compiler-types": "3.0.0-types.0",
     "@rbxts/immut": "0.4.4-ts.0",
     "@rbxts/iris": "2.3.1-ts.1",
+    "@rbxts/lapis": "^0.3.8",
     "@rbxts/pretty-react-hooks": "^0.6.4",
     "@rbxts/react": "^17.2.3",
     "@rbxts/react-charm": "^0.3.0",
