@@ -6,7 +6,3 @@ logger.print(`initializing as ${game.PlaceId === Constants.TestingPlaceId ? 'tes
 
 import './players';
 import './centurion';
-
-if (script.FindFirstChild('anticheat')) {
-	require(script.FindFirstChild('anticheat') as ModuleScript);
-}

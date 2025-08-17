@@ -3,7 +3,4 @@
 /include
 *.tsbuildinfo
 
-/src/server/anticheat.ts
-/src/server/tophat-api.ts
-
 .VSCodeCounter
