@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "pnpm@10.14.0",
   "devDependencies": {
     "@rbxts/centurion": "^1.0.1",
     "@rbxts/centurion-ui": "^1.0.8",
@@ -28,9 +28,9 @@
     "@rbxts/services": "^1.5.5",
     "@rbxts/set-timeout": "^1.1.2",
     "@rbxts/t": "^3.2.1",
-    "@rbxts/types": "^1.0.858",
-    "@rbxts/ui-labs": "^2.4.0",
+    "@rbxts/types": "^1.0.876",
+    "@rbxts/ui-labs": "^2.4.1",
     "roblox-ts": "^3.0.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   }
 }
