@@ -87,7 +87,7 @@ export namespace InputPrompts {
 			// [Enum.KeyCode.Shift_Alt, 'rbxassetid://'],
 			[Enum.KeyCode.LeftShift, 'rbxassetid://85590107857447'],
 			[Enum.KeyCode.RightShift, 'rbxassetid://85590107857447'],
-			[Enum.KeyCode.Slash, 'rbxassetid://'],
+			// [Enum.KeyCode.Slash, 'rbxassetid://'],
 			[Enum.KeyCode.BackSlash, 'rbxassetid://133739529285080'],
 			[Enum.KeyCode.Space, 'rbxassetid://75174190215812'],
 			[Enum.KeyCode.T, 'rbxassetid://76031245764262'],
