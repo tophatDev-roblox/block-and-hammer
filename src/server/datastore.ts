@@ -19,13 +19,13 @@ const collection = createCollection<CollectionSchema>('player-data', {
 		dollars: 100,
 		userSettings: UserSettings.defaultValue,
 	},
-	validate: DataTemplate,
 	migrations: [
 		(data) => ({
 			...data,
 			userSettings: table.clone(UserSettings.defaultValue),
 		}),
 	],
+	validate: DataTemplate,
 });
 
 const logger = new Logger('datastore');
