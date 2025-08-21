@@ -9,9 +9,9 @@ import { CharacterState } from 'client/character/state';
 import { Preloader } from 'client/preloader';
 import { CoreGuis } from 'client/core-guis';
 
-import { LocationState } from './location-state';
+import { UI } from 'client/ui/state';
 
-const logger = new Logger('ui/start-screen-state');
+const logger = new Logger('ui', 'start-screen-state');
 
 export namespace LoadingState {
 	export const statusAtom = atom<string>('initializing...');
@@ -21,30 +21,30 @@ export namespace LoadingState {
 
 Preloader.preloadAtom(LoadingState.statusAtom, LoadingState.percentageAtom, LoadingState.isFinishedAtom);
 
-subscribe(LocationState.pathAtom, (path, previousPath) => {
-	const isInStartScreen = LocationState.isAt('/start-screen', path);
-	const wasInStartScreen = LocationState.isAt('/start-screen', previousPath);
+subscribe(UI.stateAtom, (state, previousState) => {
+	const isInStartScreen = state === UI.State.StartScreen;
+	const wasInStartScreen = previousState === UI.State.StartScreen;
+	
 	if (isInStartScreen === wasInStartScreen) {
 		return;
 	}
 	
-	CharacterState.disableCameraAtom(isInStartScreen);
-	
 	batch(() => {
-		CoreGuis.chatAtom(!isInStartScreen);
-		CoreGuis.playerListAtom(GuiService.IsTenFootInterface() ? false : !isInStartScreen);
-	});
-	
-	if (isInStartScreen) {
-		Remotes.unloadCharacter.fire();
+		CharacterState.disableCameraAtom(isInStartScreen);
 		
-		const characterParts = peek(CharacterState.partsAtom);
-		if (characterParts !== undefined) {
-			characterParts.model.Destroy();
-			CharacterState.partsAtom(undefined);
+		CoreGuis.playerListAtom(GuiService.IsTenFootInterface() ? false : !isInStartScreen);
+		
+		if (isInStartScreen) {
+			Remotes.unloadCharacter.fire();
+			
+			const characterParts = peek(CharacterState.partsAtom);
+			if (characterParts !== undefined) {
+				characterParts.model.Destroy();
+				CharacterState.partsAtom(undefined);
+			}
+		} else {
+			Remotes.fullReset()
+				.catch((err) => logger.warn('failed to fire `fullReset` -', err));
 		}
-	} else {
-		Remotes.fullReset()
-			.catch((err) => logger.warn('failed to fire `fullReset` -', err));
-	}
+	});
 });

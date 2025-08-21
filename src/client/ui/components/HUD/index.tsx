@@ -1,91 +1,73 @@
-import { GuiService } from '@rbxts/services';
+import React, { useEffect, useRef } from '@rbxts/react';
 
-import React, { useEffect } from '@rbxts/react';
-import { useMotion } from '@rbxts/pretty-react-hooks';
+import { effect } from '@rbxts/charm';
 
-import { setTimeout } from '@rbxts/set-timeout';
-import { subscribe } from '@rbxts/charm';
+import { Styles } from 'client/styles';
 
-import { LocationState } from 'client/ui/location-state';
+import { CharacterState } from 'client/character/state';
+
 import { usePx } from 'client/ui/hooks/use-px';
+import { UI } from 'client/ui/state';
 
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
+import ScreenGUI from '../ScreenGUI';
 
-import StatusEffects from './StatusEffects';
 import Speedometer from './Speedometer';
 import Altitude from './Altitude';
-import MoveHint from './MoveHint';
+import Timer from './Timer';
 
-const HudGUI: React.FC = () => {
-	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromScale(0, 0));
+const HUD: React.FC = () => {
+	const bodyRef = useRef<Part>();
 	
 	const px = usePx();
 	
 	useEffect(() => {
-		return subscribe(LocationState.pathAtom, (path, previousPath) => {
-			const isPanelOpen = LocationState.match('/game/side-menu/:panel', path) !== undefined;
-			const wasPanelOpen = LocationState.match('/game/side-menu/:panel', previousPath) !== undefined;
-			if (isPanelOpen === wasPanelOpen) {
-				return;
-			}
+		return effect(() => {
+			const characterParts = CharacterState.partsAtom();
 			
-			const target = isPanelOpen ? {
-				position: UDim2.fromScale(0, 1),
-			} : {
-				position: UDim2.fromScale(0, 0),
-			};
-			
-			if (!GuiService.ReducedMotionEnabled) {
-				if (isPanelOpen) {
-					positionMotion.tween(target.position, {
-						time: 0.6,
-						style: Enum.EasingStyle.Back,
-						direction: Enum.EasingDirection.In,
-					});
-				} else {
-					setTimeout(() => {
-						positionMotion.tween(target.position, {
-							time: 0.6,
-							style: Enum.EasingStyle.Back,
-							direction: Enum.EasingDirection.Out,
-						});
-					}, 0.4);
-				}
-			} else {
-				positionMotion.immediate(target.position);
-			}
+			bodyRef.current = characterParts?.body;
 		});
 	}, []);
 	
 	return (
-		<screengui
-			key={'HudGUI'}
-			ZIndexBehavior={Enum.ZIndexBehavior.Sibling}
-			DisplayOrder={2}
-			ResetOnSpawn={false}
+		<ScreenGUI
+			DisplayOrder={UI.DisplayOrder.HUD}
 		>
+			<UIPadding
+				padding={px(Styles.UI.hud.padding)}
+			/>
 			<frame
 				BackgroundTransparency={1}
 				Size={UDim2.fromScale(1, 1)}
-				Position={position}
 			>
 				<UIListLayout
 					fillDirection={Enum.FillDirection.Vertical}
 					alignX={Enum.HorizontalAlignment.Center}
 					alignY={Enum.VerticalAlignment.Bottom}
-					padding={px(6)}
+					padding={px(Styles.UI.hud.listPadding)}
 				/>
-				<UIPadding
-					padding={px(8)}
+				<Speedometer
+					bodyRef={bodyRef}
 				/>
-				<MoveHint />
-				<StatusEffects />
-				<Speedometer />
-				<Altitude />
+				<Altitude
+					bodyRef={bodyRef}
+				/>
 			</frame>
-		</screengui>
+			<frame
+				BackgroundTransparency={1}
+				Size={UDim2.fromScale(1, 1)}
+			>
+				<UIListLayout
+					fillDirection={Enum.FillDirection.Vertical}
+					alignX={Enum.HorizontalAlignment.Left}
+					alignY={Enum.VerticalAlignment.Bottom}
+					padding={px(Styles.UI.hud.listPadding)}
+				/>
+				<Timer />
+			</frame>
+		</ScreenGUI>
 	);
 };
 
-export default HudGUI;
+export default HUD;

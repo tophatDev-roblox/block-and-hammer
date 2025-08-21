@@ -1,8 +1,8 @@
-import { GuiService, Players, ReplicatedStorage, RunService, StarterGui, UserInputService, Workspace } from '@rbxts/services';
+import { GuiService, Players, ReplicatedStorage, RunService, UserInputService, Workspace } from '@rbxts/services';
 
-import { table as ImmutTable, produce } from '@rbxts/immut';
+import Immut from '@rbxts/immut';
+
 import { effect, peek, subscribe } from '@rbxts/charm';
-import { setTimeout } from '@rbxts/set-timeout';
 
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
@@ -14,13 +14,14 @@ import { Logger } from 'shared/logger';
 import { Units } from 'shared/units';
 
 import { clientInputTypeAtom } from 'client/input';
-import { UserSettings } from 'client/user-settings';
+import { ClientSettings } from 'client/client-settings';
 import { StatusEffect } from 'client/status-effect';
 import { Leaderstats } from 'client/leaderstats';
 import { Camera } from 'client/camera';
 
-import { LocationState } from 'client/ui/location-state';
+import { TransitionState } from 'client/ui/transition-state';
 import { ModalState } from 'client/ui/modal-state';
+import { UI } from 'client/ui/state';
 
 import { CharacterState } from './state';
 
@@ -93,15 +94,17 @@ export namespace Character {
 	
 	export function endStatusEffects(i: number): void {
 		const characterParts = peek(CharacterState.partsAtom);
+		
 		if (characterParts === undefined) {
 			return;
 		}
 		
-		CharacterState.statusEffectsAtom((statusEffects) => produce(statusEffects, (draft) => {
+		CharacterState.statusEffectsAtom((statusEffects) => Immut.produce(statusEffects, (draft) => {
 			const statusEffect = draft[i];
-			ImmutTable.remove(draft, i + 1);
 			
-			switch (statusEffect.effect) {
+			Immut.table.remove(draft, i + 1);
+			
+			switch (statusEffect.type) {
 				case StatusEffect.Ragdoll: {
 					characterParts.rotationLock.Enabled = true;
 					characterParts.targetAttachment.CFrame = CFrame.lookAlong(Vector3.zero, Vector3.yAxis.mul(-1), Vector3.zAxis);
@@ -180,9 +183,12 @@ function moveTargetAttachment(position: Vector3): void {
 function processInput(input: InputObject): void {
 	const camera = peek(Camera.instanceAtom);
 	const characterParts = peek(CharacterState.partsAtom);
-	const sideMenuOpen = LocationState.isAt('/game/side-menu', peek(LocationState.pathAtom));
 	const modal = peek(ModalState.stateAtom);
-	if (camera === undefined || characterParts === undefined || sideMenuOpen || modal !== undefined) {
+	
+	const state = peek(UI.stateAtom);
+	const isTransitioning = peek(TransitionState.isTransitioningAtom);
+	
+	if (camera === undefined || characterParts === undefined || modal !== undefined || state === UI.State.SideMenu || isTransitioning) {
 		return;
 	}
 	
@@ -191,7 +197,7 @@ function processInput(input: InputObject): void {
 		CharacterState.mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
 	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Controller) {
 		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
-			const userSettings = peek(UserSettings.stateAtom);
+			const userSettings = peek(ClientSettings.stateAtom);
 			
 			let direction = input.Position;
 			if (direction.Magnitude > 1) {
@@ -231,10 +237,6 @@ function onInputEnded(input: InputObject): void {
 		characterParts.targetAttachment.CFrame = CFrame.fromOrientation(math.pi / -2, 0, 0);
 		CharacterState.thumbstickDirectionAtom(undefined);
 	}
-}
-
-function onResetButton(): void {
-	Character.quickReset();
 }
 
 async function onCharacterAdded(newCharacter: Model): Promise<void> {
@@ -327,19 +329,14 @@ function onPreRender(): void {
 		});
 	}
 	
+	const velocity = characterParts.body.AssemblyLinearVelocity.Magnitude;
+	characterParts.windTrail.Enabled = velocity > 150;
+	
 	updateStatusEffects();
 	
 	const leaderstats = peek(Leaderstats.stateAtom);
 	if (leaderstats !== undefined) {
 		leaderstats.altitude.Value = math.round(math.max(Units.studsToMeters(characterParts.body.Position.Y - characterParts.body.Size.Y / 2), 0));
-	}
-}
-
-function bindResetButtonCallback(resetEvent: BindableEvent): void {
-	try {
-		StarterGui.SetCore('ResetButtonCallback', resetEvent);
-	} catch (err) {
-		setTimeout(() => bindResetButtonCallback(resetEvent), 1);
 	}
 }
 
@@ -350,10 +347,6 @@ function bindResetButtonCallback(resetEvent: BindableEvent): void {
 	effectsFolder = await waitForChild(Workspace, 'Effects', 'Folder');
 	mapFolder = await waitForChild(Workspace, 'Map', 'Folder');
 })();
-
-const resetEvent = new Instance('BindableEvent');
-resetEvent.Event.Connect(onResetButton);
-bindResetButtonCallback(resetEvent);
 
 subscribe(() => {
 	CharacterState.partsAtom();
@@ -403,7 +396,7 @@ effect(() => {
 		return;
 	}
 	
-	const userSettings = UserSettings.stateAtom();
+	const userSettings = ClientSettings.stateAtom();
 	
 	const existingRangeDisplay = characterParts.model.FindFirstChild('RangeDisplay');
 	if (userSettings.character.showRange) {
@@ -413,6 +406,7 @@ effect(() => {
 		if (existingRangeDisplay === undefined || !existingRangeDisplay.IsA('Part')) {
 			const clone = rangeDisplay.Clone();
 			clone.Size = size;
+			clone.PivotTo(characterParts.body.CFrame);
 			
 			const alignPosition = clone.FindFirstChild('AlignPosition');
 			if (!alignPosition?.IsA('AlignPosition')) {

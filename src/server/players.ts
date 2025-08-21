@@ -4,17 +4,19 @@ import { debounce, setInterval, throttle } from '@rbxts/set-timeout';
 import { peek } from '@rbxts/charm';
 import Immut from '@rbxts/immut';
 
+import computeNameColor from 'shared/NameColor';
+
+import type { UserSettings } from 'shared/user-settings';
+
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
-import { Constants } from 'shared/constants';
 import { InputType } from 'shared/input-type';
+import { Constants } from 'shared/constants';
 import { RichText } from 'shared/rich-text';
 import { Remotes } from 'shared/remotes';
 import { Number } from 'shared/number';
 import { Logger } from 'shared/logger';
 import { Units } from 'shared/units';
-
-import computeNameColor from 'shared/NameColor';
 
 import { Leaderstats } from 'server/leaderstats';
 import { PlayerData } from 'server/datastore';
@@ -46,6 +48,18 @@ const onFullReset = throttle(async (player: Player): Promise<true> => {
 const onInputTypeChanged = debounce((player: Player, inputType: InputType): void => {
 	player.SetAttribute('inputType', inputType);
 }, 1);
+
+const onUpdateSettings = debounce((player: Player, userSettings: UserSettings.Value): void => {
+	const documentAtom = PlayerData.documentAtoms.get(player);
+	
+	if (documentAtom === undefined) {
+		return;
+	}
+	
+	documentAtom((document) => Immut.produce(document, (draft) => {
+		draft.userSettings = userSettings;
+	}));
+}, 2);
 
 async function respawn(player: Player): Promise<void> {
 	const leaderstats = await waitForChild(player, 'leaderstats', 'Folder');
@@ -112,6 +126,7 @@ function onUnloadCharacter(player: Player): void {
 
 async function onPlayerAdded(player: Player): Promise<void> {
 	const documentAtom = await PlayerData.load(player);
+	
 	if (documentAtom === undefined) {
 		return;
 	}
@@ -163,6 +178,8 @@ async function onPlayerAdded(player: Player): Promise<void> {
 	
 	Badge.award(Badge.Id.Welcome, player);
 	Leaderstats.apply(player);
+	
+	Remotes.loadSettings.fire(player, document.userSettings);
 	
 	const playerRichText = new RichText({ font: { color: player.GetAttribute('color') as Color3 } });
 	Remotes.sendSystemMessage.fireAllExcept(player, joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} joined the server`)));
@@ -245,6 +262,7 @@ for (const player of Players.GetPlayers()) {
 
 Remotes.updateInputType.connect((player, inputType) => onInputTypeChanged(player, inputType));
 Remotes.fullReset.onRequest((player) => onFullReset(player));
+Remotes.updateSettings.connect((player, userSettings) => onUpdateSettings(player, userSettings));
 Remotes.unloadCharacter.connect(onUnloadCharacter);
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);

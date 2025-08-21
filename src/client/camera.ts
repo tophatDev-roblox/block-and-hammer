@@ -9,10 +9,12 @@ import { Shake } from 'shared/shake';
 
 import { CharacterState } from 'client/character/state';
 
-import { LocationState } from 'client/ui/location-state';
+import { UI } from 'client/ui/state';
+import { debounce } from '@rbxts/set-timeout';
 
 export namespace Camera {
 	export const instanceAtom = atom<Camera>();
+	export const viewportSizeAtom = atom<Vector2>(Vector2.one);
 	
 	export const cframeMotion = createMotion<CFrame>(CFrame.identity, {
 		heartbeat: RunService.PreRender,
@@ -29,12 +31,28 @@ function onCameraTypeChange(): void {
 	camera.CameraType = Enum.CameraType.Scriptable;
 }
 
+const debouncedViewportSizeAtom = debounce((camera: Camera) => {
+	Camera.viewportSizeAtom(camera.ViewportSize);
+}, 0.2);
+
+function onViewportSizeChange(): void {
+	const camera = peek(Camera.instanceAtom);
+	if (camera === undefined) {
+		return;
+	}
+	
+	debouncedViewportSizeAtom(camera);
+}
+
 (async () => {
 	const camera = Workspace.CurrentCamera ?? await waitForChild(Workspace, 'Camera', 'Camera');
 	Camera.instanceAtom(camera);
 	
 	onCameraTypeChange();
+	onViewportSizeChange();
+	
 	camera.GetPropertyChangedSignal('CameraType').Connect(onCameraTypeChange);
+	camera.GetPropertyChangedSignal('ViewportSize').Connect(onViewportSizeChange);
 	
 	Camera.cframeMotion.onStep((cameraCFrame, dt) => {
 		const disableCamera = peek(CharacterState.disableCameraAtom);
@@ -63,7 +81,7 @@ function onCameraTypeChange(): void {
 				camera.FieldOfView = math.min(camera.FieldOfView, 80);
 			}
 		} else {
-			if (LocationState.isAt('/start-screen', peek(LocationState.pathAtom))) {
+			if (peek(UI.stateAtom) === UI.State.StartScreen) {
 				camera.FieldOfView = 45;
 			} else {
 				camera.FieldOfView = 70;

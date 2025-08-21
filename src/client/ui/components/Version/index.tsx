@@ -1,54 +1,45 @@
 import { RunService } from '@rbxts/services';
 
 import React from '@rbxts/react';
-import { useAtom } from '@rbxts/react-charm';
 
 import { Constants } from 'shared/constants';
-import { Styles } from 'shared/styles';
+
+import { Styles } from 'client/styles';
 
 import { usePx } from 'client/ui/hooks/use-px';
+import { UI } from 'client/ui/state';
 
 import UIPadding from '../UIPadding';
+import ScreenGUI from '../ScreenGUI';
 import Text from '../Text';
 
-const VersionGUI: React.FC = () => {
-	const styles = useAtom(Styles.stateAtom);
-	
+const Version: React.FC = () => {
 	const px = usePx();
 	
-	let versionString = `block and hammer v${game.PlaceVersion}`;
+	let text = `block and hammer v${game.PlaceVersion}`;
+	
 	if (RunService.IsStudio()) {
-		versionString += ' [dev]';
+		text += ' [dev]';
 	} else if (game.PlaceId === Constants.TestingPlaceId) {
-		versionString += ' [test]';
+		text += ' [test]';
 	}
 	
 	return (
-		<screengui
-			key={'VersionGUI'}
-			DisplayOrder={1}
-			ResetOnSpawn={false}
+		<ScreenGUI
+			DisplayOrder={UI.DisplayOrder.Version}
 			IgnoreGuiInset
 		>
-			<frame
-				BackgroundTransparency={1}
-				AnchorPoint={new Vector2(0, 0)}
-				Position={UDim2.fromScale(0, 0)}
-				Size={UDim2.fromScale(1, 0)}
-				AutomaticSize={Enum.AutomaticSize.Y}
-			>
-				<UIPadding
-					padding={[px(4), px(4), 0, 0]}
-				/>
-				<Text
-					styles={styles.misc.text.version}
-					text={versionString}
-					alignX={Enum.TextXAlignment.Right}
-					automaticHeight
-				/>
-			</frame>
-		</screengui>
+			<UIPadding
+				padding={px(3)}
+			/>
+			<Text
+				text={text}
+				styles={Styles.UI.version}
+				alignX={Enum.TextXAlignment.Right}
+				autoHeight
+			/>
+		</ScreenGUI>
 	);
 };
 
-export default VersionGUI;
+export default Version;

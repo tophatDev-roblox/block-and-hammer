@@ -2,9 +2,10 @@ import React from '@rbxts/react';
 
 interface UIPaddingProps {
 	padding: number | [number, number] | [number, number, number, number];
+	overrides?: React.InstanceProps<UIPadding>;
 }
 
-const UIPadding: React.FC<UIPaddingProps> = ({ padding }) => {
+const UIPadding: React.FC<UIPaddingProps> = ({ padding, overrides }) => {
 	if (typeIs(padding, 'number')) {
 		return (
 			<uipadding
@@ -12,6 +13,7 @@ const UIPadding: React.FC<UIPaddingProps> = ({ padding }) => {
 				PaddingRight={new UDim(0, padding)}
 				PaddingBottom={new UDim(0, padding)}
 				PaddingLeft={new UDim(0, padding)}
+				{...overrides}
 			/>
 		);
 	} else if (padding.size() === 2) {
@@ -21,6 +23,7 @@ const UIPadding: React.FC<UIPaddingProps> = ({ padding }) => {
 				PaddingRight={new UDim(0, padding[1])}
 				PaddingBottom={new UDim(0, padding[0])}
 				PaddingLeft={new UDim(0, padding[1])}
+				{...overrides}
 			/>
 		);
 	}
@@ -31,6 +34,7 @@ const UIPadding: React.FC<UIPaddingProps> = ({ padding }) => {
 			PaddingRight={new UDim(0, padding[1])}
 			PaddingBottom={new UDim(0, padding[2])}
 			PaddingLeft={new UDim(0, padding[3])}
+			{...overrides}
 		/>
 	);
 };

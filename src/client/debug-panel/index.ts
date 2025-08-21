@@ -11,7 +11,6 @@ import { CharacterState } from 'client/character/state';
 import { StatusEffect } from 'client/status-effect';
 
 import { DebugPanelState } from './state';
-import { LocationState } from 'client/ui/location-state';
 
 export namespace DebugPanel {
 	export function render(): void {
@@ -34,11 +33,9 @@ export namespace DebugPanel {
 				Iris.CollapsingHeader(['Info']); {
 					const timeStart = peek(CharacterState.timeStartAtom);
 					const shakeStrength = peek(CharacterState.shakeStrengthAtom);
-					const path = peek(LocationState.pathAtom);
 					
 					Iris.Text(['Time: %.3fs'.format(timeStart !== undefined ? TimeSpan.timeSince(timeStart) : 0)]);
 					Iris.Text(['Shake Strength: %.4f'.format(shakeStrength)]);
-					Iris.Text(['UI Path: %s'.format(path)]);
 				} Iris.End();
 				
 				Iris.CollapsingHeader(['Input']); {
@@ -57,7 +54,7 @@ export namespace DebugPanel {
 					const statusEffects = peek(CharacterState.statusEffectsAtom);
 					
 					Iris.Text(['Currently Active: %s'.format(
-						statusEffects.size() > 0 ? statusEffects.map((statusEffect) => statusEffect.effect).join(', ') : 'None',
+						statusEffects.size() > 0 ? statusEffects.map((statusEffect) => statusEffect.type).join(', ') : 'None',
 					)]);
 					Iris.ComboArray(['Effect'], { index: effectIndexState }, effectSelection);
 					Iris.SliderNum(['Duration', 0.1, 0.1, 15], { number: effectDurationState });
@@ -81,7 +78,7 @@ const windowPositionState = Iris.State<Vector2>(Vector2.zero);
 const windowSizeState = Iris.State<Vector2>(new Vector2(400, 250));
 const windowOpenedState = Iris.State<boolean>(false);
 
-const cameraZOffsetState = Iris.State<number>(peek(CharacterState.cameraZOffsetAtom));
+const cameraZOffsetState = Iris.State<number>(-peek(CharacterState.cameraZOffsetAtom));
 cameraZOffsetState.onChange((cameraZOffset) => CharacterState.cameraZOffsetAtom(-cameraZOffset));
 
 const hammerDistanceState = Iris.State<number>(peek(CharacterState.hammerDistanceAtom));

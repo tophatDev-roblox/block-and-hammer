@@ -14,6 +14,7 @@ interface RichTextData {
 	font: {
 		color?: Color3;
 		size?: number;
+		family?: string;
 		weight?: Enum.FontWeight;
 		transparency?: number;
 	};
@@ -30,7 +31,9 @@ interface RichTextData {
 }
 
 export class RichText {
-	constructor(public readonly data: RichTextData) {}
+	constructor(
+		public readonly data: RichTextData,
+	) {}
 	
 	static parseAttributes(this: void, attributes: Record<string, string | number | undefined>): string {
 		const result = new Array<string>();
@@ -74,6 +77,7 @@ export class RichText {
 			const attributes = {
 				color: this.data.font.color !== undefined ? `#${this.data.font.color.ToHex()}` : undefined,
 				size: this.data.font.size,
+				family: this.data.font.family,
 				weight: this.data.font.weight?.Value,
 				transparency: this.data.font.transparency,
 			};

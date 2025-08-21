@@ -2,12 +2,13 @@ import { GuiService, UserInputService } from '@rbxts/services';
 
 import { atom, peek, subscribe } from '@rbxts/charm';
 
+import { UserSettings } from 'shared/user-settings';
 import { Controller } from 'shared/controller';
 import { InputType } from 'shared/input-type';
 import { Remotes } from 'shared/remotes';
 import { Logger } from 'shared/logger';
 
-import { UserSettings } from './user-settings';
+import { ClientSettings } from 'client/client-settings';
 
 const logger = new Logger('input');
 
@@ -30,7 +31,7 @@ const mouseInputTypes = new Set<Enum.UserInputType>([
 ]);
 
 function processInput(input: InputObject): void {
-	const userSettings = peek(UserSettings.stateAtom);
+	const userSettings = peek(ClientSettings.stateAtom);
 	const inputType = peek(clientInputTypeAtom);
 	if (userSettings.controller.detectionType !== UserSettings.ControllerDetection.OnInput || inputType === InputType.Controller) {
 		return;
@@ -53,7 +54,7 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 	if (userInputType === Enum.UserInputType.Touch) {
 		newInputType = InputType.Touch;
 	} else if (Controller.isGamepadInput(userInputType)) {
-		const userSettings = peek(UserSettings.stateAtom);
+		const userSettings = peek(ClientSettings.stateAtom);
 		if (userSettings.controller.detectionType === UserSettings.ControllerDetection.LastInput) {
 			newInputType = InputType.Controller;
 		}

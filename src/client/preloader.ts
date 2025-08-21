@@ -4,11 +4,14 @@ import { Atom, batch } from '@rbxts/charm';
 
 import { waitForChild } from 'shared/wait-for-child';
 import { TimeSpan } from 'shared/time-span';
+import { Logger } from 'shared/logger';
 
 import { Assets } from 'shared/assets';
 import { InputPrompts } from 'shared/assets/input-prompts';
 
 const client = Players.LocalPlayer;
+
+const logger = new Logger('preloader');
 
 export namespace Preloader {
 	export async function preloadAtom(loadingStatusAtom: Atom<string>, loadingPercentageAtom: Atom<number>, isLoadingFinishedAtom: Atom<boolean>): Promise<void> {
@@ -30,6 +33,7 @@ export namespace Preloader {
 			const decal = new Instance('Decal');
 			decal.Name = name;
 			decal.Texture = id;
+			
 			contentList.push(decal);
 		}
 		
@@ -38,6 +42,7 @@ export namespace Preloader {
 			const sound = new Instance('Sound');
 			sound.Name = name;
 			sound.SoundId = id;
+			
 			contentList.push(sound);
 		}
 		
@@ -45,6 +50,7 @@ export namespace Preloader {
 			const textLabel = new Instance('TextLabel');
 			textLabel.Name = name;
 			textLabel.FontFace = new Font(id);
+			
 			contentList.push(textLabel);
 		}
 		
@@ -54,12 +60,14 @@ export namespace Preloader {
 				const decal = new Instance('Decal');
 				decal.Name = key.Name;
 				decal.Texture = id;
+				
 				contentList.push(decal);
 			} else {
 				for (const subId of id) {
 					const decal = new Instance('Decal');
 					decal.Name = key.Name;
 					decal.Texture = subId;
+					
 					contentList.push(decal);
 				}
 			}
@@ -67,6 +75,7 @@ export namespace Preloader {
 		
 		let done = false;
 		let loadedAssets = 0;
+		
 		preload(contentList, (id, status) => {
 			if (done) {
 				return;
@@ -76,6 +85,8 @@ export namespace Preloader {
 				loadingStatusAtom(`${id} preloaded successfully`);
 			} else {
 				loadingStatusAtom(`${id} failed to preload (${status})`);
+				
+				logger.warn(`failed to preload asset '${id}' [${status}]`);
 			}
 			
 			loadedAssets++;

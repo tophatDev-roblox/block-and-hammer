@@ -1,22 +1,19 @@
 import { GuiService } from '@rbxts/services';
 
-import { subscribe } from '@rbxts/charm';
+import { effect } from '@rbxts/charm';
 import { setTimeout } from '@rbxts/set-timeout';
 
 import { CoreGuis } from 'client/core-guis';
 
-import { LocationState } from './location-state';
+import { UI } from 'client/ui/state';
 
-subscribe(LocationState.pathAtom, (path, previousPath) => {
-	if (LocationState.isAt('/start-screen', path)) {
+effect(() => {
+	const state = UI.stateAtom();
+	if (state === UI.State.StartScreen) {
 		return;
 	}
 	
-	const sideMenuOpen = LocationState.isAt('/game/side-menu', path);
-	const wasSideMenuOpen = LocationState.isAt('/game/side-menu', previousPath);
-	if (sideMenuOpen === wasSideMenuOpen) {
-		return;
-	}
+	const sideMenuOpen = state === UI.State.SideMenu;
 	
 	if (GuiService.IsTenFootInterface()) {
 		CoreGuis.playerListAtom(false);
@@ -26,12 +23,12 @@ subscribe(LocationState.pathAtom, (path, previousPath) => {
 	if (sideMenuOpen) {
 		CoreGuis.playerListAtom(false);
 	} else {
+		UI.SideMenu.panelAtom(UI.SideMenu.Panel.None);
+		
 		if (!GuiService.ReducedMotionEnabled) {
-			const clearTimeout = setTimeout(() => {
+			return setTimeout(() => {
 				CoreGuis.playerListAtom(true);
 			}, 0.6);
-			
-			return clearTimeout;
 		} else {
 			CoreGuis.playerListAtom(true);
 		}

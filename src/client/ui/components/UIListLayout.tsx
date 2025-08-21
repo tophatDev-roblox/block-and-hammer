@@ -10,7 +10,7 @@ interface UIListLayoutProps {
 	sortByName?: boolean;
 }
 
-const UIListLayout: React.FC<UIListLayoutProps> = ({ fillDirection, alignX, alignY, flexX, flexY, padding, sortByName }) => {
+const UIListLayout: React.FC<UIListLayoutProps> = ({ fillDirection, alignX, alignY, flexX, flexY, padding, sortByName = true }) => {
 	return (
 		<uilistlayout
 			FillDirection={fillDirection}

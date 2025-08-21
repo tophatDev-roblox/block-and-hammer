@@ -1,6 +1,7 @@
 import { ReplicatedStorage, RunService } from '@rbxts/services';
 
-import { table as ImmutTable, produce } from '@rbxts/immut';
+import Immut from '@rbxts/immut';
+
 import { createMotion } from '@rbxts/ripple';
 import { atom, peek } from '@rbxts/charm';
 
@@ -9,8 +10,9 @@ import { AreaManager } from 'shared/area-manager';
 import { Constants } from 'shared/constants';
 import { TimeSpan } from 'shared/time-span';
 
-import { DebugPanelState } from 'client/debug-panel/state';
 import { StatusEffect } from 'client/status-effect';
+
+import { DebugPanelState } from 'client/debug-panel/state';
 
 const RNG = new Random();
 
@@ -20,6 +22,7 @@ export namespace CharacterState {
 	export interface Parts {
 		model: Model;
 		body: Part;
+		windTrail: Trail;
 		centerAttachment: Attachment;
 		targetAttachment: Attachment;
 		rotationLock: AlignOrientation;
@@ -37,14 +40,14 @@ export namespace CharacterState {
 	}
 	
 	export interface StatusEffectData {
-		effect: StatusEffect;
+		type: StatusEffect;
 		endTime: number;
 		duration: number;
 	}
 	
 	export function hasStatusEffect(effect: StatusEffect, statusEffects: ReadonlyArray<StatusEffectData>): boolean {
 		for (const statusEffect of statusEffects) {
-			if (statusEffect.effect === effect) {
+			if (statusEffect.type === effect) {
 				return true;
 			}
 		}
@@ -56,11 +59,14 @@ export namespace CharacterState {
 		const body = await waitForChild(character, 'Body', 'Part');
 		const bubbleChatOrigin = await waitForChild(character, 'BubbleChatOrigin', 'Part');
 		const hammer = await waitForChild(character, 'Hammer', 'Model');
+		
+		const windTrail = await waitForChild(body, 'Trail', 'Trail');
 		const head = await waitForChild(hammer, 'Head', 'Part');
 		
 		return {
 			model: character,
 			body: body,
+			windTrail: windTrail,
 			centerAttachment: await waitForChild(body, 'CenterAttachment', 'Attachment'),
 			targetAttachment: await waitForChild(body, 'TargetAttachment1', 'Attachment'),
 			rotationLock: await waitForChild(body, 'RotationLock', 'AlignOrientation'),
@@ -80,25 +86,33 @@ export namespace CharacterState {
 	
 	export function applyStatusEffects(effects: Array<[StatusEffect, number]>): void {
 		const characterParts = peek(CharacterState.partsAtom);
+		
 		if (characterParts === undefined) {
 			return;
 		}
 		
-		CharacterState.statusEffectsAtom((statusEffects) => produce(statusEffects, (draft) => {
+		CharacterState.statusEffectsAtom((statusEffects) => Immut.produce(statusEffects, (draft) => {
 			for (const [effect, seconds] of effects) {
 				let isAlreadyApplied = false;
+				
 				for (const i of $range(0, statusEffects.size() - 1)) {
 					const statusEffect = draft[i];
-					if (statusEffect.effect === effect) {
+					if (statusEffect.type === effect) {
+						isAlreadyApplied = true;
+						
 						statusEffect.endTime += seconds / 2;
 						statusEffect.duration += seconds / 2;
-						isAlreadyApplied = true;
+						
 						break;
 					}
 				}
 				
 				if (!isAlreadyApplied) {
-					ImmutTable.insert(draft, { effect, endTime: TimeSpan.now() + seconds, duration: seconds });
+					Immut.table.insert(draft, {
+						type: effect,
+						endTime: TimeSpan.now() + seconds,
+						duration: seconds,
+					});
 					
 					switch (effect) {
 						case StatusEffect.Ragdoll: {
@@ -184,5 +198,6 @@ export namespace CharacterState {
 
 (async () => {
 	const assetsFolder = await waitForChild(ReplicatedStorage, 'Assets', 'Folder');
+	
 	baseStunParticles = await waitForChild(assetsFolder, 'StunParticles', 'Part');
 })();

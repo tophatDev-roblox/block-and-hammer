@@ -1,56 +1,57 @@
 import { RunService } from '@rbxts/services';
 
-import React, { useBinding, useMemo } from '@rbxts/react';
+import React, { useBinding } from '@rbxts/react';
 import { useEventListener } from '@rbxts/pretty-react-hooks';
-import { useAtom } from '@rbxts/react-charm';
 
 import { peek } from '@rbxts/charm';
 
-import { TimeSpan } from 'shared/time-span';
-import { Styles } from 'shared/styles';
-import { Shake } from 'shared/shake';
 import { Units } from 'shared/units';
+
+import { Styles } from 'client/styles';
 
 import { CharacterState } from 'client/character/state';
 
 import Text from '../Text';
+import { Shake } from 'shared/shake';
+import { TimeSpan } from 'shared/time-span';
 
-const Altitude: React.FC = () => {
+interface AltitudeProps {
+	bodyRef: React.RefObject<Part>;
+}
+
+const Altitude: React.FC<AltitudeProps> = ({ bodyRef }) => {
 	const [text, setText] = useBinding<string>('--');
 	const [rotation, setRotation] = useBinding<number>(0);
 	
-	const characterParts = useAtom(CharacterState.partsAtom);
-	const styles = useAtom(Styles.stateAtom);
-	
-	const labelFormat = useMemo(() => `%.${styles.hud.text.altitude.display.decimals}fm`, [styles.hud.text.altitude.display.decimals]);
-	
-	useEventListener(RunService.PreSimulation, () => {
+	useEventListener(RunService.PreRender, () => {
 		const time = TimeSpan.now();
-		if (characterParts === undefined) {
+		
+		const shakeStrength = peek(CharacterState.shakeStrengthAtom);
+		setRotation(Shake.ui(shakeStrength, time, 2));
+		
+		const body = bodyRef.current;
+		if (body === undefined) {
 			setText('--');
-			setRotation(0);
 			return;
 		}
 		
-		const altitude = Units.studsToMeters(math.max(characterParts.body.Position.Y - characterParts.body.Size.Y / 2, 0));
-		setText(labelFormat.format(altitude));
-		setRotation(Shake.ui(peek(CharacterState.shakeStrengthAtom), time, 2));
+		const y = body.Position.Y - body.Size.Y / 2;
+		
+		setText(math.abs(y) < 0.1 ? '0.0m' : '%.1fm'.format(Units.studsToMeters(y)));
 	});
 	
 	return (
 		<frame
-			key={'Altitude'}
 			BackgroundTransparency={1}
-			Size={UDim2.fromScale(0, 0)}
-			AutomaticSize={Enum.AutomaticSize.XY}
-			LayoutOrder={3}
+			Size={UDim2.fromScale(1, 0)}
+			AutomaticSize={Enum.AutomaticSize.Y}
 		>
 			<Text
-				styles={styles.hud.text.altitude}
+				styles={Styles.UI.hud.altitude}
 				text={text}
-				automaticWidth
-				automaticHeight
-				properties={{
+				alignX={Enum.TextXAlignment.Center}
+				autoHeight
+				overrides={{
 					Rotation: rotation,
 				}}
 			/>

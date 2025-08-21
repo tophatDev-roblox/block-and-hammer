@@ -14,3 +14,4 @@ import './chat';
 import './leave-sound';
 import './debug-panel';
 import './centurion';
+import './disable-reset';

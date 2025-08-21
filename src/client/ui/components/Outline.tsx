@@ -1,6 +1,6 @@
 import React from '@rbxts/react';
 
-import { Styles, StyleParse } from 'shared/styles';
+import { Styles } from 'client/styles';
 
 import { usePx } from 'client/ui/hooks/use-px';
 
@@ -9,7 +9,7 @@ import Gradient from './Gradient';
 interface OutlineProps {
 	styles: Styles.Outline;
 	applyStrokeMode: Enum.ApplyStrokeMode;
-	properties?: React.InstanceProps<UIStroke>;
+	overrides?: React.InstanceProps<UIStroke>;
 }
 
 const Outline: React.FC<OutlineProps> = (props) => {
@@ -21,23 +21,21 @@ const Outline: React.FC<OutlineProps> = (props) => {
 			autoScale = true,
 		},
 		applyStrokeMode,
-		properties,
+		overrides,
 	} = props;
 	
 	const px = usePx();
 	
-	const isRGBA = StyleParse.isRGBA(color);
-	
 	return (
 		<uistroke
 			ApplyStrokeMode={applyStrokeMode}
-			Color={isRGBA ? StyleParse.color(color) : Color3.fromRGB(255, 255, 255)}
-			Transparency={isRGBA ? 1 - color.alpha : 0}
+			Color={color.type === 'plain' ? color.color : Color3.fromRGB(255, 255, 255)}
+			Transparency={color.type === 'plain' ? 1 - (color.alpha ?? 1) : 0}
 			Thickness={autoScale ? px(thickness, false) : thickness}
-			LineJoinMode={StyleParse.outlineJoinMode(joinMode)}
-			{...properties}
+			LineJoinMode={joinMode}
+			{...overrides}
 		>
-			{!isRGBA && (
+			{color.type === 'gradient' && (
 				<Gradient
 					styles={color}
 				/>

@@ -1,20 +1,26 @@
-import { Players } from '@rbxts/services';
+import { Players, RunService } from '@rbxts/services';
 
-import { effect, subscribe } from '@rbxts/charm';
-
-import { Constants } from 'shared/constants';
+import { effect, peek, subscribe } from '@rbxts/charm';
 
 import NumberSpinner from 'shared/NumberSpinner';
 import Icon from 'shared/Icon';
 
-import { clientInputTypeAtom } from 'client/input';
+import { Constants } from 'shared/constants';
+
 import { InputType } from 'shared/input-type';
-import { Styles } from 'shared/styles';
+import { TimeSpan } from 'shared/time-span';
+import { RichText } from 'shared/rich-text';
 
-import { LocationState } from 'client/ui/location-state';
+import { clientInputTypeAtom } from 'client/input';
+
+import { Styles } from 'client/styles';
+
+import { TransitionState } from 'client/ui/transition-state';
 import { ModalState } from 'client/ui/modal-state';
+import { UI } from 'client/ui/state';
 
-import { DebugPanelState } from './debug-panel/state';
+import { DebugPanelState } from 'client/debug-panel/state';
+import { ClientSettings } from 'client/client-settings';
 
 const client = Players.LocalPlayer;
 
@@ -23,23 +29,24 @@ dollarsNumber.Value = 0;
 dollarsNumber.Decimals = 0;
 dollarsNumber.Commas = true;
 
-const theme = [
+const monospaceRichText = new RichText({ font: { family: 'rbxassetid://16658246179' } })
+
+let lastPerformanceUpdate = -1;
+
+const mainTheme = [
+	['IconImageScale', 'Value', 0.8],
+	['IconButton', 'BackgroundTransparency', 0.4],
+	['IconSpot', 'BackgroundColor3', Color3.fromRGB(0, 0, 0), 'Selected'],
+	['IconSpot', 'BackgroundTransparency', 0.6, 'Selected'],
+];
+
+const secondaryTheme = [
 	['IconLabel', 'TextSize', 26],
 	['IconLabel', 'FontFace', new Font('rbxassetid://12187365364', Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal)],
-	['IconImageScale', 'Value', 0.9],
-	['IconCorners', 'CornerRadius', new UDim(0, 8)],
-	['IconOverlay', 'BackgroundTransparency', 1],
-	['IconButton', 'BackgroundTransparency', 0.4],
-	['IconButton', 'BackgroundColor3', Color3.fromRGB(255, 255, 255)],
-	['IconGradient', 'Enabled', true],
-	['IconGradient', 'Rotation', 60],
-	['IconGradient', 'Color', new ColorSequence(Color3.fromRGB(34, 34, 34), Color3.fromRGB(0, 0, 0)), 'Deselected'],
-	['IconGradient', 'Color', new ColorSequence(Color3.fromRGB(54, 54, 54), Color3.fromRGB(20, 20, 20)), 'Viewing'],
-	['IconGradient', 'Color', new ColorSequence(Color3.fromRGB(69, 69, 69), Color3.fromRGB(35, 35, 35)), 'Selected'],
+	['IconButton', 'BackgroundTransparency', 0.6],
 ];
 
 Icon.setDisplayOrder(100);
-Icon.modifyBaseTheme(theme);
 
 const menuIcon = new Icon()
 	.setImage(79239443855874)
@@ -48,28 +55,48 @@ const menuIcon = new Icon()
 	.bindToggleKey(Enum.KeyCode.B)
 	.setOrder(0)
 	.autoDeselect(false)
-	.modifyTheme(theme);
+	.modifyTheme(mainTheme);
 
 new Icon()
 	.convertLabelToNumberSpinner(dollarsNumber)
 	.setOrder(10)
 	.lock()
-	.modifyTheme(theme)
+	.modifyTheme(secondaryTheme)
 	.modifyTheme([
 		['PaddingLeft', 'Size', new UDim2(0, 24, 1, 0)],
 		['PaddingRight', 'Size', new UDim2(0, 24, 1, 0)],
 	]);
 
+const fpsIcon = new Icon()
+	.setLabel('-- FPS')
+	.setOrder(11)
+	.lock()
+	.modifyTheme(secondaryTheme);
+
+const pingIcon = new Icon()
+	.setLabel('--ms Ping')
+	.setOrder(12)
+	.lock()
+	.modifyTheme(secondaryTheme);
+
 menuIcon.toggled.Connect((toggled) => {
+	const state = peek(UI.stateAtom);
+	
+	if (state === UI.State.StartScreen || peek(TransitionState.isTransitioningAtom)) {
+		return;
+	}
+	
 	if (toggled) {
-		LocationState.pathAtom('/game/side-menu');
+		UI.stateAtom(UI.State.SideMenu);
 	} else {
-		LocationState.pathAtom('/game');
+		UI.stateAtom(UI.State.Game);
 	}
 });
 
-subscribe(LocationState.pathAtom, (path) => {
-	if (LocationState.isAt('/start-screen', path)) {
+effect(() => {
+	const state = UI.stateAtom();
+	
+	if (state === UI.State.StartScreen) {
 		menuIcon.lock();
 		Icon.setTopbarEnabled(false);
 	} else {
@@ -77,14 +104,16 @@ subscribe(LocationState.pathAtom, (path) => {
 		Icon.setTopbarEnabled(true);
 	}
 	
-	if (LocationState.isAt('/game/side-menu', path)) {
+	if (state === UI.State.SideMenu) {
 		menuIcon.select();
 	} else {
 		menuIcon.deselect();
 	}
 });
 
-subscribe(ModalState.stateAtom, (modal) => {
+effect(() => {
+	const modal = ModalState.stateAtom();
+	
 	if (modal !== undefined) {
 		menuIcon.lock();
 	} else {
@@ -94,6 +123,7 @@ subscribe(ModalState.stateAtom, (modal) => {
 
 effect(() => {
 	const inputType = clientInputTypeAtom();
+	
 	switch (inputType) {
 		case InputType.Desktop: {
 			menuIcon.setCaptionHint(Enum.KeyCode.B);
@@ -118,7 +148,7 @@ if (Constants.IsDebugPanelEnabled) {
 		.bindToggleKey(Enum.KeyCode.Quote)
 		.setOrder(9)
 		.autoDeselect(false)
-		.modifyTheme(theme)
+		.modifyTheme(mainTheme)
 		.modifyTheme(['IconImageScale', 'Value', 0.7]);
 	
 	subscribe(DebugPanelState.isOpenAtom, (isOpen) => {
@@ -138,19 +168,50 @@ if (Constants.IsDebugPanelEnabled) {
 	});
 }
 
-function applyStyles(_styles: Styles.Data): void {
+function applyStyles(_styles: Styles.Topbar): void {
 	// TODO: apply ui styles to topbar
 }
 
 function onAttributeChanged(attribute: string) {
-	if (attribute !== 'dollars') {
+	if (attribute === 'dollars') {
+		dollarsNumber.Value = math.clamp(tonumber(client.GetAttribute(attribute)) ?? 0, Constants.MinDollars, Constants.MaxDollars);
+	}
+}
+
+function onPreRender(dt: number) {
+	if (TimeSpan.timeSince(lastPerformanceUpdate) < 0.2) {
 		return;
 	}
 	
-	dollarsNumber.Value = math.clamp(client.GetAttribute(attribute) as number | undefined ?? 0, Constants.MinDollars, Constants.MaxDollars);
+	const userSettings = peek(ClientSettings.stateAtom);
+	
+	if (!userSettings.ui.topbar.displayPerformance) {
+		return;
+	}
+	
+	lastPerformanceUpdate = TimeSpan.now();
+	
+	const fps = monospaceRichText.apply(tostring(math.round(1 / dt)));
+	const ping = monospaceRichText.apply(`${math.round(client.GetNetworkPing() * 1000)}ms`);
+	
+	if (userSettings.ui.topbar.showPerformanceLabels) {
+		fpsIcon.setLabel('%s FPS'.format(fps));
+		pingIcon.setLabel('%s Ping'.format(ping));
+	} else {
+		fpsIcon.setLabel(fps);
+		pingIcon.setLabel(ping);
+	}
 }
 
-applyStyles(Styles.Default);
+effect(() => {
+	const userSettings = ClientSettings.stateAtom();
+	
+	fpsIcon.setEnabled(userSettings.ui.topbar.displayPerformance);
+	pingIcon.setEnabled(userSettings.ui.topbar.displayPerformance);
+});
+
+applyStyles(Styles.Topbar);
 onAttributeChanged('dollars');
 
 client.AttributeChanged.Connect(onAttributeChanged);
+RunService.PreRender.Connect(onPreRender);

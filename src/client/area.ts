@@ -6,7 +6,7 @@ import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
 import { Logger } from 'shared/logger';
 
-import { UserSettings } from 'client/user-settings';
+import { ClientSettings } from 'client/client-settings';
 import { Leaderstats } from 'client/leaderstats';
 
 import { CharacterState } from 'client/character/state';
@@ -37,7 +37,7 @@ effect(() => {
 });
 
 effect(() => {
-	const userSettings = UserSettings.stateAtom();
+	const userSettings = ClientSettings.stateAtom();
 	const characterParts = CharacterState.partsAtom();
 	if (characterParts === undefined) {
 		CharacterState.areaAtom(AreaManager.Area.Unknown);

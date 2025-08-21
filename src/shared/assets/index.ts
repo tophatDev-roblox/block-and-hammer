@@ -19,6 +19,7 @@ export namespace Assets {
 	export enum Images {
 		ButtonBackground = 'rbxassetid://116917521691205',
 		StunParticle = 'rbxassetid://78494850316130',
+		WindCircle = 'rbxassetid://104835326380576',
 	}
 	
 	export enum SFX {

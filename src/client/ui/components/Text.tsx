@@ -1,8 +1,8 @@
-import React, { forwardRef, useMemo } from '@rbxts/react';
+import React, { forwardRef } from '@rbxts/react';
 
-import { Styles, StyleParse } from 'shared/styles';
+import { Styles } from 'client/styles';
+
 import { getAutomaticSize } from 'client/ui/get-automatic-size';
-
 import { usePx } from 'client/ui/hooks/use-px';
 
 import Gradient from './Gradient';
@@ -10,17 +10,17 @@ import Outline from './Outline';
 
 interface TextProps extends React.PropsWithChildren {
 	styles: Styles.Text;
-	text: React.Binding<string> | string;
+	text: string | React.Binding<string>;
 	width?: UDim;
 	height?: UDim;
-	automaticWidth?: boolean;
-	automaticHeight?: boolean;
+	autoWidth?: boolean;
+	autoHeight?: boolean;
 	order?: number;
 	alignX?: Enum.TextXAlignment;
 	alignY?: Enum.TextYAlignment;
 	richText?: boolean;
 	wrapped?: boolean;
-	properties?: React.InstanceProps<TextLabel>;
+	overrides?: React.InstanceProps<TextLabel>;
 }
 
 const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
@@ -35,28 +35,25 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 		text,
 		width,
 		height,
-		automaticWidth = false,
-		automaticHeight = false,
+		autoWidth = false,
+		autoHeight = false,
 		order = 1,
 		alignX = Enum.TextXAlignment.Center,
 		alignY = Enum.TextYAlignment.Center,
 		richText = false,
 		wrapped = false,
-		properties,
+		overrides: properties,
 		children,
 	} = props;
 	
-	const fontFace = useMemo<Font>(() => StyleParse.font(font), [font]);
-	
 	const px = usePx();
 	
-	const automaticSize = getAutomaticSize(automaticWidth, automaticHeight);
-	const isRGBA = StyleParse.isRGBA(color);
+	const automaticSize = getAutomaticSize(autoWidth, autoHeight);
 	
 	let labelSize =
-		automaticHeight && automaticWidth ? UDim2.fromScale(0, 0)
-		: automaticHeight ? UDim2.fromScale(1, 0)
-		: automaticWidth ? UDim2.fromScale(0, 1)
+		autoHeight && autoWidth ? UDim2.fromScale(0, 0)
+		: autoHeight ? UDim2.fromScale(1, 0)
+		: autoWidth ? UDim2.fromScale(0, 1)
 		: UDim2.fromScale(1, 1);
 	
 	if (width !== undefined || height !== undefined) {
@@ -69,9 +66,9 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 			BackgroundTransparency={1}
 			Size={labelSize}
 			AutomaticSize={automaticSize}
-			FontFace={fontFace}
-			TextColor3={isRGBA ? Color3.fromRGB(color.red, color.green, color.blue) : Color3.fromRGB(255, 255, 255)}
-			TextTransparency={isRGBA ? 1 - color.alpha : 0}
+			FontFace={font}
+			TextColor3={color.type === 'plain' ? color.color : Color3.fromRGB(255, 255, 255)}
+			TextTransparency={color.type === 'plain' ? 1 - (color.alpha ?? 1) : 0}
 			TextSize={autoScale === false ? size : px(size)}
 			LayoutOrder={order}
 			TextXAlignment={alignX}
@@ -81,7 +78,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 			RichText={richText}
 			{...properties}
 		>
-			{!isRGBA && (
+			{color.type === 'gradient' && (
 				<Gradient
 					styles={color}
 				/>

@@ -1,282 +1,179 @@
-import { GuiService } from '@rbxts/services';
-
-import React, { useEffect, useMemo, useState } from '@rbxts/react';
+import React, { useBinding, useEffect } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { setTimeout } from '@rbxts/set-timeout';
+import { peek } from '@rbxts/charm';
 
-import { StyleParse, Styles } from 'shared/styles';
+import { PixelScale } from 'shared/pixel-scale';
 import { Assets } from 'shared/assets';
 
-import { LocationState } from 'client/ui/location-state';
-import { UIConstants } from 'client/ui/constants';
-import { ModalState } from 'client/ui/modal-state';
+import { Camera } from 'client/camera';
+
+import { Styles } from 'client/styles';
+
+import { TransitionState } from 'client/ui/transition-state';
 import { usePx } from 'client/ui/hooks/use-px';
+import { UI } from 'client/ui/state';
 
 import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
+import SideButton from '../SideButton';
+import ScreenGUI from '../ScreenGUI';
 import Gradient from '../Gradient';
-import Outline from '../Outline';
 
-import { getSideButtonSizes } from '../SideButton';
+import ButtonLayout from './ButtonLayout';
+import Panel from './Panel';
 
-import MenuButton from './MenuButton';
-
-const SideMenuGUI: React.FC = () => {
-	const [selectable, setSelectable] = useState<boolean>(false);
+const SideMenu: React.FC = () => {
+	const [enabled, setEnabled] = useBinding<boolean>(false);
 	
-	const styles = useAtom(Styles.stateAtom);
-	const path = useAtom(LocationState.pathAtom);
+	const viewportSize = useAtom(Camera.viewportSizeAtom);
+	const uiState = useAtom(UI.stateAtom);
 	
-	const sideMenuOpened = useMemo<boolean>(() => LocationState.isAt('/game/side-menu', path), [path]);
-	
-	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromScale(1.5, 0));
-	const [rotation, rotationMotion] = useMotion<number>(20);
+	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromScale(1, 0));
 	
 	const px = usePx();
 	
-	const {
-		background,
-		outline,
-	} = styles.sideMenu.container;
+	const offsetTopX = viewportSize.X * 0.65;
+	const offsetBottomX = offsetTopX + px(100);
 	
-	const isBackgroundRGBA = StyleParse.isRGBA(background);
+	const slope = math.abs(offsetTopX - offsetBottomX) / PixelScale.baseSize.Y;
 	
-	const buttonPadding = px(12);
-	const buttonHeight = useMemo<number>(() => getSideButtonSizes(px, styles.sideMenu.button.text, buttonPadding)[1], [px, styles, buttonPadding]);
+	const buttonHeight = px(Styles.UI.sideButton.text.size + Styles.UI.sideButton.padding * 2);
+	const buttonGap = px(20);
 	
-	const totalButtons = 6;
-	
-	const listPadding = px(12);
-	const buttonGapOffset = useMemo<number>(() => {
-		return (buttonHeight + listPadding) * math.tan(math.rad(UIConstants.sideMenuRotation));
-	}, [buttonHeight, listPadding]);
+	const togglePanel = (panel: UI.SideMenu.Panel) => {
+		if (peek(UI.SideMenu.panelAtom) === panel) {
+			UI.SideMenu.panelAtom(UI.SideMenu.Panel.None);
+		} else {
+			UI.SideMenu.panelAtom(panel);
+		}
+	};
 	
 	useEffect(() => {
-		const target = sideMenuOpened ? {
-			position: UDim2.fromScale(1, 0),
-			rotation: UIConstants.sideMenuRotation,
-		} : {
-			position: UDim2.fromScale(2, 0),
-			rotation: 20,
-		};
-		
-		if (!GuiService.ReducedMotionEnabled) {
-			if (sideMenuOpened) {
-				positionMotion.tween(target.position, {
-					time: 0.6,
-					style: Enum.EasingStyle.Back,
-					direction: Enum.EasingDirection.Out,
-				});
-				
-				rotationMotion.tween(target.rotation, {
-					time: 0.6,
-					style: Enum.EasingStyle.Back,
-					direction: Enum.EasingDirection.Out,
-				});
-				
-				const clearTimeout = setTimeout(() => setSelectable(true), 0.3);
-				
-				return () => {
-					clearTimeout();
-				};
-			} else {
-				positionMotion.tween(target.position, {
-					time: 0.6,
-					style: Enum.EasingStyle.Back,
-					direction: Enum.EasingDirection.In,
-				});
-				
-				rotationMotion.tween(target.rotation, {
-					time: 0.6,
-					style: Enum.EasingStyle.Back,
-					direction: Enum.EasingDirection.In,
-				});
-				
-				setSelectable(false);
-			}
+		if (uiState === UI.State.SideMenu) {
+			positionMotion.tween(UDim2.fromScale(0, 0), {
+				style: Enum.EasingStyle.Back,
+				direction: Enum.EasingDirection.Out,
+				time: 0.6,
+			});
+			
+			setEnabled(true);
 		} else {
-			if (sideMenuOpened) {
-				positionMotion.immediate(target.position);
-				rotationMotion.immediate(target.rotation);
-				
-				const clearTimeout = setTimeout(() => setSelectable(true), 0.05);
-				
-				return () => {
-					clearTimeout();
-				};
-			} else {
-				positionMotion.immediate(target.position);
-				rotationMotion.immediate(target.rotation);
-				setSelectable(false);
-			}
+			positionMotion.tween(UDim2.fromScale(0.6, 0), {
+				style: Enum.EasingStyle.Back,
+				direction: Enum.EasingDirection.In,
+				time: 0.6,
+			});
+			
+			return setTimeout(() => setEnabled(false), 0.6);
 		}
-	}, [sideMenuOpened]);
+	}, [uiState]);
 	
 	return (
-		<screengui
-			key={'SideMenuGUI'}
-			DisplayOrder={3}
-			ScreenInsets={Enum.ScreenInsets.DeviceSafeInsets}
-			ResetOnSpawn={false}
-			ClipToDeviceSafeArea={false}
+		<ScreenGUI
+			DisplayOrder={UI.DisplayOrder.SideMenu}
+			Enabled={enabled}
 			IgnoreGuiInset
 		>
 			<frame
 				BackgroundTransparency={1}
-				Size={new UDim2(0, px(700), 1, 0)}
+				Size={UDim2.fromScale(1, 1)}
 				Position={position}
-				AnchorPoint={new Vector2(1, 0)}
 			>
 				<frame
 					BackgroundTransparency={1}
 					Size={UDim2.fromScale(2, 1)}
+					Position={UDim2.fromOffset(offsetBottomX + buttonGap, 0)}
+					ZIndex={2}
+				>
+					<UIPadding
+						padding={[buttonGap * 2, 0]}
+					/>
+					<UIListLayout
+						fillDirection={Enum.FillDirection.Vertical}
+						padding={buttonGap}
+						alignY={Enum.VerticalAlignment.Bottom}
+						alignX={Enum.HorizontalAlignment.Right}
+					/>
+					<ButtonLayout
+						buttonHeight={buttonHeight}
+						padding={px(slope * (buttonHeight + buttonGap))}
+						sideMenuOpen={uiState === UI.State.SideMenu}
+					>
+						<SideButton
+							text={'Inventory'}
+							icon={Assets.Icons.InventoryIcon}
+							onClick={() => {}}
+						/>
+						<SideButton
+							text={'Badges'}
+							icon={Assets.Icons.BadgesIcon}
+							onClick={() => {}}
+						/>
+						<SideButton
+							text={'Settings'}
+							icon={Assets.Icons.SettingsIcon}
+							onClick={() => togglePanel(UI.SideMenu.Panel.Settings)}
+						/>
+						<SideButton
+							text={'Spectate'}
+							icon={Assets.Icons.SpectateIcon}
+							onClick={() => {}}
+						/>
+						<SideButton
+							text={'Reset'}
+							icon={''}
+							onClick={() => {}}
+						/>
+						<SideButton
+							text={'Start Screen'}
+							icon={Assets.Icons.StartMenuIcon}
+							onClick={() => {
+								if (peek(TransitionState.isTransitioningAtom)) {
+									return;
+								}
+								
+								TransitionState.beginTransitionAtom()
+									.then((didTransition) => {
+										if (!didTransition) {
+											return;
+										}
+										
+										UI.stateAtom(UI.State.StartScreen)
+									});
+							}}
+						/>
+					</ButtonLayout>
+				</frame>
+				<frame
+					BackgroundTransparency={1}
+					Size={UDim2.fromScale(0, 0)}
+					Position={UDim2.fromOffset(offsetTopX, 0)}
+					Rotation={math.deg(math.atan2(viewportSize.Y, offsetBottomX - offsetTopX))}
+					ZIndex={1}
 				>
 					<frame
-						BackgroundColor3={isBackgroundRGBA ? StyleParse.color(background) : Color3.fromRGB(255, 255, 255)}
-						BackgroundTransparency={isBackgroundRGBA ? 1 - background.alpha : 0}
-						BorderSizePixel={0}
-						Size={UDim2.fromScale(1, 2)}
-						Position={UDim2.fromScale(0.5, 0.5)}
-						AnchorPoint={new Vector2(0.5, 0.5)}
-						Rotation={rotation}
+						{...Styles.applyBackgroundColorProps(Styles.UI.sideMenu.background)}
+						Size={UDim2.fromOffset(viewportSize.X * 2, viewportSize.Y * 2)}
+						AnchorPoint={new Vector2(0, 1)}
 					>
-						{!isBackgroundRGBA && (
+						{Styles.UI.sideMenu.background.type === 'gradient' && (
 							<Gradient
-								styles={background}
+								styles={Styles.UI.sideMenu.background}
 							/>
 						)}
-						{outline !== undefined && (
-							<Outline
-								styles={outline}
-								applyStrokeMode={Enum.ApplyStrokeMode.Contextual}
-							/>
-						)}
-					</frame>
-					<frame
-						BackgroundTransparency={1}
-						Size={UDim2.fromScale(1, 1)}
-					>
-						<UIListLayout
-							fillDirection={Enum.FillDirection.Vertical}
+						<uicorner
+							CornerRadius={new UDim(0, 1)}
 						/>
-						<UIPadding
-							padding={[0, 0, 0, px(20)]}
-						/>
-						<frame
-							BackgroundTransparency={1}
-							Size={UDim2.fromScale(1, 0)}
-							LayoutOrder={0}
-						>
-							<uiflexitem
-								FlexMode={Enum.UIFlexMode.Grow}
-							/>
-							<UIListLayout
-								fillDirection={Enum.FillDirection.Vertical}
-								alignY={Enum.VerticalAlignment.Bottom}
-								padding={listPadding}
-							/>
-							<UIPadding
-								padding={[px(12), 0, px(42), px(12)]}
-							/>
-							<MenuButton
-								styles={styles.sideMenu.button}
-								text={'Inventory'}
-								iconId={Assets.Icons.InventoryIcon}
-								index={0}
-								padding={buttonPadding}
-								totalButtons={totalButtons}
-								selectable={selectable}
-								autoSelect
-							/>
-							<MenuButton
-								styles={styles.sideMenu.button}
-								text={'Badges'}
-								iconId={Assets.Icons.BadgesIcon}
-								widthOffset={buttonGapOffset}
-								index={1}
-								padding={buttonPadding}
-								totalButtons={totalButtons}
-								selectable={selectable}
-							/>
-							<MenuButton
-								styles={styles.sideMenu.button}
-								text={'Settings'}
-								iconId={Assets.Icons.SettingsIcon}
-								widthOffset={buttonGapOffset * 2}
-								index={2}
-								padding={buttonPadding}
-								totalButtons={totalButtons}
-								selectable={selectable}
-								onClick={() => LocationState.navigate('/game/side-menu/settings')}
-							/>
-							<MenuButton
-								styles={styles.sideMenu.button}
-								text={'Customize'}
-								iconId={Assets.Icons.CustomizeIcon}
-								widthOffset={buttonGapOffset * 3}
-								index={3}
-								padding={buttonPadding}
-								totalButtons={totalButtons}
-								selectable={selectable}
-							/>
-							<MenuButton
-								styles={styles.sideMenu.button}
-								text={'Spectate'}
-								iconId={Assets.Icons.SpectateIcon}
-								widthOffset={buttonGapOffset * 4}
-								index={4}
-								padding={buttonPadding}
-								totalButtons={totalButtons}
-								selectable={selectable}
-							/>
-							<MenuButton
-								styles={styles.sideMenu.button}
-								text={'Switch Level'}
-								iconId={Assets.Icons.SwitchLevelIcon}
-								widthOffset={buttonGapOffset * 5}
-								index={5}
-								padding={buttonPadding}
-								totalButtons={totalButtons}
-								selectable={selectable}
-							/>
-							<MenuButton
-								styles={styles.sideMenu.button}
-								text={'Start Screen'}
-								iconId={Assets.Icons.StartMenuIcon}
-								widthOffset={buttonGapOffset * 6}
-								index={6}
-								padding={buttonPadding}
-								totalButtons={totalButtons}
-								selectable={selectable}
-								onClick={async () => {
-									LocationState.pathAtom('/game');
-									
-									const action = await ModalState.create({
-										title: 'Start Screen',
-										body: [
-											'Are you sure you want to go to the start screen?',
-											'Your progress will be reset and is not recoverable.',
-											'TODO: make progress actually save lol',
-										].join('\n'),
-										dismissable: true,
-										actions: ['Yes', 'Nevermind'] as const,
-									});
-									
-									if (action !== 'Yes') {
-										return;
-									}
-									
-									LocationState.pathAtom('/start-screen');
-								}}
-							/>
-						</frame>
 					</frame>
 				</frame>
 			</frame>
-		</screengui>
+			<Panel />
+		</ScreenGUI>
 	);
 };
 
-export default SideMenuGUI;
+export default SideMenu;
+

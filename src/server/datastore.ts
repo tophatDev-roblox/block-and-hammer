@@ -2,27 +2,37 @@ import { createCollection, Document } from '@rbxts/lapis';
 import { atom, Atom, subscribe } from '@rbxts/charm';
 import { t } from '@rbxts/t';
 
+import { UserSettings } from 'shared/user-settings';
+
 import { Logger } from 'shared/logger';
 
 type CollectionSchema = t.static<typeof DataTemplate>;
 const DataTemplate = t.interface({
 	color: t.optional(t.Color3),
 	dollars: t.number,
+	userSettings: UserSettings.Value,
 });
 
 const collection = createCollection<CollectionSchema>('player-data', {
 	defaultData: {
 		color: undefined,
 		dollars: 100,
+		userSettings: UserSettings.defaultValue,
 	},
 	validate: DataTemplate,
+	migrations: [
+		(data) => ({
+			...data,
+			userSettings: table.clone(UserSettings.defaultValue),
+		}),
+	],
 });
 
 const logger = new Logger('datastore');
 const loadedPlayers = new Map<Player, { unsubscribe: () => void, document: Document<CollectionSchema> }>();
 
 export namespace PlayerData {
-	export const atoms = new Map<Player, Atom<CollectionSchema>>();
+	export const documentAtoms = new Map<Player, Atom<CollectionSchema>>();
 	
 	export async function load(player: Player): Promise<Atom<CollectionSchema> | undefined> {
 		try {
@@ -40,7 +50,7 @@ export namespace PlayerData {
 			const data = document.read();
 			const documentAtom = atom<Readonly<CollectionSchema>>(data);
 			
-			atoms.set(player, documentAtom);
+			documentAtoms.set(player, documentAtom);
 			
 			const unsubscribe = subscribe(documentAtom, (state) => document.write(state));
 			

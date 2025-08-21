@@ -1,42 +1,33 @@
-import React, { useEffect, useState } from '@rbxts/react';
+import React, { useEffect } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 
-import { Styles, StyleParse } from 'shared/styles';
+import { Styles } from 'client/styles';
 
 interface GradientProps {
 	styles: Styles.Gradient;
 }
 
-const Gradient: React.FC<GradientProps> = ({ styles: gradient }) => {
-	const [colorSequence, setColorSequence] = useState<ColorSequence | undefined>(undefined);
-	const [transparencySequence, setTransparencySequence] = useState<NumberSequence | undefined>(undefined);
-	
-	const [rotation, rotationMotion] = useMotion<number>(typeIs(gradient.rotation, 'number') ? gradient.rotation : 0);
+const Gradient: React.FC<GradientProps> = ({ styles }) => {
+	const [rotation, rotationMotion] = useMotion<number>(styles.rotationsPerSecond === undefined ? (styles.rotation ?? 0) : 0);
 	
 	useEffect(() => {
-		const [colorSequence, transparencySequence] = StyleParse.gradient(gradient);
-		
-		setColorSequence(colorSequence);
-		setTransparencySequence(transparencySequence);
-	}, [gradient.colors, gradient.transparency]);
-	
-	useEffect(() => {
-		if (typeIs(gradient.rotation, 'number')) {
-			rotationMotion.set(gradient.rotation);
+		if (styles.rotationsPerSecond === undefined) {
+			rotationMotion.set(styles.rotation ?? 0);
 		} else {
 			rotationMotion.set(0);
+			
 			rotationMotion.tween(360, {
-				time: 1 / gradient.rotation.rotationsPerSecond,
+				time: 1 / styles.rotationsPerSecond,
 				style: Enum.EasingStyle.Linear,
 				repeatCount: -1,
 			});
 		}
-	}, [gradient.rotation]);
+	}, [styles.rotation, styles.rotationsPerSecond]);
 	
 	return (
 		<uigradient
-			Color={colorSequence}
-			Transparency={transparencySequence}
+			Color={styles.color}
+			Transparency={styles.transparency}
 			Rotation={rotation}
 		/>
 	);

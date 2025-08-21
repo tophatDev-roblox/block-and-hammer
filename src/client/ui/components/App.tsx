@@ -1,43 +1,47 @@
-import React, { useMemo } from '@rbxts/react';
+import React from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
 
-import { LocationState } from 'client/ui/location-state';
+import { UI } from 'client/ui/state';
 
-import SpeedEffectGUI from './SpeedEffect';
-import StartScreenGUI from './StartScreen';
-import SubtitlesGUI from './Subtitles';
-import SideMenuGUI from './SideMenu';
-import VersionGUI from './Version';
-import TimerGUI from './Timer';
-import ModalGUI from './Modal';
-import PanelGUI from './Panel';
-import HudGUI from './HUD';
-import World from './World';
+import StartScreen from './StartScreen';
+import Transition from './Transition';
+import SideMenu from './SideMenu';
+import Version from './Version';
+import HUD from './HUD';
 
 const App: React.FC = () => {
-	const path = useAtom(LocationState.pathAtom);
+	const state = useAtom(UI.stateAtom);
 	
-	const isInStartScreen = useMemo(() => LocationState.isAt('/start-screen', path), [path]);
-	if (isInStartScreen) {
+	if (state === UI.State.StartScreen) {
 		return (
 			<>
-				<StartScreenGUI />
-				<VersionGUI />
+				<Transition
+					key={'Transition'}
+				/>
+				<Version
+					key={'Version'}
+				/>
+				<StartScreen
+					key={'StartScreen'}
+				/>
 			</>
 		);
 	}
 	
 	return (
 		<>
-			<World />
-			<SpeedEffectGUI />
-			<VersionGUI />
-			<SubtitlesGUI />
-			<HudGUI />
-			<TimerGUI />
-			<SideMenuGUI />
-			<PanelGUI />
-			<ModalGUI />
+			<Transition
+				key={'Transition'}
+			/>
+			<Version
+				key={'Version'}
+			/>
+			<HUD
+				key={'HUD'}
+			/>
+			<SideMenu
+				key={'SideMenu'}
+			/>
 		</>
 	);
 };

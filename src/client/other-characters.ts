@@ -1,7 +1,8 @@
 import { Players } from '@rbxts/services';
 
+import Immut from '@rbxts/immut';
+
 import { atom, Atom } from '@rbxts/charm';
-import { produce } from '@rbxts/immut';
 
 import { InputType } from 'shared/input-type';
 
@@ -15,7 +16,7 @@ function onPlayerAdded(player: Player): void {
 	const partsAtom = atom<CharacterState.Parts>();
 	const inputTypeAtom = atom<InputType>(InputType.Unknown);
 	
-	OtherCharacters.partsAtoms((parts) => produce(parts, (draft) => {
+	OtherCharacters.partsAtoms((parts) => Immut.produce(parts, (draft) => {
 		draft.set(player, [partsAtom, inputTypeAtom]);
 	}));
 	
@@ -45,7 +46,7 @@ function onPlayerAdded(player: Player): void {
 }
 
 function onPlayerRemoving(player: Player): void {
-	OtherCharacters.partsAtoms((parts) => produce(parts, (draft) => {
+	OtherCharacters.partsAtoms((parts) => Immut.produce(parts, (draft) => {
 		draft.delete(player);
 	}));
 }

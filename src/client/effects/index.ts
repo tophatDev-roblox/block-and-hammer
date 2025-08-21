@@ -10,7 +10,7 @@ import { Raycast } from 'shared/raycast';
 import { Logger } from 'shared/logger';
 
 import { clientInputTypeAtom } from 'client/input';
-import { UserSettings } from 'client/user-settings';
+import { ClientSettings } from 'client/client-settings';
 import { SFX } from 'client/sfx';
 
 import { CharacterState } from 'client/character/state';
@@ -367,9 +367,9 @@ effect(() => {
 				Character.ragdoll(effectIntensity);
 				Character.shake(effectIntensity);
 				
-				const userSettings = peek(UserSettings.stateAtom);
+				const userSettings = peek(ClientSettings.stateAtom);
 				const inputType = peek(clientInputTypeAtom)
-				if (!userSettings.haptics.disabled && inputType === InputType.Controller) {
+				if (userSettings.haptics.enabled && inputType === InputType.Controller) {
 					const baseAmplitude = effectIntensity / 4 + 0.2;
 					const duration = 700;
 					const steps = 10;

@@ -1,7 +1,8 @@
 import { RunService, SoundService, Workspace } from '@rbxts/services';
 
+import Immut from '@rbxts/immut';
+
 import { atom, subscribe } from '@rbxts/charm';
-import Immut, { produce } from '@rbxts/immut';
 
 import { waitForChild } from 'shared/wait-for-child';
 import { TimeSpan } from 'shared/time-span';
@@ -52,7 +53,7 @@ export namespace SFX {
 	}
 	
 	function onHeartbeat(): void {
-		subtitlesAtom((subtitles) => produce(subtitles, (draft) => {
+		subtitlesAtom((subtitles) => Immut.produce(subtitles, (draft) => {
 			for (const i of $range(0, draft.size() - 1)) {
 				const [, endTime] = draft[i];
 				if (endTime < math.huge && TimeSpan.timeUntil(endTime) < 0) {
@@ -67,7 +68,7 @@ export namespace SFX {
 		const name = SFX.getName(targetSound);
 		const debounceDuration = length + 1;
 		
-		subtitlesAtom((subtitles) => produce(subtitles, (draft) => {
+		subtitlesAtom((subtitles) => Immut.produce(subtitles, (draft) => {
 			const index = draft.findIndex(([sound]) => sound === name);
 			if (index !== -1) {
 				draft[index][1] = TimeSpan.now() + debounceDuration;
@@ -85,7 +86,7 @@ export namespace SFX {
 		
 		const name = SFX.getName(windSound);
 		if (windSpeed > 0.5 && previousWindSpeed <= 0.5) {
-			subtitlesAtom((subtitles) => produce(subtitles, (draft) => {
+			subtitlesAtom((subtitles) => Immut.produce(subtitles, (draft) => {
 				const index = draft.findIndex(([sound]) => sound === name);
 				if (index !== -1) {
 					draft[index][1] = math.huge;
@@ -94,7 +95,7 @@ export namespace SFX {
 				}
 			}));
 		} else if (windSpeed <= 0.5 && previousWindSpeed > 0.5) {
-			subtitlesAtom((subtitles) => produce(subtitles, (draft) => {
+			subtitlesAtom((subtitles) => Immut.produce(subtitles, (draft) => {
 				const index = draft.findIndex(([sound]) => sound === name);
 				if (index === -1) {
 					return;
