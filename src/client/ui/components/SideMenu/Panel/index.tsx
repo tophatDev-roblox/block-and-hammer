@@ -48,7 +48,7 @@ const Panel: React.FC = () => {
 	const scrollbarPosition = React.joinBindings({ scrollbarHeight, contentY, contentHeight, viewportSize: viewportSizeBinding })
 		.map(({ scrollbarHeight, contentY, contentHeight, viewportSize }) => (contentY / (contentHeight - viewportSize.Y)) * (viewportSize.Y - scrollbarHeight));
 	
-	const offsetTopX = viewportSize.X * 0.55;
+	const offsetTopX = math.round(viewportSize.X * 0.55);
 	const offsetBottomX = offsetTopX + px(100);
 	
 	const rotation = math.deg(math.atan2(viewportSize.Y, offsetBottomX - offsetTopX));
@@ -151,7 +151,7 @@ const Panel: React.FC = () => {
 				}}
 			>
 				<UIPadding
-					padding={[inset.Y + px(10), 0, px(10), 0]}
+					padding={[inset.Y + px(10), 0, px(40), 0]}
 				/>
 				<UIListLayout
 					fillDirection={Enum.FillDirection.Vertical}
