@@ -1,31 +1,34 @@
-import { RunService } from '@rbxts/services';
+import { useMotion } from '@rbxts/pretty-react-hooks';
+import React, { useEffect, useRef } from '@rbxts/react';
 
-import React, { useBinding, useRef } from '@rbxts/react';
-import { useEventListener } from '@rbxts/pretty-react-hooks';
-
-import { usePx } from 'client/ui/hooks/use-px';
+import { useItemsContext } from 'client/ui/contexts/scrolling-items';
 
 interface ItemProps {
 	child: React.ReactNode;
-	slope: number;
 }
 
-const Item: React.FC<ItemProps> = ({ child, slope }) => {
+const Item: React.FC<ItemProps> = ({ child }) => {
 	const frameRef = useRef<Frame>();
+	const paddingRef = useRef<UIPadding>();
 	
-	const [padding, setPadding] = useBinding<UDim>(new UDim(0, 0));
+	const [padding, paddingMotion] = useMotion<UDim>(new UDim(0, 0));
 	
-	const px = usePx();
+	const { register, unregister } = useItemsContext();
 	
-	useEventListener(RunService.PreRender, () => {
+	useEffect(() => {
 		const frame = frameRef.current;
+		const padding = paddingRef.current;
 		
-		if (frame === undefined) {
+		if (frame === undefined || padding === undefined) {
 			return;
 		}
 		
-		setPadding(new UDim(0, frame.AbsolutePosition.Y * slope + px(50)));
-	});
+		register({ frame, paddingMotion });
+		
+		return () => {
+			unregister(frame);
+		};
+	}, []);
 	
 	return (
 		<frame
@@ -35,6 +38,7 @@ const Item: React.FC<ItemProps> = ({ child, slope }) => {
 			AutomaticSize={Enum.AutomaticSize.Y}
 		>
 			<uipadding
+				ref={paddingRef}
 				PaddingLeft={padding}
 			/>
 			{child}

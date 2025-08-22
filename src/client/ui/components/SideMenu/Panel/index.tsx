@@ -1,6 +1,6 @@
 import { GuiService } from '@rbxts/services';
 
-import React, { useBinding, useEffect } from '@rbxts/react';
+import React, { useBinding, useEffect, useRef } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
@@ -23,6 +23,8 @@ import Gradient from '../../Gradient';
 import Settings from './Settings';
 
 const Panel: React.FC = () => {
+	const scrolllingFrameRef = useRef<ScrollingFrame>();
+	
 	const [contentHeight, setContentHeight] = useBinding<number>(2160);
 	const [contentY, setContentY] = useBinding<number>(0);
 	const [visible, setVisible] = useBinding<boolean>(false);
@@ -136,6 +138,7 @@ const Panel: React.FC = () => {
 				</canvasgroup>
 			</frame>
 			<scrollingframe
+				ref={scrolllingFrameRef}
 				BackgroundTransparency={1}
 				Size={new UDim2(0, offsetBottomX, 1, 0)}
 				CanvasSize={UDim2.fromScale(0, 1)}
@@ -158,6 +161,7 @@ const Panel: React.FC = () => {
 					panel === UI.SideMenu.Panel.Settings && (
 						<Settings
 							slope={slope}
+							scrollingFrameRef={scrolllingFrameRef}
 						/>
 					)
 				)}

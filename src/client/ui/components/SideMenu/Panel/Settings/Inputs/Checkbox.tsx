@@ -50,10 +50,12 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onToggle }) => {
 		thumbAnchorPointMotion.tween(new Vector2(checked ? 1 : 0, 0), options);
 	}, [checked]);
 	
+	const settingsStyles = Styles.UI.panel.settings;
+	
 	return (
 		<frame
 			BackgroundTransparency={1}
-			Size={new UDim2(0, viewportSize.X * 0.5, 0, px(Styles.UI.panel.settings.item.label.size + Styles.UI.panel.settings.item.padding * 2))}
+			Size={new UDim2(0, viewportSize.X * 0.5, 0, px(settingsStyles.item.label.size + settingsStyles.item.padding * 2))}
 		>
 			<textbutton
 				BackgroundTransparency={1}
@@ -70,13 +72,13 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onToggle }) => {
 				/>
 			</textbutton>
 			<frame
-				{...Styles.applyBackgroundColorProps(Styles.UI.panel.settings.item.background)}
+				{...Styles.applyBackgroundColorProps(settingsStyles.item.background)}
 				Size={UDim2.fromScale(1, 1)}
 				ZIndex={1}
 			>
-				{Styles.UI.panel.settings.item.background.type === 'gradient' && (
+				{settingsStyles.item.background.type === 'gradient' && (
 					<Gradient
-						styles={Styles.UI.panel.settings.item.background}
+						styles={settingsStyles.item.background}
 					/>
 				)}
 				<UIListLayout
@@ -84,16 +86,16 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onToggle }) => {
 					alignY={Enum.VerticalAlignment.Center}
 				/>
 				<UIPadding
-					padding={px(Styles.UI.panel.settings.item.padding)}
+					padding={px(settingsStyles.item.padding)}
 					overrides={{
-						PaddingLeft: new UDim(0, px(Styles.UI.panel.settings.item.padding * 2)),
+						PaddingLeft: new UDim(0, px(settingsStyles.item.padding * 2)),
 					}}
 				/>
 				<uicorner
 					CornerRadius={new UDim(1, 0)}
 				/>
 				<Text
-					styles={Styles.UI.panel.settings.item.label}
+					styles={settingsStyles.item.label}
 					text={label}
 					alignX={Enum.TextXAlignment.Left}
 					autoHeight
@@ -115,7 +117,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onToggle }) => {
 						CornerRadius={new UDim(1, 0)}
 					/>
 					<UIPadding
-						padding={px(Styles.UI.panel.settings.checkbox.padding)}
+						padding={px(settingsStyles.checkbox.padding)}
 					/>
 					<frame
 						BackgroundColor3={thumbBackground}

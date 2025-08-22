@@ -11,14 +11,16 @@ import Checkbox from './Inputs/Checkbox';
 
 interface SettingsProps {
 	slope: number;
+	scrollingFrameRef: React.RefObject<ScrollingFrame>;
 }
 
-const Settings: React.FC<SettingsProps> = ({ slope }) => {
+const Settings: React.FC<SettingsProps> = ({ slope, scrollingFrameRef }) => {
 	const userSettings = useAtom(ClientSettings.stateAtom);
 	
 	return (
 		<ScrollingItems
 			slope={slope}
+			scrollingFrameRef={scrollingFrameRef}
 		>
 			<Checkbox
 				label={'Show Range'}
@@ -49,6 +51,177 @@ const Settings: React.FC<SettingsProps> = ({ slope }) => {
 			/>
 			<Checkbox
 				label={'Enable Haptic Vibrations'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
+				checked={userSettings.haptics.enabled}
+				onToggle={(checked) => {
+					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+						draft.haptics.enabled = checked;
+					}));
+				}}
+			/>
+			<Checkbox
+				label={'some setting'}
 				checked={userSettings.haptics.enabled}
 				onToggle={(checked) => {
 					ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
