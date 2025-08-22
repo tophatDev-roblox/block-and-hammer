@@ -1,11 +1,10 @@
-import React, { useBinding, useEffect } from '@rbxts/react';
+import React, { useBinding, useCallback, useEffect } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
-import { setTimeout } from '@rbxts/set-timeout';
-import { peek } from '@rbxts/charm';
+import { setTimeout, throttle } from '@rbxts/set-timeout';
+import { batch, peek } from '@rbxts/charm';
 
-import { PixelScale } from 'shared/pixel-scale';
 import { Assets } from 'shared/assets';
 
 import { Camera } from 'client/camera';
@@ -38,18 +37,41 @@ const SideMenu: React.FC = () => {
 	const offsetTopX = viewportSize.X * 0.65;
 	const offsetBottomX = offsetTopX + px(100);
 	
-	const slope = math.abs(offsetTopX - offsetBottomX) / PixelScale.baseSize.Y;
+	const slope = math.abs(offsetTopX - offsetBottomX) / viewportSize.Y;
 	
 	const buttonHeight = px(Styles.UI.sideButton.text.size + Styles.UI.sideButton.padding * 2);
 	const buttonGap = px(20);
 	
-	const togglePanel = (panel: UI.SideMenu.Panel) => {
-		if (peek(UI.SideMenu.panelAtom) === panel) {
-			UI.SideMenu.panelAtom(UI.SideMenu.Panel.None);
+	const togglePanel = useCallback(throttle((panel: UI.SideMenu.Panel) => {
+		const currentPanel = peek(UI.SideMenu.panelAtom);
+		
+		let nextPanel = panel;
+		
+		if (currentPanel === panel) {
+			UI.SideMenu.isClosingPanelAtom(true);
+			
+			nextPanel = UI.SideMenu.Panel.None;
 		} else {
-			UI.SideMenu.panelAtom(panel);
+			if (currentPanel === UI.SideMenu.Panel.None) {
+				UI.SideMenu.panelAtom(panel);
+				
+				return;
+			} else {
+				UI.SideMenu.isClosingPanelAtom(true);
+			}
 		}
-	};
+		
+		setTimeout(() => {
+			if (peek(UI.stateAtom) !== UI.State.SideMenu) {
+				return;
+			}
+			
+			batch(() => {
+				UI.SideMenu.panelAtom(nextPanel);
+				UI.SideMenu.isClosingPanelAtom(false);
+			});
+		}, 0.6);
+	}, 0.6), []);
 	
 	useEffect(() => {
 		if (uiState === UI.State.SideMenu) {
@@ -99,7 +121,7 @@ const SideMenu: React.FC = () => {
 					/>
 					<ButtonLayout
 						buttonHeight={buttonHeight}
-						padding={px(slope * (buttonHeight + buttonGap))}
+						slope={slope * (buttonHeight + buttonGap)}
 						sideMenuOpen={uiState === UI.State.SideMenu}
 					>
 						<SideButton

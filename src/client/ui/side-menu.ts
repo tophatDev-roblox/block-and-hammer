@@ -22,9 +22,10 @@ effect(() => {
 	
 	if (sideMenuOpen) {
 		CoreGuis.playerListAtom(false);
-	} else {
-		UI.SideMenu.panelAtom(UI.SideMenu.Panel.None);
 		
+		UI.SideMenu.panelAtom(UI.SideMenu.Panel.None);
+		UI.SideMenu.isClosingPanelAtom(false);
+	} else {
 		if (!GuiService.ReducedMotionEnabled) {
 			return setTimeout(() => {
 				CoreGuis.playerListAtom(true);

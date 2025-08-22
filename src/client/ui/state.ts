@@ -19,6 +19,7 @@ export namespace UI {
 	
 	export namespace SideMenu {
 		export const panelAtom = atom<Panel>(Panel.None);
+		export const isClosingPanelAtom = atom<boolean>(false);
 		
 		export const enum Panel {
 			None,

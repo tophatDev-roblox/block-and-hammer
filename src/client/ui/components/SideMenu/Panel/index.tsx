@@ -6,8 +6,6 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { setTimeout } from '@rbxts/set-timeout';
 
-import { PixelScale } from 'shared/pixel-scale';
-
 import { Camera } from 'client/camera';
 
 import { Styles } from 'client/styles';
@@ -33,14 +31,14 @@ const Panel: React.FC = () => {
 	
 	const viewportSize = useAtom(Camera.viewportSizeAtom);
 	const panel = useAtom(UI.SideMenu.panelAtom);
+	const isClosingPanel = useAtom(UI.SideMenu.isClosingPanelAtom);
+	const uiState = useAtom(UI.stateAtom);
 	
 	const viewportSizeBinding = useAtomBinding(Camera.viewportSizeAtom);
 	
 	const [inset] = GuiService.GetGuiInset();
 	
 	const px = usePx();
-	
-	// TODO: fix fps dropping to <100 while scrolling
 	
 	const scrollbarHeight = React.joinBindings({ contentHeight, viewportSize: viewportSizeBinding })
 		.map(({ contentHeight, viewportSize }) => (viewportSize.Y / contentHeight) * viewportSize.Y);
@@ -52,12 +50,12 @@ const Panel: React.FC = () => {
 	const offsetBottomX = offsetTopX + px(100);
 	
 	const rotation = math.deg(math.atan2(viewportSize.Y, offsetBottomX - offsetTopX));
-	const slope = math.abs(offsetTopX - offsetBottomX) / PixelScale.baseSize.Y;
+	const slope = math.abs(offsetTopX - offsetBottomX) / viewportSize.Y;
 	
 	const scrollbarThickness = px(20);
 	
 	useEffect(() => {
-		if (panel !== UI.SideMenu.Panel.None) {
+		if (panel !== UI.SideMenu.Panel.None && uiState === UI.State.SideMenu && !isClosingPanel) {
 			positionMotion.tween(UDim2.fromScale(0, 0), {
 				style: Enum.EasingStyle.Back,
 				direction: Enum.EasingDirection.Out,
@@ -74,7 +72,7 @@ const Panel: React.FC = () => {
 			
 			return setTimeout(() => setVisible(false), 0.6);
 		}
-	}, [panel]);
+	}, [panel, uiState, isClosingPanel]);
 	
 	return (
 		<frame

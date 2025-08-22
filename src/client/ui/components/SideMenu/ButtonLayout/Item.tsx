@@ -11,11 +11,11 @@ interface ItemProps {
 	child: React.ReactNode;
 	index: number;
 	buttonHeight: number;
-	paddingChange: number;
+	slope: number;
 	sideMenuOpen: boolean;
 }
 
-const Item: React.FC<ItemProps> = ({ child, index, buttonHeight, paddingChange, sideMenuOpen }) => {
+const Item: React.FC<ItemProps> = ({ child, index, buttonHeight, slope, sideMenuOpen }) => {
 	const px = usePx();
 	
 	const [size, sizeMotion] = useMotion<UDim2>(new UDim2(1, px(-600), 0, buttonHeight));
@@ -46,7 +46,7 @@ const Item: React.FC<ItemProps> = ({ child, index, buttonHeight, paddingChange, 
 			Size={size}
 		>
 			<UIPadding
-				padding={[0, 0, 0, paddingChange * index]}
+				padding={[0, 0, 0, slope * index]}
 			/>
 			{child}
 		</frame>
