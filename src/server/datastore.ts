@@ -2,12 +2,14 @@ import { createCollection, Document } from '@rbxts/lapis';
 import { atom, Atom, subscribe } from '@rbxts/charm';
 import { t } from '@rbxts/t';
 
+import Immut from '@rbxts/immut';
+
 import { UserSettings } from 'shared/user-settings';
 
 import { Logger } from 'shared/logger';
 
-type CollectionSchema = t.static<typeof DataTemplate>;
-const DataTemplate = t.interface({
+type CollectionSchema = t.static<typeof CollectionSchema>;
+const CollectionSchema = t.strictInterface({
 	color: t.optional(t.Color3),
 	dollars: t.number,
 	userSettings: UserSettings.Value,
@@ -20,12 +22,11 @@ const collection = createCollection<CollectionSchema>('player-data', {
 		userSettings: UserSettings.defaultValue,
 	},
 	migrations: [
-		(data) => ({
-			...data,
-			userSettings: table.clone(UserSettings.defaultValue),
+		(data) => Immut.produce(data, (draft: CollectionSchema) => {
+			draft.userSettings = table.clone(UserSettings.defaultValue);
 		}),
 	],
-	validate: DataTemplate,
+	validate: CollectionSchema,
 });
 
 const logger = new Logger('datastore');
