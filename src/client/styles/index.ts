@@ -219,8 +219,7 @@ export namespace Styles {
 					label: {
 						font: fontHeavy,
 						color: plainColor(Color3.fromRGB(255, 255, 255)),
-						outline: genericTextOutline,
-						size: 40,
+						size: 45,
 					},
 					padding: 10,
 				},
