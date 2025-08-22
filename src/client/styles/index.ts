@@ -168,7 +168,7 @@ export namespace Styles {
 			listPadding: 10,
 		},
 		sideButton: {
-			background: plainColor(Color3.fromRGB(0, 0, 0), 0.5),
+			background: gradientColor(new ColorSequence(Color3.fromRGB(0, 0, 0)), new NumberSequence(0.4, 0.6), -90),
 			icon: {
 				background: plainColor(Color3.fromRGB(0, 0, 0), 0.4),
 				color: plainColor(Color3.fromRGB(255, 255, 255)),
