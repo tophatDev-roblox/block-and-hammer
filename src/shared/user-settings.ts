@@ -2,6 +2,9 @@ import { t } from '@rbxts/t';
 
 export namespace UserSettings {
 	export const defaultValue: Value = {
+		general: {
+			hideOthers: HideOthers.Never,
+		},
 		character: {
 			showRange: true,
 		},
@@ -32,8 +35,18 @@ export namespace UserSettings {
 		LastInput,
 	}
 	
+	export const tHideOthers = t.union(t.literal(0), t.literal(1), t.literal(2));
+	export const enum HideOthers {
+		Never,
+		Always,
+		NonFriends,
+	}
+	
 	export type Value = t.static<typeof Value>;
 	export const Value = t.strictInterface({
+		general: t.strictInterface({
+			hideOthers: tHideOthers,
+		}),
 		character: t.strictInterface({
 			showRange: t.boolean,
 		}),

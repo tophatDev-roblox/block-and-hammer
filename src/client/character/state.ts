@@ -22,6 +22,7 @@ export namespace CharacterState {
 	export interface Parts {
 		model: Model;
 		body: Part;
+		face: Decal;
 		windTrail: Trail;
 		centerAttachment: Attachment;
 		targetAttachment: Attachment;
@@ -60,12 +61,14 @@ export namespace CharacterState {
 		const bubbleChatOrigin = await waitForChild(character, 'BubbleChatOrigin', 'Part');
 		const hammer = await waitForChild(character, 'Hammer', 'Model');
 		
+		const face = await waitForChild(body, 'Face', 'Decal');
 		const windTrail = await waitForChild(body, 'Trail', 'Trail');
 		const head = await waitForChild(hammer, 'Head', 'Part');
 		
 		return {
 			model: character,
 			body: body,
+			face: face,
 			windTrail: windTrail,
 			centerAttachment: await waitForChild(body, 'CenterAttachment', 'Attachment'),
 			targetAttachment: await waitForChild(body, 'TargetAttachment1', 'Attachment'),

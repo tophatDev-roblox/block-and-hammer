@@ -33,6 +33,12 @@ const Nameplate: React.FC<NameplateProps> = ({ player, partsAtom }) => {
 		return;
 	}
 	
+	const hideOthersTransparency = tonumber(characterParts.body.GetAttribute('hideOthersTransparency')) ?? 0;
+	
+	if (hideOthersTransparency >= 1) {
+		return;
+	}
+	
 	return (
 		<billboardgui
 			Adornee={characterParts.body}

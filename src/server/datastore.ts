@@ -21,9 +21,12 @@ const collection = createCollection<CollectionSchema>('player-data', {
 		dollars: 100,
 		userSettings: UserSettings.defaultValue,
 	},
-	migrations: [
+	migrations: [ // TODO: remove all migrations on first release
 		(data) => Immut.produce(data, (draft: CollectionSchema) => {
 			draft.userSettings = table.clone(UserSettings.defaultValue);
+		}),
+		(data) => Immut.produce(data, (draft: CollectionSchema) => {
+			draft.userSettings.general = table.clone(UserSettings.defaultValue.general);
 		}),
 	],
 	validate: CollectionSchema,
