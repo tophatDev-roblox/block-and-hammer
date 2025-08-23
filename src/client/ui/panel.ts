@@ -8,9 +8,12 @@ import { CoreGuis } from 'client/core-guis';
 import { UI } from 'client/ui/state';
 
 effect(() => {
+	const state = UI.stateAtom();
 	const view = UI.SideMenu.panelAtom();
 	
-	if (view !== UI.SideMenu.Panel.None) {
+	const sideMenuOpen = state === UI.State.SideMenu;
+	
+	if (view !== UI.SideMenu.Panel.None && sideMenuOpen) {
 		CoreGuis.chatAtom(false);
 	} else {
 		if (!GuiService.ReducedMotionEnabled) {
