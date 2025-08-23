@@ -1,4 +1,7 @@
-import React, { useBinding, useEffect, useState } from '@rbxts/react';
+import React, { useEffect, useState } from '@rbxts/react';
+import { useMotion } from '@rbxts/pretty-react-hooks';
+
+import Ripple from '@rbxts/ripple';
 
 import { Styles } from 'client/styles';
 
@@ -16,21 +19,26 @@ const Item: React.FC<ItemProps> = ({ text, onClick }) => {
 	const [isHovered, setHovered] = useState<boolean>(false);
 	const [isPressed, setPressed] = useState<boolean>(false);
 	
-	const [backgroundTransparency, setBackgroundTransparency] = useBinding<number>(1);
+	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion<number>(1);
 	
 	const px = usePx();
 	
 	const settingsStyles = Styles.UI.panel.settings;
 	
 	useEffect(() => {
+		const options: Ripple.TweenOptions = {
+			style: Enum.EasingStyle.Linear,
+			time: 0.1,
+		};
+		
 		if (isHovered) {
 			if (isPressed) {
-				setBackgroundTransparency(0.7);
+				backgroundTransparencyMotion.tween(0.7, options);
 			} else {
-				setBackgroundTransparency(0.8);
+				backgroundTransparencyMotion.tween(0.8, options);
 			}
 		} else {
-			setBackgroundTransparency(1);
+			backgroundTransparencyMotion.tween(1, options);
 		}
 	}, [isHovered, isPressed]);
 	
