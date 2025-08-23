@@ -2,6 +2,7 @@ export namespace Styles {
 	const fontRegular = new Font('rbxassetid://12187365364', Enum.FontWeight.Regular, Enum.FontStyle.Normal);
 	const fontMedium = new Font('rbxassetid://12187365364', Enum.FontWeight.Medium, Enum.FontStyle.Normal);
 	const fontBold = new Font('rbxassetid://12187365364', Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+	const fontExtraBold = new Font('rbxassetid://12187365364', Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
 	const fontHeavy = new Font('rbxassetid://12187365364', Enum.FontWeight.Heavy, Enum.FontStyle.Normal);
 	
 	export const applyBackgroundColorProps = (color: Color | Gradient): object => {
@@ -128,6 +129,13 @@ export namespace Styles {
 			};
 		};
 		version: Text;
+		world: {
+			nameplate: {
+				displayName: Text;
+				username: Text;
+				listPadding: number;
+			};
+		};
 	}
 	
 	const genericTextOutline: Outline = {
@@ -233,6 +241,23 @@ export namespace Styles {
 			color: plainColor(Color3.fromRGB(255, 255, 255), 0.6),
 			outline: genericTextOutline,
 			size: 30,
+		},
+		world: {
+			nameplate: {
+				displayName: {
+					font: fontExtraBold,
+					color: plainColor(Color3.fromRGB(255, 255, 255), 1),
+					outline: genericTextOutline,
+					size: 30,
+				},
+				username: {
+					font: fontExtraBold,
+					color: plainColor(Color3.fromRGB(255, 255, 255), 0.6),
+					outline: genericTextOutline,
+					size: 20,
+				},
+				listPadding: 5,
+			},
 		},
 	};
 	

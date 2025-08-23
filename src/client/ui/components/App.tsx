@@ -7,6 +7,7 @@ import StartScreen from './StartScreen';
 import Transition from './Transition';
 import SideMenu from './SideMenu';
 import Version from './Version';
+import World from './World';
 import HUD from './HUD';
 
 const App: React.FC = () => {
@@ -41,6 +42,9 @@ const App: React.FC = () => {
 			/>
 			<SideMenu
 				key={'SideMenu'}
+			/>
+			<World
+				key={'World'}
 			/>
 		</>
 	);

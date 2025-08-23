@@ -9,7 +9,7 @@ import { InputType } from 'shared/input-type';
 import { CharacterState } from 'client/character/state';
 
 export namespace OtherCharacters {
-	export const partsAtoms = atom<ReadonlyMap<Player, [Atom<CharacterState.Parts | undefined>, Atom<InputType>]>>(new Map());
+	export const partsAtoms = atom<ReadonlyMap<Player, { partsAtom: Atom<CharacterState.Parts | undefined>, inputTypeAtom: Atom<InputType> }>>(new Map());
 }
 
 function onPlayerAdded(player: Player): void {
@@ -17,7 +17,7 @@ function onPlayerAdded(player: Player): void {
 	const inputTypeAtom = atom<InputType>(InputType.Unknown);
 	
 	OtherCharacters.partsAtoms((parts) => Immut.produce(parts, (draft) => {
-		draft.set(player, [partsAtom, inputTypeAtom]);
+		draft.set(player, { partsAtom, inputTypeAtom });
 	}));
 	
 	const onCharacterAdded = async (newCharacter: Model): Promise<void> => {
