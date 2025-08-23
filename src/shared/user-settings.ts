@@ -57,7 +57,7 @@ export namespace UserSettings {
 			showRange: t.boolean,
 		}),
 		performance: t.strictInterface({
-			areaUpdateInterval: t.number,
+			areaUpdateInterval: t.numberConstrained(0.1, 1),
 		}),
 		ui: t.strictInterface({
 			topbar: t.strictInterface({
@@ -66,7 +66,7 @@ export namespace UserSettings {
 		}),
 		controller: t.strictInterface({
 			detectionType: tControllerDetection,
-			deadzonePercentage: t.number,
+			deadzonePercentage: t.numberConstrained(0, 1),
 		}),
 		haptics: t.strictInterface({
 			enabled: t.boolean,
