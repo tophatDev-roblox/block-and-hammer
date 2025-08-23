@@ -28,6 +28,12 @@ const collection = createCollection<CollectionSchema>('player-data', {
 		(data) => Immut.produce(data, (draft: CollectionSchema) => {
 			draft.userSettings.general = table.clone(UserSettings.defaultValue.general);
 		}),
+		(data) => Immut.produce(data, (draft: CollectionSchema) => {
+			(draft.userSettings.ui.topbar as any).displayPerformance = undefined;
+			(draft.userSettings.ui.topbar as any).showPerformanceLabels = undefined;
+			
+			draft.userSettings.ui.topbar.performanceDisplay = UserSettings.defaultValue.ui.topbar.performanceDisplay;
+		}),
 	],
 	validate: CollectionSchema,
 });

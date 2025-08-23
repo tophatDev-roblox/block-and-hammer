@@ -13,8 +13,7 @@ export namespace UserSettings {
 		},
 		ui: {
 			topbar: {
-				displayPerformance: true,
-				showPerformanceLabels: false,
+				performanceDisplay: PerformanceDisplay.WithLabels,
 			},
 		},
 		controller: {
@@ -42,6 +41,13 @@ export namespace UserSettings {
 		NonFriends,
 	}
 	
+	export const tPerformanceDisplay = t.union(t.literal(0), t.literal(1), t.literal(2));
+	export const enum PerformanceDisplay {
+		Off,
+		WithLabels,
+		WithoutLabels,
+	}
+	
 	export type Value = t.static<typeof Value>;
 	export const Value = t.strictInterface({
 		general: t.strictInterface({
@@ -55,8 +61,7 @@ export namespace UserSettings {
 		}),
 		ui: t.strictInterface({
 			topbar: t.strictInterface({
-				displayPerformance: t.boolean,
-				showPerformanceLabels: t.boolean,
+				performanceDisplay: tPerformanceDisplay,
 			}),
 		}),
 		controller: t.strictInterface({

@@ -5,8 +5,8 @@ import { effect, peek, subscribe } from '@rbxts/charm';
 import NumberSpinner from 'shared/NumberSpinner';
 import Icon from 'shared/Icon';
 
+import { UserSettings } from 'shared/user-settings';
 import { Constants } from 'shared/constants';
-
 import { InputType } from 'shared/input-type';
 import { TimeSpan } from 'shared/time-span';
 import { RichText } from 'shared/rich-text';
@@ -185,7 +185,9 @@ function onPreRender(dt: number) {
 	
 	const userSettings = peek(ClientSettings.stateAtom);
 	
-	if (!userSettings.ui.topbar.displayPerformance) {
+	const performanceDisplay = userSettings.ui.topbar.performanceDisplay;
+	
+	if (performanceDisplay === UserSettings.PerformanceDisplay.Off) {
 		return;
 	}
 	
@@ -194,7 +196,7 @@ function onPreRender(dt: number) {
 	const fps = monospaceRichText.apply(tostring(math.round(1 / dt)));
 	const ping = monospaceRichText.apply(`${math.round(client.GetNetworkPing() * 1000)}ms`);
 	
-	if (userSettings.ui.topbar.showPerformanceLabels) {
+	if (performanceDisplay === UserSettings.PerformanceDisplay.WithLabels) {
 		fpsIcon.setLabel('%s FPS'.format(fps));
 		pingIcon.setLabel('%s Ping'.format(ping));
 	} else {
@@ -206,8 +208,10 @@ function onPreRender(dt: number) {
 effect(() => {
 	const userSettings = ClientSettings.stateAtom();
 	
-	fpsIcon.setEnabled(userSettings.ui.topbar.displayPerformance);
-	pingIcon.setEnabled(userSettings.ui.topbar.displayPerformance);
+	const enabled = userSettings.ui.topbar.performanceDisplay !== UserSettings.PerformanceDisplay.Off;
+	
+	fpsIcon.setEnabled(enabled);
+	pingIcon.setEnabled(enabled);
 });
 
 applyStyles(Styles.Topbar);

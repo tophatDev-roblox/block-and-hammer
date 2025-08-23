@@ -53,21 +53,13 @@ const Settings: React.FC<SettingsProps> = ({ slope, scrollingFrameRef }) => {
 						}));
 					}}
 				/>
-				<Checkbox
-					label={'Display Performance'}
-					checked={userSettings.ui.topbar.displayPerformance}
-					onToggle={(checked) => {
+				<Dropdown
+					label={'Performance Display'}
+					value={['Off', 'With Labels', 'Without Labels']}
+					index={userSettings.ui.topbar.performanceDisplay}
+					onSelect={(index) => {
 						ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
-							draft.ui.topbar.displayPerformance = checked;
-						}));
-					}}
-				/>
-				<Checkbox
-					label={'Performance Labels'}
-					checked={userSettings.ui.topbar.showPerformanceLabels}
-					onToggle={(checked) => {
-						ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
-							draft.ui.topbar.showPerformanceLabels = checked;
+							draft.ui.topbar.performanceDisplay = index;
 						}));
 					}}
 				/>
