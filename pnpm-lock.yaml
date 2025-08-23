@@ -29,6 +29,9 @@ importers:
       '@rbxts/lapis':
         specifier: ^0.3.8
         version: 0.3.8(@rbxts/t@3.2.1)
+      '@rbxts/lapis-mockdatastore':
+        specifier: ^0.3.7
+        version: 0.3.7
       '@rbxts/pretty-react-hooks':
         specifier: ^0.6.4
         version: 0.6.4(@rbxts/react-roblox@17.2.3)(@rbxts/react@17.2.3)
@@ -93,6 +96,9 @@ packages:
 
   '@rbxts/iris@2.3.1-ts.1':
     resolution: {integrity: sha512-L/lja+ugKNH3ywdz5c8omXUS34L9oGKlul3yVifzTfQVJS4ryePU/hS6IdMaSbIwNda+qEOehXbSxglF9qxa/A==}
+
+  '@rbxts/lapis-mockdatastore@0.3.7':
+    resolution: {integrity: sha512-D8DhcnTDoMit7Rne6AQxAas8H5ZK7B6StFIGNTUoe2oUfQVmEbPF85Q78PjBEww2vAjVAnAF2FbMnbcALQjaUQ==}
 
   '@rbxts/lapis@0.3.8':
     resolution: {integrity: sha512-SQTVdSp47Rh7nzuI/ArUsGssz2+KmciPlue4Qlj3i9iO2p3Xgf1ZsgfhvMemPih/kFdjSH47E8wHGA4dY/Y+AA==}
@@ -371,6 +377,8 @@ snapshots:
   '@rbxts/immut@0.4.4-ts.0': {}
 
   '@rbxts/iris@2.3.1-ts.1': {}
+
+  '@rbxts/lapis-mockdatastore@0.3.7': {}
 
   '@rbxts/lapis@0.3.8(@rbxts/t@3.2.1)':
     dependencies:

@@ -1,4 +1,8 @@
-import { createCollection, Document } from '@rbxts/lapis';
+import { DataStoreService, RunService } from '@rbxts/services';
+
+import DataStoreServiceMock from '@rbxts/lapis-mockdatastore';
+
+import { createCollection, setConfig, Document } from '@rbxts/lapis';
 import { atom, Atom, subscribe } from '@rbxts/charm';
 import { t } from '@rbxts/t';
 
@@ -7,6 +11,10 @@ import Immut from '@rbxts/immut';
 import { UserSettings } from 'shared/user-settings';
 
 import { Logger } from 'shared/logger';
+
+setConfig({
+	dataStoreService: RunService.IsStudio() ? new DataStoreServiceMock() : DataStoreService,
+});
 
 type CollectionSchema = t.static<typeof CollectionSchema>;
 const CollectionSchema = t.strictInterface({
