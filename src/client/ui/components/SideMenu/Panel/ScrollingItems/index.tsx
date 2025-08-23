@@ -61,6 +61,7 @@ const ScrollingItems: React.FC<ScrollingItemsProps> = ({ slope, scrollingFrameRe
 				<Item
 					key={i}
 					child={child}
+					index={-i}
 				/>
 			))}
 		</ItemsContext.Provider>

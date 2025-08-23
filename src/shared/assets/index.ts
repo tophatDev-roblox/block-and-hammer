@@ -14,6 +14,7 @@ export namespace Assets {
 		QuestionIcon = 'rbxassetid://75706370460179',
 		RagdollEffectIcon = 'rbxassetid://137768418845613',
 		DizzyEffectIcon = 'rbxassetid://129344731386711',
+		DropdownIcon = 'rbxassetid://95588668400184',
 	}
 	
 	export enum Images {

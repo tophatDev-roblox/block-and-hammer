@@ -5,9 +5,10 @@ import { useItemsContext } from 'client/ui/contexts/scrolling-items';
 
 interface ItemProps {
 	child: React.ReactNode;
+	index: number;
 }
 
-const Item: React.FC<ItemProps> = ({ child }) => {
+const Item: React.FC<ItemProps> = ({ child, index }) => {
 	const frameRef = useRef<Frame>();
 	const paddingRef = useRef<UIPadding>();
 	
@@ -36,6 +37,7 @@ const Item: React.FC<ItemProps> = ({ child }) => {
 			BackgroundTransparency={1}
 			Size={UDim2.fromScale(1, 0)}
 			AutomaticSize={Enum.AutomaticSize.Y}
+			ZIndex={index}
 		>
 			<uipadding
 				ref={paddingRef}

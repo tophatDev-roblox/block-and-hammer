@@ -125,7 +125,11 @@ export namespace Styles {
 				};
 				checkbox: {
 					padding: number;
-				}
+				};
+				dropdown: {
+					itemText: Text;
+					padding: number;
+				};
 			};
 		};
 		version: Text;
@@ -232,6 +236,14 @@ export namespace Styles {
 					padding: 10,
 				},
 				checkbox: {
+					padding: 5,
+				},
+				dropdown: {
+					itemText: {
+						font: fontBold,
+						color: plainColor(Color3.fromRGB(255, 255, 255)),
+						size: 40,
+					},
 					padding: 5,
 				},
 			},
