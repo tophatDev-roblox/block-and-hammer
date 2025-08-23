@@ -64,10 +64,19 @@ const SideButton: React.FC<SideButtonProps> = ({ text, icon, iconScale = 0.7, on
 				ScaleType={Enum.ScaleType.Slice}
 				SliceCenter={new Rect(256, 256, 512, 256)}
 				Event={{
-					MouseEnter: () => setHovered(true),
-					MouseLeave: () => setHovered(false),
-					MouseButton1Down: () => setPressed(true),
-					MouseButton1Up: () => setPressed(false),
+					MouseEnter: () => {
+						setHovered(true);
+					},
+					MouseLeave: () => {
+						setHovered(false);
+						setPressed(false);
+					},
+					MouseButton1Down: () => {
+						setPressed(true);
+					},
+					MouseButton1Up: () => {
+						setPressed(false);
+					},
 					MouseButton1Click: onClick,
 				}}
 			>

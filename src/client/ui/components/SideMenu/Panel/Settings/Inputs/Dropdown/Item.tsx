@@ -42,10 +42,19 @@ const Item: React.FC<ItemProps> = ({ text, onClick }) => {
 			AutomaticSize={Enum.AutomaticSize.Y}
 			AutoButtonColor={false}
 			Event={{
-				MouseEnter: () => setHovered(true),
-				MouseLeave: () => setHovered(false),
-				MouseButton1Down: () => setPressed(true),
-				MouseButton1Up: () => setPressed(false),
+				MouseEnter: () => {
+					setHovered(true);
+				},
+				MouseLeave: () => {
+					setHovered(false);
+					setPressed(false);
+				},
+				MouseButton1Down: () => {
+					setPressed(true);
+				},
+				MouseButton1Up: () => {
+					setPressed(false);
+				},
 				MouseButton1Click: onClick,
 			}}
 		>
