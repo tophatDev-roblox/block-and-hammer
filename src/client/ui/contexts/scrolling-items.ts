@@ -13,7 +13,7 @@ export interface ItemRegistry {
 
 export const ItemsContext = createContext<{
 	register: (item: ItemRegistry) => void;
-	unregister: (frame: Frame) => void,
+	unregister: (frame: Frame) => void;
 } | undefined>(undefined);
 
 export const useItemsContext = () => {
