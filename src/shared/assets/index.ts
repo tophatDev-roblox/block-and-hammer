@@ -35,6 +35,8 @@ export namespace Assets {
 		FabricHit = 'rbxassetid://9113819689',
 		Explosion = 'rbxassetid://5801257793',
 		Wind = 'rbxassetid://106270796117861',
+		UIHover = 'rbxassetid://6895079853',
+		UIClick = 'rbxassetid://15675059323',
 	}
 	
 	export enum Music {

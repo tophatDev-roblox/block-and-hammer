@@ -10,6 +10,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 import UIListLayout from './UIListLayout';
 import UIPadding from './UIPadding';
 import Gradient from './Gradient';
+import Button from './Button';
 import Text from './Text';
 
 interface SideButtonProps {
@@ -56,13 +57,10 @@ const SideButton: React.FC<SideButtonProps> = ({ text, icon, iconScale = 0.7, on
 			BackgroundTransparency={1}
 			Size={new UDim2(1, 0, 0, px(Styles.UI.sideButton.text.size + Styles.UI.sideButton.padding * 2))}
 		>
-			<imagebutton
-				{...Styles.applyImageColorProps(Styles.UI.sideButton.background)}
+			<Button
+				BackgroundTransparency={1}
 				Size={UDim2.fromScale(1, 1)}
 				Position={position}
-				Image={Assets.Images.ButtonBackground}
-				ScaleType={Enum.ScaleType.Slice}
-				SliceCenter={new Rect(256, 256, 512, 256)}
 				Event={{
 					MouseEnter: () => {
 						setHovered(true);
@@ -80,51 +78,59 @@ const SideButton: React.FC<SideButtonProps> = ({ text, icon, iconScale = 0.7, on
 					MouseButton1Click: onClick,
 				}}
 			>
-				{Styles.UI.sideButton.background.type === 'gradient' && (
-					<Gradient
-						styles={Styles.UI.sideButton.background}
-					/>
-				)}
-				<UIListLayout
-					fillDirection={Enum.FillDirection.Horizontal}
-					alignX={Enum.HorizontalAlignment.Left}
-					padding={px(Styles.UI.sideButton.padding)}
-				/>
-				<UIPadding
-					padding={px(Styles.UI.sideButton.padding)}
-				/>
-				<frame
-					{...Styles.applyBackgroundColorProps(Styles.UI.sideButton.icon.background)}
+				<imagelabel
+					{...Styles.applyImageColorProps(Styles.UI.sideButton.background)}
 					Size={UDim2.fromScale(1, 1)}
-					SizeConstraint={Enum.SizeConstraint.RelativeYY}
-					LayoutOrder={0}
+					Image={Assets.Images.ButtonBackground}
+					ScaleType={Enum.ScaleType.Slice}
+					SliceCenter={new Rect(256, 256, 512, 256)}
 				>
-					<uicorner
-						CornerRadius={new UDim(1, 0)}
-					/>
-					{Styles.UI.sideButton.icon.background.type === 'gradient' && (
+					{Styles.UI.sideButton.background.type === 'gradient' && (
 						<Gradient
-							styles={Styles.UI.sideButton.icon.background}
+							styles={Styles.UI.sideButton.background}
 						/>
 					)}
-					<imagelabel
-						{...Styles.applyImageColorProps(Styles.UI.sideButton.icon.color)}
-						BackgroundTransparency={1}
-						Size={typeIs(iconScale, 'number')
-							? UDim2.fromScale(iconScale, iconScale)
-							: iconScale.map((iconScale) => UDim2.fromScale(iconScale, iconScale))}
-						Position={UDim2.fromScale(0.5, 0.5)}
-						AnchorPoint={new Vector2(0.5, 0.5)}
-						Image={icon}
+					<UIListLayout
+						fillDirection={Enum.FillDirection.Horizontal}
+						alignX={Enum.HorizontalAlignment.Left}
+						padding={px(Styles.UI.sideButton.padding)}
 					/>
-				</frame>
-				<Text
-					styles={Styles.UI.sideButton.text}
-					text={text}
-					autoWidth
-					order={1}
-				/>
-			</imagebutton>
+					<UIPadding
+						padding={px(Styles.UI.sideButton.padding)}
+					/>
+					<frame
+						{...Styles.applyBackgroundColorProps(Styles.UI.sideButton.icon.background)}
+						Size={UDim2.fromScale(1, 1)}
+						SizeConstraint={Enum.SizeConstraint.RelativeYY}
+						LayoutOrder={0}
+					>
+						<uicorner
+							CornerRadius={new UDim(1, 0)}
+						/>
+						{Styles.UI.sideButton.icon.background.type === 'gradient' && (
+							<Gradient
+								styles={Styles.UI.sideButton.icon.background}
+							/>
+						)}
+						<imagelabel
+							{...Styles.applyImageColorProps(Styles.UI.sideButton.icon.color)}
+							BackgroundTransparency={1}
+							Size={typeIs(iconScale, 'number')
+								? UDim2.fromScale(iconScale, iconScale)
+								: iconScale.map((iconScale) => UDim2.fromScale(iconScale, iconScale))}
+							Position={UDim2.fromScale(0.5, 0.5)}
+							AnchorPoint={new Vector2(0.5, 0.5)}
+							Image={icon}
+						/>
+					</frame>
+					<Text
+						styles={Styles.UI.sideButton.text}
+						text={text}
+						autoWidth
+						order={1}
+					/>
+				</imagelabel>
+			</Button>
 		</frame>
 	);
 };

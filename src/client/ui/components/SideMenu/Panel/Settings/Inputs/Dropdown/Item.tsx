@@ -8,6 +8,7 @@ import { Styles } from 'client/styles';
 import { usePx } from 'client/ui/hooks/use-px';
 
 import UIPadding from 'client/ui/components/UIPadding';
+import Button from 'client/ui/components/Button';
 import Text from 'client/ui/components/Text';
 
 interface ItemProps {
@@ -43,12 +44,11 @@ const Item: React.FC<ItemProps> = ({ text, onClick }) => {
 	}, [isHovered, isPressed]);
 	
 	return (
-		<textbutton
+		<Button
 			BackgroundColor3={Color3.fromRGB(255, 255, 255)}
 			BackgroundTransparency={backgroundTransparency}
 			Size={UDim2.fromScale(1, 0)}
 			AutomaticSize={Enum.AutomaticSize.Y}
-			AutoButtonColor={false}
 			Event={{
 				MouseEnter: () => {
 					setHovered(true);
@@ -77,7 +77,7 @@ const Item: React.FC<ItemProps> = ({ text, onClick }) => {
 				text={text}
 				autoHeight
 			/>
-		</textbutton>
+		</Button>
 	);
 };
 

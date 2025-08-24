@@ -15,6 +15,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 import UIListLayout from 'client/ui/components/UIListLayout';
 import UIPadding from 'client/ui/components/UIPadding';
 import Gradient from 'client/ui/components/Gradient';
+import Button from 'client/ui/components/Button';
 import Text from 'client/ui/components/Text';
 
 import Item from './Item';
@@ -42,11 +43,9 @@ const Dropdown = <T extends number>({ label, value, index, onSelect }: DropdownP
 			BackgroundTransparency={1}
 			Size={new UDim2(0, viewportSize.X * 0.5, 0, px(settingsStyles.item.label.size + settingsStyles.item.padding * 2))}
 		>
-			<textbutton
+			<Button
 				BackgroundTransparency={1}
 				Size={UDim2.fromScale(1, 1)}
-				Text={''}
-				TextTransparency={1}
 				ZIndex={2}
 				Event={{
 					MouseButton1Click: () => {
@@ -61,7 +60,7 @@ const Dropdown = <T extends number>({ label, value, index, onSelect }: DropdownP
 				<uicorner
 					CornerRadius={new UDim(1, 0)}
 				/>
-			</textbutton>
+			</Button>
 			<frame
 				{...Styles.applyBackgroundColorProps(settingsStyles.item.background)}
 				Size={UDim2.fromScale(1, 1)}
@@ -145,13 +144,12 @@ const Dropdown = <T extends number>({ label, value, index, onSelect }: DropdownP
 						</frame>
 					</frame>
 					{currentDropdown === dropdownId && (
-						<textbutton
+						<Button
 							BackgroundColor3={Color3.fromRGB(0, 0, 0)}
 							BackgroundTransparency={0.5}
 							Size={UDim2.fromScale(1, 0)}
 							Position={new UDim2(0, 0, 1, px(settingsStyles.dropdown.padding))}
 							AutomaticSize={Enum.AutomaticSize.Y}
-							AutoButtonColor={false}
 						>
 							<uicorner
 								CornerRadius={new UDim(0, px(16))}
@@ -173,7 +171,7 @@ const Dropdown = <T extends number>({ label, value, index, onSelect }: DropdownP
 									}}
 								/>
 							))}
-						</textbutton>
+						</Button>
 					)}
 				</frame>
 			</frame>

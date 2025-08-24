@@ -1,4 +1,4 @@
-import { RunService, UserInputService } from '@rbxts/services';
+import { RunService, SoundService, UserInputService, Workspace } from '@rbxts/services';
 
 import React, { useEffect, useRef, useState } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
@@ -6,6 +6,7 @@ import { useAtom } from '@rbxts/react-charm';
 
 import Ripple from '@rbxts/ripple';
 
+import { waitForChild } from 'shared/wait-for-child';
 import { Number } from 'shared/number';
 
 import { Camera } from 'client/camera';
@@ -17,7 +18,14 @@ import { usePx } from 'client/ui/hooks/use-px';
 import UIListLayout from 'client/ui/components/UIListLayout';
 import UIPadding from 'client/ui/components/UIPadding';
 import Gradient from 'client/ui/components/Gradient';
+import Button from 'client/ui/components/Button';
 import Text from 'client/ui/components/Text';
+
+let uiHoverSound: Sound;
+
+(async () => {
+	uiHoverSound = await waitForChild(SoundService, 'UIHover', 'Sound');
+})();
 
 interface SliderProps {
 	label: string;
@@ -153,11 +161,9 @@ const Slider: React.FC<SliderProps> = ({ label, value, min, max, step, decimals,
 						CornerRadius={new UDim(1, 0)}
 					/>
 				</textbox>
-				<textbutton
+				<Button
 					BackgroundTransparency={1}
 					Size={UDim2.fromScale(0.35, 1)}
-					TextTransparency={1}
-					AutoButtonColor={false}
 					Event={{
 						MouseEnter: () => {
 							setHovered(true);
@@ -178,6 +184,8 @@ const Slider: React.FC<SliderProps> = ({ label, value, min, max, step, decimals,
 							const left = sliderBackground.AbsolutePosition.X;
 							const right = left + sliderBackground.AbsoluteSize.X;
 							
+							let previousValue = value;
+							
 							const renderSteppedEvent = RunService.RenderStepped.Connect(() => {
 								const mouseLocation = UserInputService.GetMouseLocation();
 								
@@ -186,7 +194,17 @@ const Slider: React.FC<SliderProps> = ({ label, value, min, max, step, decimals,
 								
 								const newValue = Number.clampStep(math.map(percentageX, 0, 1, min, max), min, max, step);
 								
-								textBox.Text = formatString.format(newValue);
+								if (previousValue !== newValue) {
+									textBox.Text = formatString.format(newValue);
+									
+									const sound = uiHoverSound.Clone();
+									sound.PlaybackSpeed = math.map(percentageX, 0, 1, 0.9, 1.2);
+									sound.Volume = 0.5;
+									sound.Parent = Workspace;
+									sound.Destroy();
+									
+									previousValue = newValue;
+								}
 								
 								if (!UserInputService.IsMouseButtonPressed(Enum.UserInputType.MouseButton1)) {
 									renderSteppedEvent.Disconnect();
@@ -237,7 +255,7 @@ const Slider: React.FC<SliderProps> = ({ label, value, min, max, step, decimals,
 							CornerRadius={new UDim(1, 0)}
 						/>
 					</frame>
-				</textbutton>
+				</Button>
 			</frame>
 		</frame>
 	);

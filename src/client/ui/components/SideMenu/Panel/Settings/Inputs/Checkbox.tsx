@@ -15,6 +15,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 import UIListLayout from 'client/ui/components/UIListLayout';
 import UIPadding from 'client/ui/components/UIPadding';
 import Gradient from 'client/ui/components/Gradient';
+import Button from 'client/ui/components/Button';
 import Text from 'client/ui/components/Text';
 
 interface CheckboxProps {
@@ -57,11 +58,9 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onToggle }) => {
 			BackgroundTransparency={1}
 			Size={new UDim2(0, viewportSize.X * 0.5, 0, px(settingsStyles.item.label.size + settingsStyles.item.padding * 2))}
 		>
-			<textbutton
+			<Button
 				BackgroundTransparency={1}
 				Size={UDim2.fromScale(1, 1)}
-				Text={''}
-				TextTransparency={1}
 				ZIndex={2}
 				Event={{
 					MouseButton1Click: () => onMouseButton1Click(checked),
@@ -70,7 +69,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onToggle }) => {
 				<uicorner
 					CornerRadius={new UDim(1, 0)}
 				/>
-			</textbutton>
+			</Button>
 			<frame
 				{...Styles.applyBackgroundColorProps(settingsStyles.item.background)}
 				Size={UDim2.fromScale(1, 1)}
