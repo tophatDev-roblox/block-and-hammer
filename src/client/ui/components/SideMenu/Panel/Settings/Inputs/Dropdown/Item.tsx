@@ -76,11 +76,7 @@ const Item: React.FC<ItemProps> = ({ text, onClick }) => {
 				styles={settingsStyles.dropdown.itemText}
 				text={text}
 				autoHeight
-			>
-				<uiflexitem
-					FlexMode={Enum.UIFlexMode.Grow}
-				/>
-			</Text>
+			/>
 		</textbutton>
 	);
 };
