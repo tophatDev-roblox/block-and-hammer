@@ -1,5 +1,5 @@
-import { useMotion } from '@rbxts/pretty-react-hooks';
 import React, { useEffect, useRef } from '@rbxts/react';
+import { useMotion } from '@rbxts/pretty-react-hooks';
 
 import { useItemsContext } from 'client/ui/contexts/scrolling-items';
 
