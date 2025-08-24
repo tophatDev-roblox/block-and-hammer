@@ -17,7 +17,7 @@ const onSettingsUpdate = debounce((userSettings: UserSettings.Value) => {
 	logger.print('saving settings:', userSettings);
 	
 	Remotes.updateSettings.fire(userSettings);
-}, 2);
+}, 10);
 
 export namespace ClientSettings {
 	export const stateAtom = atom<UserSettings.Value>(UserSettings.defaultValue);
