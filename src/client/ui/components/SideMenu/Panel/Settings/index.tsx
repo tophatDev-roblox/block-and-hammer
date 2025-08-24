@@ -11,6 +11,7 @@ import ScrollingItems from '../ScrollingItems';
 
 import Checkbox from './Inputs/Checkbox';
 import Dropdown from './Inputs/Dropdown';
+import Slider from './Inputs/Slider';
 
 interface SettingsProps {
 	slope: number;
@@ -53,6 +54,19 @@ const Settings: React.FC<SettingsProps> = ({ slope, scrollingFrameRef }) => {
 						}));
 					}}
 				/>
+				<Slider
+					label={'Area Check Interval'}
+					value={userSettings.performance.areaUpdateInterval}
+					min={0.1}
+					max={1}
+					step={0.05}
+					decimals={2}
+					onChange={(newValue) => {
+						ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+							draft.performance.areaUpdateInterval = newValue;
+						}));
+					}}
+				/>
 				<Dropdown
 					label={'Performance Display'}
 					value={['Off', 'With Labels', 'Without Labels']}
@@ -70,6 +84,19 @@ const Settings: React.FC<SettingsProps> = ({ slope, scrollingFrameRef }) => {
 					onSelect={(index) => {
 						ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
 							draft.controller.detectionType = index;
+						}));
+					}}
+				/>
+				<Slider
+					label={'Controller Deadzone (%)'}
+					value={math.floor(userSettings.controller.deadzonePercentage * 100)}
+					min={1}
+					max={100}
+					step={1}
+					decimals={0}
+					onChange={(newValue) => {
+						ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
+							draft.controller.deadzonePercentage = newValue / 100;
 						}));
 					}}
 				/>

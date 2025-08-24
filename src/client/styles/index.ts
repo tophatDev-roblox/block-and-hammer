@@ -32,6 +32,20 @@ export namespace Styles {
 		return props;
 	};
 	
+	export const applyTextColorProps = (color: Color | Gradient): object => {
+		const props: React.InstanceProps<TextLabel> = {
+			BackgroundTransparency: 1,
+			BorderSizePixel: 0,
+		};
+		
+		if (color.type === 'plain') {
+			props.TextColor3 = color.color;
+			props.BackgroundTransparency = 1 - (color.alpha ?? 0);
+		}
+		
+		return props;
+	};
+	
 	export const plainColor = (color: Color3, alpha: number = 1): Color => ({
 		type: 'plain',
 		color,
@@ -75,6 +89,10 @@ export namespace Styles {
 		size: number;
 		font: Font;
 		outline?: Outline;
+	}
+	
+	export interface TextPlain extends Omit<Text, 'color'> {
+		color: Color;
 	}
 	
 	export interface Button {
@@ -128,6 +146,12 @@ export namespace Styles {
 				};
 				dropdown: {
 					itemText: Text;
+					padding: number;
+				};
+				slider: {
+					input: TextPlain;
+					placeholder: Color;
+					thumb: Color | Gradient;
 					padding: number;
 				};
 			};
@@ -245,6 +269,16 @@ export namespace Styles {
 						size: 40,
 					},
 					padding: 5,
+				},
+				slider: {
+					input: {
+						font: fontBold,
+						color: plainColor(Color3.fromRGB(255, 255, 255)),
+						size: 35,
+					},
+					placeholder: plainColor(Color3.fromRGB(128, 128, 128)),
+					thumb: plainColor(Color3.fromRGB(71, 130, 255)),
+					padding: 10,
 				},
 			},
 		},
