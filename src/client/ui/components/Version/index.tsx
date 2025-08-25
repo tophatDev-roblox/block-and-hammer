@@ -16,7 +16,7 @@ import Text from '../Text';
 const Version: React.FC = () => {
 	const px = usePx();
 	
-	let text = `block and hammer v${game.PlaceVersion}`;
+	let text = `block and hammer v${Constants.GameVersion}`;
 	
 	if (RunService.IsStudio()) {
 		text += ' [dev]';
