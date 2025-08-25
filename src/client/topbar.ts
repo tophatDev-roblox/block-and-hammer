@@ -1,6 +1,7 @@
 import { Players, RunService } from '@rbxts/services';
 
 import { effect, peek, subscribe } from '@rbxts/charm';
+import { throttle } from '@rbxts/set-timeout';
 
 import NumberSpinner from 'shared/NumberSpinner';
 import Icon from 'shared/Icon';
@@ -16,7 +17,6 @@ import { clientInputTypeAtom } from 'client/input';
 import { Styles } from 'client/styles';
 
 import { TransitionState } from 'client/ui/transition-state';
-import { ModalState } from 'client/ui/modal-state';
 import { UI } from 'client/ui/state';
 
 import { DebugPanelState } from 'client/debug-panel/state';
@@ -79,10 +79,8 @@ const pingIcon = new Icon()
 	.lock()
 	.modifyTheme(secondaryTheme);
 
-menuIcon.toggled.Connect((toggled) => {
-	const state = peek(UI.stateAtom);
-	
-	if (state === UI.State.StartScreen || peek(TransitionState.isTransitioningAtom)) {
+menuIcon.toggled.Connect(throttle((toggled) => {
+	if (!UI.SideMenu.canToggle()) {
 		return;
 	}
 	
@@ -91,16 +89,22 @@ menuIcon.toggled.Connect((toggled) => {
 	} else {
 		UI.stateAtom(UI.State.Game);
 	}
-});
+}, 0.6));
 
 effect(() => {
 	const state = UI.stateAtom();
+	const isTransitioning = TransitionState.isTransitioningAtom();
 	
-	if (state === UI.State.StartScreen) {
+	if (!UI.SideMenu.canToggle(state, isTransitioning)) {
+		menuIcon.deselect();
 		menuIcon.lock();
-		Icon.setTopbarEnabled(false);
 	} else {
 		menuIcon.unlock();
+	}
+	
+	if (state === UI.State.StartScreen) {
+		Icon.setTopbarEnabled(false);
+	} else {
 		Icon.setTopbarEnabled(true);
 	}
 	
@@ -108,16 +112,6 @@ effect(() => {
 		menuIcon.select();
 	} else {
 		menuIcon.deselect();
-	}
-});
-
-effect(() => {
-	const modal = ModalState.stateAtom();
-	
-	if (modal !== undefined) {
-		menuIcon.lock();
-	} else {
-		menuIcon.unlock();
 	}
 });
 

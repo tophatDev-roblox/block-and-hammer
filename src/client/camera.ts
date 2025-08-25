@@ -2,6 +2,7 @@ import { GuiService, RunService, Workspace } from '@rbxts/services';
 
 import { createMotion } from '@rbxts/ripple';
 import { atom, peek } from '@rbxts/charm';
+import { debounce } from '@rbxts/set-timeout';
 
 import { waitForChild } from 'shared/wait-for-child';
 import { TimeSpan } from 'shared/time-span';
@@ -10,7 +11,6 @@ import { Shake } from 'shared/shake';
 import { CharacterState } from 'client/character/state';
 
 import { UI } from 'client/ui/state';
-import { debounce } from '@rbxts/set-timeout';
 
 export namespace Camera {
 	export const instanceAtom = atom<Camera>();
@@ -81,10 +81,21 @@ function onViewportSizeChange(): void {
 				camera.FieldOfView = math.min(camera.FieldOfView, 80);
 			}
 		} else {
-			if (peek(UI.stateAtom) === UI.State.StartScreen) {
-				camera.FieldOfView = 45;
-			} else {
-				camera.FieldOfView = 70;
+			const state = peek(UI.stateAtom);
+			
+			switch (state) {
+				case UI.State.StartScreen: {
+					camera.FieldOfView = 45;
+					break;
+				}
+				case UI.State.Inventory: {
+					camera.FieldOfView = 15;
+					break;
+				}
+				default: {
+					camera.FieldOfView = 70;
+					break;
+				}
 			}
 		}
 		

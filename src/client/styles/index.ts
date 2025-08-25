@@ -95,7 +95,7 @@ export namespace Styles {
 		color: Color;
 	}
 	
-	export interface Button {
+	export interface ButtonText {
 		background: Color | Gradient;
 		icon: {
 			background: Color | Gradient;
@@ -104,6 +104,13 @@ export namespace Styles {
 		padding: number;
 		text: Text;
 		outline?: Outline;
+	}
+	
+	export interface ButtonIcon extends Omit<ButtonText, 'text' | 'icon'> {
+		icon: {
+			color: Color | Gradient;
+		};
+		size: number;
 	}
 	
 	export interface UI {
@@ -121,7 +128,7 @@ export namespace Styles {
 			title: Text;
 			listPadding: number;
 		};
-		sideButton: Button;
+		sideButton: ButtonText;
 		hud: {
 			altitude: Text;
 			speedometer: Text;
@@ -163,6 +170,27 @@ export namespace Styles {
 				username: Text;
 				listPadding: number;
 			};
+		};
+		inventory: {
+			tabs: {
+				text: Text;
+				background: Color | Gradient;
+				unselectedBackground: Color;
+				selectedBackground: Color;
+				hoveredBackground: Color;
+				padding: number;
+			};
+			content: {
+				text: Text;
+				background: Color | Gradient;
+			};
+			buttons: {
+				button: Omit<ButtonIcon, 'background'>;
+				background: Color;
+				hoveredBackground: Color;
+			};
+			padding: number;
+			listPadding: number;
 		};
 	}
 	
@@ -304,6 +332,41 @@ export namespace Styles {
 				},
 				listPadding: 5,
 			},
+		},
+		inventory: {
+			tabs: {
+				text: {
+					font: fontBold,
+					color: plainColor(Color3.fromRGB(255, 255, 255)),
+					size: 40,
+				},
+				background: gradientColor(new ColorSequence(Color3.fromRGB(0, 0, 0)), new NumberSequence(0.5, 0.8), 20),
+				unselectedBackground: plainColor(Color3.fromRGB(255, 255, 255), 0.08),
+				selectedBackground: plainColor(Color3.fromRGB(255, 255, 255), 0.3),
+				hoveredBackground: plainColor(Color3.fromRGB(255, 255, 255), 0.2),
+				padding: 10,
+			},
+			content: {
+				text: {
+					font: fontRegular,
+					color: plainColor(Color3.fromRGB(255, 255, 255)),
+					size: 40,
+				},
+				background: gradientColor(new ColorSequence(Color3.fromRGB(0, 0, 0)), new NumberSequence(0.5, 0.8), 20),
+			},
+			buttons: {
+				button: {
+					icon: {
+						color: plainColor(Color3.fromRGB(255, 255, 255)),
+					},
+					size: 48,
+					padding: 8,
+				},
+				background: plainColor(Color3.fromRGB(0, 0, 0), 0.5),
+				hoveredBackground: plainColor(Color3.fromRGB(0, 0, 0), 0.7),
+			},
+			padding: 10,
+			listPadding: 10,
 		},
 	};
 	

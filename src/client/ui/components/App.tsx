@@ -5,6 +5,7 @@ import { UI } from 'client/ui/state';
 
 import StartScreen from './StartScreen';
 import Transition from './Transition';
+import Inventory from './Inventory';
 import SideMenu from './SideMenu';
 import Version from './Version';
 import World from './World';
@@ -24,6 +25,20 @@ const App: React.FC = () => {
 				/>
 				<StartScreen
 					key={'StartScreen'}
+				/>
+			</>
+		);
+	} else if (state === UI.State.Inventory) {
+		return (
+			<>
+				<Transition
+					key={'Transition'}
+				/>
+				<Version
+					key={'Version'}
+				/>
+				<Inventory
+					key={'Inventory'}
 				/>
 			</>
 		);

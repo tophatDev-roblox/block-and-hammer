@@ -127,7 +127,16 @@ const SideMenu: React.FC = () => {
 						<SideButton
 							text={'Inventory'}
 							icon={Assets.Icons.InventoryIcon}
-							onClick={() => {}}
+							onClick={() => {
+								TransitionState.beginTransitionAtom()
+									.then((didTransition) => {
+										if (!didTransition) {
+											return;
+										}
+										
+										UI.stateAtom(UI.State.Inventory);
+									});
+							}}
 						/>
 						<SideButton
 							text={'Badges'}

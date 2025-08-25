@@ -9,6 +9,7 @@ import App from './components/App';
 
 import './side-menu';
 import './panel';
+import './inventory';
 
 const client = Players.LocalPlayer;
 
