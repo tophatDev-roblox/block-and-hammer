@@ -1,20 +1,21 @@
 import { Players, ReplicatedStorage, RunService, Workspace } from '@rbxts/services';
 
-import { debounce, setInterval, throttle } from '@rbxts/set-timeout';
+import { setInterval, throttle } from '@rbxts/set-timeout';
 import { peek } from '@rbxts/charm';
+
 import Immut from '@rbxts/immut';
 
 import computeNameColor from 'shared/NameColor';
 
 import type { UserSettings } from 'shared/user-settings';
 
+import { CharacterParts } from 'shared/character-parts';
 import { waitForChild } from 'shared/wait-for-child';
+import { Accessories } from 'shared/accessories';
 import { AreaManager } from 'shared/area-manager';
 import { InputType } from 'shared/input-type';
-import { Constants } from 'shared/constants';
 import { RichText } from 'shared/rich-text';
 import { Remotes } from 'shared/remotes';
-import { Number } from 'shared/number';
 import { Logger } from 'shared/logger';
 import { Units } from 'shared/units';
 
@@ -45,11 +46,11 @@ const onFullReset = throttle(async (player: Player): Promise<true> => {
 	return true;
 }, 0.2);
 
-const onInputTypeChanged = debounce((player: Player, inputType: InputType): void => {
+const onInputTypeChanged = throttle((player: Player, inputType: InputType): void => {
 	player.SetAttribute('inputType', inputType);
 }, 1);
 
-const onUpdateSettings = debounce((player: Player, userSettings: UserSettings.Value): void => {
+const onUpdateSettings = throttle((player: Player, userSettings: UserSettings.Value): void => {
 	const documentAtom = PlayerData.documentAtoms.get(player);
 	
 	if (documentAtom === undefined) {
@@ -61,7 +62,34 @@ const onUpdateSettings = debounce((player: Player, userSettings: UserSettings.Va
 	}));
 }, 2);
 
+const onApplyAccessories = throttle((player: Player, accessories: Accessories.PlayerAccessories): void => {
+	const documentAtom = PlayerData.documentAtoms.get(player);
+	
+	if (documentAtom === undefined) {
+		return;
+	}
+	
+	documentAtom((document) => Immut.produce(document, (draft) => {
+		draft.accessories = accessories;
+	}));
+	
+	const character = player.Character;
+	
+	if (character !== undefined) {
+		CharacterParts.create(character)
+			.then((characterParts) => Accessories.applyAccessories(characterParts, accessories));
+	}
+}, 2);
+
 async function respawn(player: Player): Promise<void> {
+	const documentAtom = PlayerData.documentAtoms.get(player);
+	
+	if (documentAtom === undefined) {
+		return;
+	}
+	
+	const document = peek(documentAtom);
+	
 	const leaderstats = await waitForChild(player, 'leaderstats', 'Folder');
 	const altitudeValue = await waitForChild(leaderstats, 'Altitude', 'IntValue');
 	const areaValue = await waitForChild(leaderstats, 'Area', 'StringValue');
@@ -92,6 +120,8 @@ async function respawn(player: Player): Promise<void> {
 	});
 	
 	character.Destroying.Once(() => {
+		player.Character = undefined;
+		
 		characterData.delete(character);
 		
 		if (character.GetAttribute('unloading') !== true) {
@@ -101,14 +131,12 @@ async function respawn(player: Player): Promise<void> {
 	
 	character.Parent = Workspace;
 	player.Character = character;
+	
+	body.Color = document.color ?? computeNameColor(player.Name);
 	body.SetNetworkOwner(player);
 	
-	const color = player.GetAttribute('color');
-	if (typeIs(color, 'Color3')) {
-		body.Color = color;
-	} else {
-		body.Color = computeNameColor(player.Name);
-	}
+	CharacterParts.create(character)
+		.then((characterParts) => Accessories.applyAccessories(characterParts, document.accessories));
 }
 
 function onUnloadCharacter(player: Player): void {
@@ -130,46 +158,6 @@ async function onPlayerAdded(player: Player): Promise<void> {
 	if (documentAtom === undefined) {
 		return;
 	}
-	
-	player.AttributeChanged.Connect((attribute) => {
-		const document = peek(documentAtom);
-		
-		switch (attribute) {
-			case 'color': {
-				const color = player.GetAttribute(attribute);
-				if (!typeIs(color, 'Color3')) {
-					player.SetAttribute(attribute, document.color);
-					return;
-				}
-				
-				const body = player.Character?.FindFirstChild('Body');
-				if (!body?.IsA('Part')) {
-					return;
-				}
-				
-				body.Color = color;
-				
-				documentAtom(Immut.produce(document, (draft) => {
-					draft.color = color;
-				}));
-				
-				break;
-			}
-			case 'dollars': {
-				const dollars = tonumber(player.GetAttribute(attribute));
-				if (!typeIs(dollars, 'number') || Number.isNaN(dollars)) {
-					player.SetAttribute(attribute, document.dollars);
-					return;
-				}
-				
-				documentAtom(Immut.produce(document, (draft) => {
-					draft.dollars = math.clamp(dollars, Constants.MinDollars, Constants.MaxDollars);
-				}));
-				
-				break;
-			}
-		}
-	});
 	
 	const document = peek(documentAtom);
 	
@@ -263,7 +251,9 @@ for (const player of Players.GetPlayers()) {
 Remotes.updateInputType.connect((player, inputType) => onInputTypeChanged(player, inputType));
 Remotes.fullReset.onRequest((player) => onFullReset(player));
 Remotes.updateSettings.connect((player, userSettings) => onUpdateSettings(player, userSettings));
+Remotes.applyAccessories.connect((player, accessories) => onApplyAccessories(player, accessories));
 Remotes.unloadCharacter.connect(onUnloadCharacter);
+
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);
 RunService.PreSimulation.Connect(onPreSimulation);

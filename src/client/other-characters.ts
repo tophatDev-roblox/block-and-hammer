@@ -4,21 +4,20 @@ import Immut from '@rbxts/immut';
 
 import { Atom, atom, peek, subscribe } from '@rbxts/charm';
 
+import { CharacterParts } from 'shared/character-parts';
 import { UserSettings } from 'shared/user-settings';
 import { InputType } from 'shared/input-type';
 
 import { ClientSettings } from 'client/client-settings';
 
-import { CharacterState } from 'client/character/state';
-
 const client = Players.LocalPlayer;
-const characterModels = new Map<Player, { parts: CharacterState.Parts, isTransparentAtom: Atom<boolean> }>();
+const characterModels = new Map<Player, { parts: CharacterParts.Value, isTransparentAtom: Atom<boolean> }>();
 
 export namespace OtherCharacters {
-	export const partsAtoms = atom<ReadonlyMap<Player, { partsAtom: Atom<CharacterState.Parts | undefined>, inputTypeAtom: Atom<InputType> }>>(new Map());
+	export const partsAtoms = atom<ReadonlyMap<Player, { partsAtom: Atom<CharacterParts.Value | undefined>, inputTypeAtom: Atom<InputType> }>>(new Map());
 }
 
-function setCharacterTransparency(characterParts: CharacterState.Parts, transparency: number): void {
+function setCharacterTransparency(characterParts: CharacterParts.Value, transparency: number): void {
 	characterParts.body.SetAttribute('hideOthersTransparency', transparency);
 	
 	// TODO: make hammer trail transparent too
@@ -29,7 +28,7 @@ function setCharacterTransparency(characterParts: CharacterState.Parts, transpar
 }
 
 function onPlayerAdded(player: Player): void {
-	const partsAtom = atom<CharacterState.Parts>();
+	const partsAtom = atom<CharacterParts.Value>();
 	const inputTypeAtom = atom<InputType>(InputType.Unknown);
 	
 	OtherCharacters.partsAtoms((parts) => Immut.produce(parts, (draft) => {
@@ -37,7 +36,7 @@ function onPlayerAdded(player: Player): void {
 	}));
 	
 	const onCharacterAdded = async (newCharacter: Model): Promise<void> => {
-		const characterParts = await CharacterState.createParts(newCharacter);
+		const characterParts = await CharacterParts.create(newCharacter);
 		
 		if (player.UserId !== client.UserId) {
 			characterModels.set(player, { parts: characterParts, isTransparentAtom: atom(false) });

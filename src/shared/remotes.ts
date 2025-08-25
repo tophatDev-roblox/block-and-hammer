@@ -2,6 +2,7 @@ import { Client, createRemotes, remote, Server } from '@rbxts/remo';
 
 import type { UserSettings } from 'shared/user-settings';
 
+import { Accessories } from 'shared/accessories';
 import { InputType } from 'shared/input-type';
 import { matches } from 'shared/matches';
 
@@ -12,4 +13,5 @@ export const Remotes = createRemotes({
 	updateInputType: remote<Server, [inputType: InputType]>((input) => matches(input, [InputType.Desktop, InputType.Touch])),
 	loadSettings: remote<Client, [userSettings: UserSettings.Value]>(),
 	updateSettings: remote<Server, [userSettings: UserSettings.Value]>(),
+	applyAccessories: remote<Server, [accessories: Accessories.PlayerAccessories]>(),
 });

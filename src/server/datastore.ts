@@ -1,19 +1,18 @@
 import { DataStoreService, RunService } from '@rbxts/services';
 
-import DataStoreServiceMock from '@rbxts/lapis-mockdatastore';
-
-import { createCollection, setConfig, Document } from '@rbxts/lapis';
+import { createCollection, Document, setConfig } from '@rbxts/lapis';
 import { atom, Atom, subscribe } from '@rbxts/charm';
 import { t } from '@rbxts/t';
 
-import Immut from '@rbxts/immut';
+import DataStoreServiceMock from '@rbxts/lapis-mockdatastore';
 
 import { UserSettings } from 'shared/user-settings';
-
+import { Accessories } from 'shared/accessories';
+import { Constants } from 'shared/constants';
 import { Logger } from 'shared/logger';
 
 setConfig({
-	dataStoreService: RunService.IsStudio() ? new DataStoreServiceMock() : DataStoreService,
+	dataStoreService: !RunService.IsStudio() && game.PlaceId === Constants.MainPlaceId ? DataStoreService : new DataStoreServiceMock(),
 });
 
 type CollectionSchema = t.static<typeof CollectionSchema>;
@@ -21,6 +20,7 @@ const CollectionSchema = t.strictInterface({
 	color: t.optional(t.Color3),
 	dollars: t.number,
 	userSettings: UserSettings.Value,
+	accessories: Accessories.PlayerAccessories,
 });
 
 const collection = createCollection<CollectionSchema>('player-data', {
@@ -28,24 +28,10 @@ const collection = createCollection<CollectionSchema>('player-data', {
 		color: undefined,
 		dollars: 100,
 		userSettings: UserSettings.defaultValue,
+		accessories: {
+			hat: undefined,
+		},
 	},
-	migrations: [ // TODO: remove all migrations on first release
-		(data) => Immut.produce(data, (draft: CollectionSchema) => {
-			draft.userSettings = table.clone(UserSettings.defaultValue);
-		}),
-		(data) => Immut.produce(data, (draft: CollectionSchema) => {
-			draft.userSettings.general = table.clone(UserSettings.defaultValue.general);
-		}),
-		(data) => Immut.produce(data, (draft: CollectionSchema) => {
-			(draft.userSettings.ui.topbar as any).displayPerformance = undefined;
-			(draft.userSettings.ui.topbar as any).showPerformanceLabels = undefined;
-			
-			draft.userSettings.ui.topbar.performanceDisplay = UserSettings.defaultValue.ui.topbar.performanceDisplay;
-		}),
-		(data) => Immut.produce(data, (draft: CollectionSchema) => {
-			(draft as any).controller = undefined;
-		}),
-	],
 	validate: CollectionSchema,
 });
 
@@ -73,7 +59,12 @@ export namespace PlayerData {
 			
 			documentAtoms.set(player, documentAtom);
 			
-			const unsubscribe = subscribe(documentAtom, (state) => document.write(state));
+			const unsubscribe = subscribe(documentAtom, (state) => {
+				player.SetAttribute('color', state.color);
+				player.SetAttribute('dollars', state.dollars);
+				
+				document.write(state);
+			});
 			
 			loadedPlayers.set(player, { unsubscribe, document });
 			

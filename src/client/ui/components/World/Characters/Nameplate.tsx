@@ -9,7 +9,7 @@ import { InputType } from 'shared/input-type';
 
 import { Styles } from 'client/styles';
 
-import { CharacterState } from 'client/character/state';
+import { CharacterParts } from 'shared/character-parts';
 
 import { usePx } from 'client/ui/hooks/use-px';
 
@@ -20,7 +20,7 @@ const client = Players.LocalPlayer;
 
 interface NameplateProps {
 	player: Player;
-	partsAtom: Atom<CharacterState.Parts | undefined>;
+	partsAtom: Atom<CharacterParts.Value | undefined>;
 	inputTypeAtom: Atom<InputType>;
 }
 

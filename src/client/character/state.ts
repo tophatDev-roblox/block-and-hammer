@@ -5,6 +5,7 @@ import Immut from '@rbxts/immut';
 import { createMotion } from '@rbxts/ripple';
 import { atom, peek } from '@rbxts/charm';
 
+import { CharacterParts } from 'shared/character-parts';
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
 import { Constants } from 'shared/constants';
@@ -19,27 +20,6 @@ const RNG = new Random();
 let baseStunParticles: Part;
 
 export namespace CharacterState {
-	export interface Parts {
-		model: Model;
-		body: Part;
-		face: Decal;
-		windTrail: Trail;
-		centerAttachment: Attachment;
-		targetAttachment: Attachment;
-		rotationLock: AlignOrientation;
-		distanceConstraint: RopeConstraint;
-		hammer: {
-			model: Model;
-			head: Part;
-			handle: Part;
-			alignPosition: AlignPosition;
-			alignOrientation: AlignOrientation;
-		};
-		bubbleChatOrigin: {
-			connectionAttachment: Attachment;
-		};
-	}
-	
 	export interface StatusEffectData {
 		type: StatusEffect;
 		endTime: number;
@@ -54,37 +34,6 @@ export namespace CharacterState {
 		}
 		
 		return false;
-	}
-	
-	export async function createParts(character: Model): Promise<Parts> {
-		const body = await waitForChild(character, 'Body', 'Part');
-		const bubbleChatOrigin = await waitForChild(character, 'BubbleChatOrigin', 'Part');
-		const hammer = await waitForChild(character, 'Hammer', 'Model');
-		
-		const face = await waitForChild(body, 'Face', 'Decal');
-		const windTrail = await waitForChild(body, 'Trail', 'Trail');
-		const head = await waitForChild(hammer, 'Head', 'Part');
-		
-		return {
-			model: character,
-			body: body,
-			face: face,
-			windTrail: windTrail,
-			centerAttachment: await waitForChild(body, 'CenterAttachment', 'Attachment'),
-			targetAttachment: await waitForChild(body, 'TargetAttachment1', 'Attachment'),
-			rotationLock: await waitForChild(body, 'RotationLock', 'AlignOrientation'),
-			distanceConstraint: await waitForChild(body, 'DistanceConstraint', 'RopeConstraint'),
-			hammer: {
-				model: hammer,
-				handle: await waitForChild(hammer, 'Handle', 'Part'),
-				head: head,
-				alignPosition: await waitForChild(head, 'AlignPosition', 'AlignPosition'),
-				alignOrientation: await waitForChild(head, 'AlignOrientation', 'AlignOrientation'),
-			},
-			bubbleChatOrigin: {
-				connectionAttachment: await waitForChild(bubbleChatOrigin, 'ConnectionAttachment', 'Attachment'),
-			},
-		};
 	}
 	
 	export function applyStatusEffects(effects: Array<[StatusEffect, number]>): void {
@@ -186,7 +135,7 @@ export namespace CharacterState {
 		}));
 	}
 	
-	export const partsAtom = atom<CharacterState.Parts>();
+	export const partsAtom = atom<CharacterParts.Value>();
 	export const statusEffectsAtom = atom<ReadonlyArray<StatusEffectData>>([]);
 	export const areaAtom = atom<AreaManager.Area>(AreaManager.Area.Unknown);
 	export const timeStartAtom = atom<number>();

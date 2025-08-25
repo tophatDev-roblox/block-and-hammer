@@ -14,3 +14,13 @@ export async function waitForChild<T extends keyof Objects>(instance: Instance, 
 		}
 	});
 }
+
+export function findFirstChild<T extends keyof Objects>(instance: Instance, childName: string, className: T): Objects[T] | undefined {
+	const result = instance.FindFirstChild(childName);
+	
+	if (result?.IsA(className)) {
+		return result;
+	}
+	
+	return undefined;
+}

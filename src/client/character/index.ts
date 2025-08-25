@@ -4,6 +4,7 @@ import Immut from '@rbxts/immut';
 
 import { effect, peek, subscribe } from '@rbxts/charm';
 
+import { CharacterParts } from 'shared/character-parts';
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
 import { TimeSpan } from 'shared/time-span';
@@ -216,7 +217,7 @@ async function onCharacterAdded(newCharacter: Model): Promise<void> {
 	CharacterState.thumbstickDirectionAtom(undefined);
 	CharacterState.shakeStrengthAtom(0);
 	
-	const characterParts = await CharacterState.createParts(newCharacter);
+	const characterParts = await CharacterParts.create(newCharacter);
 	CharacterState.partsAtom(characterParts);
 	
 	Camera.cframeMotion.immediate(CFrame.lookAlong(
