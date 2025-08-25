@@ -51,7 +51,6 @@ Icon.setDisplayOrder(100);
 const menuIcon = new Icon()
 	.setImage(79239443855874)
 	.setCaption('Toggle menu')
-	.bindToggleKey(Enum.KeyCode.ButtonB)
 	.bindToggleKey(Enum.KeyCode.B)
 	.setOrder(0)
 	.autoDeselect(false)
@@ -89,7 +88,7 @@ menuIcon.toggled.Connect(throttle((toggled) => {
 	} else {
 		UI.stateAtom(UI.State.Game);
 	}
-}, 0.6));
+}, 0.4));
 
 effect(() => {
 	const state = UI.stateAtom();
@@ -121,10 +120,6 @@ effect(() => {
 	switch (inputType) {
 		case InputType.Desktop: {
 			menuIcon.setCaptionHint(Enum.KeyCode.B);
-			break;
-		}
-		case InputType.Controller: {
-			menuIcon.setCaptionHint(Enum.KeyCode.ButtonB);
 			break;
 		}
 		case InputType.Touch:

@@ -6,14 +6,11 @@ import { effect, peek, subscribe } from '@rbxts/charm';
 
 import { waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
-import { Controller } from 'shared/controller';
-import { InputType } from 'shared/input-type';
 import { TimeSpan } from 'shared/time-span';
 import { Raycast } from 'shared/raycast';
 import { Logger } from 'shared/logger';
 import { Units } from 'shared/units';
 
-import { clientInputTypeAtom } from 'client/input';
 import { ClientSettings } from 'client/client-settings';
 import { StatusEffect } from 'client/status-effect';
 import { Leaderstats } from 'client/leaderstats';
@@ -25,7 +22,6 @@ import { UI } from 'client/ui/state';
 import { CharacterState } from './state';
 
 const client = Players.LocalPlayer;
-const positionalInputTypes = new Set<Enum.UserInputType>([Enum.UserInputType.MouseMovement, Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch]);
 const logger = new Logger('character');
 
 let rangeDisplay: Part;
@@ -54,13 +50,13 @@ export namespace Character {
 		}
 		
 		effectsFolder.ClearAllChildren();
+		characterParts.model.SetAttribute('justReset', true);
+		
 		CharacterState.statusEffectsAtom([]);
 		CharacterState.timeStartAtom(undefined);
 		CharacterState.mousePositionAtom(undefined);
 		CharacterState.thumbstickDirectionAtom(undefined);
 		CharacterState.shakeStrengthAtom(0);
-		characterParts.model.SetAttribute('justReset', true);
-		mouseCursorPart.Position = new Vector3(0, -500, 0);
 		
 		characterParts.model.PivotTo(spawnCFrame);
 		
@@ -192,24 +188,7 @@ function processInput(input: InputObject): void {
 		return;
 	}
 	
-	const inputType = peek(clientInputTypeAtom);
-	if (positionalInputTypes.has(input.UserInputType)) {
-		CharacterState.mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
-	} else if (Controller.isGamepadInput(input.UserInputType) && inputType === InputType.Controller) {
-		if (input.KeyCode === Enum.KeyCode.Thumbstick2) {
-			const userSettings = peek(ClientSettings.stateAtom);
-			
-			let direction = input.Position;
-			if (direction.Magnitude > 1) {
-				direction = direction.Unit;
-			} else if (input.Position.Magnitude < userSettings.controller.deadzonePercentage) {
-				CharacterState.thumbstickDirectionAtom(undefined);
-				return;
-			}
-			
-			CharacterState.thumbstickDirectionAtom(new Vector2(-direction.X, direction.Y));
-		}
-	}
+	CharacterState.mousePositionAtom(new Vector2(input.Position.X, input.Position.Y));
 }
 
 function updateStatusEffects(): void {
@@ -226,29 +205,16 @@ function updateStatusEffects(): void {
 	}
 }
 
-function onInputEnded(input: InputObject): void {
-	const characterParts = peek(CharacterState.partsAtom);
-	const inputType = peek(clientInputTypeAtom);
-	if (characterParts === undefined || inputType !== InputType.Controller) {
-		return;
-	}
-	
-	if (Controller.isGamepadInput(input.UserInputType) && input.KeyCode === Enum.KeyCode.Thumbstick2) {
-		characterParts.targetAttachment.CFrame = CFrame.fromOrientation(math.pi / -2, 0, 0);
-		CharacterState.thumbstickDirectionAtom(undefined);
-	}
-}
-
 async function onCharacterAdded(newCharacter: Model): Promise<void> {
 	logger.print('character added');
 	
 	effectsFolder.ClearAllChildren();
+	
 	CharacterState.statusEffectsAtom([]);
 	CharacterState.timeStartAtom(undefined);
 	CharacterState.mousePositionAtom(undefined);
 	CharacterState.thumbstickDirectionAtom(undefined);
 	CharacterState.shakeStrengthAtom(0);
-	mouseCursorPart.Position = new Vector3(0, -500, 0);
 	
 	const characterParts = await CharacterState.createParts(newCharacter);
 	CharacterState.partsAtom(characterParts);
@@ -277,8 +243,6 @@ function onCharacterRemoving(): void {
 	CharacterState.partsAtom(undefined);
 	CharacterState.mousePositionAtom(undefined);
 	CharacterState.timeStartAtom(undefined);
-	
-	mouseCursorPart.Position = new Vector3(0, -500, 0);
 }
 
 function onPreRender(): void {
@@ -289,34 +253,20 @@ function onPreRender(): void {
 		return;
 	}
 	
+	const mousePosition = peek(CharacterState.mousePositionAtom);
+	
 	const state = peek(UI.stateAtom);
 	
 	if (state === UI.State.Game) {
 		let dontMoveTargetAttachment = false;
 		
-		const mousePosition = peek(CharacterState.mousePositionAtom);
-		const inputType = peek(clientInputTypeAtom);
-		
-		if (inputType === InputType.Controller) {
-			const thumbstickDirection = peek(CharacterState.thumbstickDirectionAtom);
-			if (thumbstickDirection !== undefined) {
-				const hammerDistance = peek(CharacterState.hammerDistanceAtom);
-				
-				const relativeDirection = thumbstickDirection.mul(hammerDistance);
-				const position = characterParts.body.Position.add(new Vector3(relativeDirection.X, relativeDirection.Y, 0));
-				mouseCursorPart.Position = position;
-			} else {
-				mouseCursorPart.Position = characterParts.body.Position.add(new Vector3(0, 0.001, 0));
-			}
+		if (mousePosition !== undefined) {
+			const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
+			const position = rayIntersectXYPlane(ray);
+			
+			mouseCursorPart.Position = position;
 		} else {
-			if (mousePosition !== undefined) {
-				const ray = camera.ScreenPointToRay(mousePosition.X, mousePosition.Y);
-				const position = rayIntersectXYPlane(ray);
-				mouseCursorPart.Position = position;
-			} else {
-				mouseCursorPart.Position = new Vector3(0, -500, 0);
-				dontMoveTargetAttachment = true;
-			}
+			dontMoveTargetAttachment = true;
 		}
 		
 		if (!dontMoveTargetAttachment) {
@@ -398,6 +348,17 @@ effect(() => {
 });
 
 effect(() => {
+	const state = UI.stateAtom();
+	const isTransitioning = TransitionState.isTransitioningAtom();
+	
+	if (state === UI.State.Game && !isTransitioning) {
+		mouseCursorPart.Parent = Workspace;
+	} else {
+		mouseCursorPart.Parent = ReplicatedStorage;
+	}
+});
+
+effect(() => {
 	const characterParts = CharacterState.partsAtom();
 	if (characterParts === undefined) {
 		return;
@@ -461,7 +422,6 @@ if (client.Character !== undefined) {
 
 UserInputService.InputBegan.Connect(processInput);
 UserInputService.InputChanged.Connect(processInput);
-UserInputService.InputEnded.Connect(onInputEnded);
 client.CharacterAdded.Connect(onCharacterAdded);
 client.CharacterRemoving.Connect(onCharacterRemoving);
 RunService.PreRender.Connect(onPreRender);

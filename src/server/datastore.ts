@@ -42,6 +42,9 @@ const collection = createCollection<CollectionSchema>('player-data', {
 			
 			draft.userSettings.ui.topbar.performanceDisplay = UserSettings.defaultValue.ui.topbar.performanceDisplay;
 		}),
+		(data) => Immut.produce(data, (draft: CollectionSchema) => {
+			(draft as any).controller = undefined;
+		}),
 	],
 	validate: CollectionSchema,
 });

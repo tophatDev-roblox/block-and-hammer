@@ -1,26 +1,14 @@
-import { GuiService, UserInputService } from '@rbxts/services';
+import { UserInputService } from '@rbxts/services';
 
 import { atom, peek, subscribe } from '@rbxts/charm';
 
-import { UserSettings } from 'shared/user-settings';
-import { Controller } from 'shared/controller';
 import { InputType } from 'shared/input-type';
 import { Remotes } from 'shared/remotes';
 import { Logger } from 'shared/logger';
 
-import { ClientSettings } from 'client/client-settings';
-
 const logger = new Logger('input');
 
 export const clientInputTypeAtom = atom<InputType>(InputType.Unknown);
-
-if (GuiService.IsTenFootInterface()) {
-	logger.print('detected 10-foot interface, switching to controller');
-	clientInputTypeAtom(InputType.Controller);
-} else if (UserInputService.GetConnectedGamepads().size() > 0) {
-	logger.print('detected one or more connected gamepads, possibly using controller');
-	clientInputTypeAtom(InputType.Controller);
-}
 
 const mouseInputTypes = new Set<Enum.UserInputType>([
 	Enum.UserInputType.MouseMovement,
@@ -30,34 +18,10 @@ const mouseInputTypes = new Set<Enum.UserInputType>([
 	Enum.UserInputType.MouseButton3,
 ]);
 
-function processInput(input: InputObject): void {
-	const userSettings = peek(ClientSettings.stateAtom);
-	const inputType = peek(clientInputTypeAtom);
-	if (userSettings.controller.detectionType !== UserSettings.ControllerDetection.OnInput || inputType === InputType.Controller) {
-		return;
-	}
-	
-	if (Controller.isGamepadInput(input.UserInputType)) {
-		if (input.KeyCode === Enum.KeyCode.Thumbstick1 || input.KeyCode === Enum.KeyCode.Thumbstick2) {
-			if (input.Position.Magnitude < userSettings.controller.deadzonePercentage) {
-				return;
-			}
-		}
-		
-		clientInputTypeAtom(InputType.Controller);
-		logger.print('set to Controller');
-	}
-}
-
 function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 	let newInputType: InputType | undefined = undefined;
 	if (userInputType === Enum.UserInputType.Touch) {
 		newInputType = InputType.Touch;
-	} else if (Controller.isGamepadInput(userInputType)) {
-		const userSettings = peek(ClientSettings.stateAtom);
-		if (userSettings.controller.detectionType === UserSettings.ControllerDetection.LastInput) {
-			newInputType = InputType.Controller;
-		}
 	} else if (mouseInputTypes.has(userInputType)) {
 		newInputType = InputType.Desktop;
 	}
@@ -74,6 +38,4 @@ subscribe(clientInputTypeAtom, (inputType) => {
 
 onInputTypeChanged(UserInputService.GetLastInputType());
 
-UserInputService.InputChanged.Connect(processInput);
-UserInputService.InputBegan.Connect(processInput);
 UserInputService.LastInputTypeChanged.Connect(onInputTypeChanged);

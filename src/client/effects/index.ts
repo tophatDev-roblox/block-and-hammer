@@ -4,12 +4,10 @@ import { createMotion } from '@rbxts/ripple';
 import { effect, peek } from '@rbxts/charm';
 
 import { waitForChild } from 'shared/wait-for-child';
-import { InputType } from 'shared/input-type';
 import { TimeSpan } from 'shared/time-span';
 import { Raycast } from 'shared/raycast';
 import { Logger } from 'shared/logger';
 
-import { clientInputTypeAtom } from 'client/input';
 import { ClientSettings } from 'client/client-settings';
 import { SFX } from 'client/sfx';
 
@@ -368,8 +366,8 @@ effect(() => {
 				Character.shake(effectIntensity);
 				
 				const userSettings = peek(ClientSettings.stateAtom);
-				const inputType = peek(clientInputTypeAtom)
-				if (userSettings.haptics.enabled && inputType === InputType.Controller) {
+				
+				if (userSettings.haptics.enabled) {
 					const baseAmplitude = effectIntensity / 4 + 0.2;
 					const duration = 700;
 					const steps = 10;

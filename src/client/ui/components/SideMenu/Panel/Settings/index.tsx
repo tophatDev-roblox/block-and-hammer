@@ -77,29 +77,6 @@ const Settings: React.FC<SettingsProps> = ({ slope, scrollingFrameRef }) => {
 						}));
 					}}
 				/>
-				<Dropdown
-					label={'Controller Detection Type'}
-					value={['Never', 'On Input', 'Last Input']}
-					index={userSettings.controller.detectionType}
-					onSelect={(index) => {
-						ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
-							draft.controller.detectionType = index;
-						}));
-					}}
-				/>
-				<Slider
-					label={'Controller Deadzone (%)'}
-					value={math.floor(userSettings.controller.deadzonePercentage * 100)}
-					min={1}
-					max={100}
-					step={1}
-					decimals={0}
-					onChange={(newValue) => {
-						ClientSettings.stateAtom((userSettings) => Immut.produce(userSettings, (draft) => {
-							draft.controller.deadzonePercentage = newValue / 100;
-						}));
-					}}
-				/>
 				<Checkbox
 					label={'Enable Haptic Vibrations'}
 					checked={userSettings.haptics.enabled}

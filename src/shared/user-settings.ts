@@ -16,10 +16,6 @@ export namespace UserSettings {
 				performanceDisplay: PerformanceDisplay.WithLabels,
 			},
 		},
-		controller: {
-			detectionType: ControllerDetection.OnInput,
-			deadzonePercentage: 0.1,
-		},
 		haptics: {
 			enabled: true,
 		},
@@ -63,10 +59,6 @@ export namespace UserSettings {
 			topbar: t.strictInterface({
 				performanceDisplay: tPerformanceDisplay,
 			}),
-		}),
-		controller: t.strictInterface({
-			detectionType: tControllerDetection,
-			deadzonePercentage: t.numberConstrained(0, 1),
 		}),
 		haptics: t.strictInterface({
 			enabled: t.boolean,
