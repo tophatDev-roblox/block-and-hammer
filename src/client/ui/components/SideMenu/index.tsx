@@ -11,6 +11,8 @@ import { Camera } from 'client/camera';
 
 import { Styles } from 'client/styles';
 
+import { Character } from 'client/character';
+
 import { TransitionState } from 'client/ui/transition-state';
 import { usePx } from 'client/ui/hooks/use-px';
 import { UI } from 'client/ui/state';
@@ -156,7 +158,17 @@ const SideMenu: React.FC = () => {
 						<SideButton
 							text={'Reset'}
 							icon={''}
-							onClick={() => {}}
+							onClick={() => {
+								TransitionState.beginTransitionAtom()
+									.then((didTransition) => {
+										if (!didTransition) {
+											return;
+										}
+										
+										Character.quickReset();
+										UI.stateAtom(UI.State.Game);
+									});
+							}}
 						/>
 						<SideButton
 							text={'Start Screen'}
