@@ -1,5 +1,3 @@
-import { GuiService } from '@rbxts/services';
-
 import React, { useEffect, useMemo } from '@rbxts/react';
 import { useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
@@ -15,7 +13,6 @@ import ScreenGUI from '../ScreenGUI';
 const Transition: React.FC = () => {
 	const [size, sizeMotion] = useMotion<UDim2>(UDim2.fromOffset(0, 0));
 	const [rotation, rotationMotion] = useMotion<number>(0);
-	const [transparency, transparencyMotion] = useMotion<number>(1);
 	
 	const screenSize = useAtom(Camera.viewportSizeAtom);
 	const isTransitioning = useAtom(TransitionState.isTransitioningAtom);
@@ -43,11 +40,6 @@ const Transition: React.FC = () => {
 				time: 0.5,
 			});
 			
-			transparencyMotion.tween(0, {
-				style: Enum.EasingStyle.Linear,
-				time: 0.5,
-			});
-			
 			await TimeSpan.sleep(0.75);
 			
 			sizeMotion.tween(UDim2.fromOffset(maxAxis, maxAxis), {
@@ -59,11 +51,6 @@ const Transition: React.FC = () => {
 			rotationMotion.tween(180, {
 				style: Enum.EasingStyle.Sine,
 				direction: Enum.EasingDirection.In,
-				time: 0.5,
-			});
-			
-			transparencyMotion.tween(1, {
-				style: Enum.EasingStyle.Linear,
 				time: 0.5,
 			});
 			
@@ -88,28 +75,20 @@ const Transition: React.FC = () => {
 			DisplayOrder={UI.DisplayOrder.Transition}
 			IgnoreGuiInset
 		>
-			{!GuiService.ReducedMotionEnabled ? (
-				<frame
-					BackgroundTransparency={1}
-					Size={size}
-					Position={UDim2.fromScale(0.5, 0.5)}
-					AnchorPoint={new Vector2(0.5, 0.5)}
-					Rotation={rotation}
-				>
-					<uistroke
-						Color={Color3.fromRGB(0, 0, 0)}
-						Thickness={9999}
-						LineJoinMode={Enum.LineJoinMode.Miter}
-						ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
-					/>
-				</frame>
-			) : (
-				<frame
-					BackgroundColor3={Color3.fromRGB(0, 0, 0)}
-					BackgroundTransparency={transparency}
-					Size={UDim2.fromScale(1, 1)}
+			<frame
+				BackgroundTransparency={1}
+				Size={size}
+				Position={UDim2.fromScale(0.5, 0.5)}
+				AnchorPoint={new Vector2(0.5, 0.5)}
+				Rotation={rotation}
+			>
+				<uistroke
+					Color={Color3.fromRGB(0, 0, 0)}
+					Thickness={9999}
+					LineJoinMode={Enum.LineJoinMode.Miter}
+					ApplyStrokeMode={Enum.ApplyStrokeMode.Border}
 				/>
-			)}
+			</frame>
 		</ScreenGUI>
 	);
 };

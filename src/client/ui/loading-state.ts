@@ -1,5 +1,3 @@
-import { GuiService } from '@rbxts/services';
-
 import { atom, batch, peek, subscribe } from '@rbxts/charm';
 
 import { Remotes } from 'shared/remotes';
@@ -31,8 +29,7 @@ subscribe(UI.stateAtom, (state, previousState) => {
 	
 	batch(() => {
 		CharacterState.disableCameraAtom(isInStartScreen);
-		
-		CoreGuis.playerListAtom(GuiService.IsTenFootInterface() ? false : !isInStartScreen);
+		CoreGuis.playerListAtom(!isInStartScreen);
 		
 		if (isInStartScreen) {
 			Remotes.unloadCharacter.fire();
@@ -40,6 +37,7 @@ subscribe(UI.stateAtom, (state, previousState) => {
 			const characterParts = peek(CharacterState.partsAtom);
 			if (characterParts !== undefined) {
 				characterParts.model.Destroy();
+				
 				CharacterState.partsAtom(undefined);
 			}
 		} else {

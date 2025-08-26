@@ -1,4 +1,4 @@
-import { GuiService, RunService, Workspace } from '@rbxts/services';
+import { RunService, Workspace } from '@rbxts/services';
 
 import { createMotion } from '@rbxts/ripple';
 import { atom, peek } from '@rbxts/charm';
@@ -76,10 +76,6 @@ function onViewportSizeChange(): void {
 			
 			const fieldOfView = 70 + math.max(velocity - 120, 0) / 5;
 			camera.FieldOfView = fieldOfView;
-			
-			if (GuiService.ReducedMotionEnabled) {
-				camera.FieldOfView = math.min(camera.FieldOfView, 80);
-			}
 		} else {
 			const state = peek(UI.stateAtom);
 			

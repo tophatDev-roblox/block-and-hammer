@@ -10,7 +10,6 @@ import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from '../UIListLayout';
 import Text from '../Text';
-import { GuiService } from '@rbxts/services';
 
 const LoadingScreen: React.FC = () => {
 	const isFinished = useAtom(LoadingState.isFinishedAtom);
@@ -19,34 +18,25 @@ const LoadingScreen: React.FC = () => {
 	const status = useAtomBinding(LoadingState.statusAtom);
 	
 	const [anchorPoint, anchorPointMotion] = useMotion<Vector2>(Vector2.zero);
-	const [transparency, transparencyMotion] = useMotion<number>(0);
 	
 	const px = usePx();
 	
 	useEffect(() => {
 		if (isFinished) {
-			if (!GuiService.ReducedMotionEnabled) {
-				anchorPointMotion.tween(new Vector2(0, 1), {
-					style: Enum.EasingStyle.Sine,
-					direction: Enum.EasingDirection.In,
-					time: 0.4,
-				});
-			} else {
-				transparencyMotion.tween(1, {
-					style: Enum.EasingStyle.Linear,
-					time: 0.4,
-				});
-			}
+			anchorPointMotion.tween(new Vector2(0, 1), {
+				style: Enum.EasingStyle.Sine,
+				direction: Enum.EasingDirection.In,
+				time: 0.4,
+			});
 		}
 	}, [isFinished]);
 	
 	return (
-		<canvasgroup
+		<frame
 			key={'LoadingScreen'}
 			BackgroundColor3={Color3.fromRGB(0, 0, 0)}
 			Size={UDim2.fromScale(1, 1)}
 			AnchorPoint={anchorPoint}
-			GroupTransparency={transparency}
 			ZIndex={10}
 		>
 			<UIListLayout
@@ -86,7 +76,7 @@ const LoadingScreen: React.FC = () => {
 				autoHeight
 				order={2}
 			/>
-		</canvasgroup>
+		</frame>
 	);
 };
 

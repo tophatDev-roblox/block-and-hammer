@@ -1,4 +1,4 @@
-import { GuiService, Players, ReplicatedStorage, RunService, UserInputService, Workspace } from '@rbxts/services';
+import { Players, ReplicatedStorage, RunService, UserInputService, Workspace } from '@rbxts/services';
 
 import Immut from '@rbxts/immut';
 
@@ -63,7 +63,7 @@ export namespace Character {
 		
 		Camera.cframeMotion.immediate(CFrame.lookAlong(
 			spawnCFrame.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
-			!GuiService.ReducedMotionEnabled ? Vector3.yAxis.mul(-1) : Vector3.zAxis,
+			Vector3.yAxis.mul(-1),
 			Vector3.zAxis,
 		));
 		
@@ -222,7 +222,7 @@ async function onCharacterAdded(newCharacter: Model): Promise<void> {
 	
 	Camera.cframeMotion.immediate(CFrame.lookAlong(
 		characterParts.body.Position.add(new Vector3(0, 0, peek(CharacterState.cameraZOffsetAtom) / 3)),
-		!GuiService.ReducedMotionEnabled ? Vector3.yAxis.mul(-1) : Vector3.zAxis,
+		Vector3.yAxis.mul(-1),
 		Vector3.zAxis,
 	));
 	

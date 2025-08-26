@@ -1,5 +1,3 @@
-import { GuiService } from '@rbxts/services';
-
 import { setTimeout } from '@rbxts/set-timeout';
 import { effect } from '@rbxts/charm';
 
@@ -16,12 +14,8 @@ effect(() => {
 	if (view !== UI.SideMenu.Panel.None && sideMenuOpen) {
 		CoreGuis.chatAtom(false);
 	} else {
-		if (!GuiService.ReducedMotionEnabled) {
-			return setTimeout(() => {
-				CoreGuis.chatAtom(true);
-			}, 0.6);
-		} else {
+		return setTimeout(() => {
 			CoreGuis.chatAtom(true);
-		}
+		}, 0.6);
 	}
 });

@@ -1,4 +1,4 @@
-import { GuiService, RunService, UserInputService, Workspace } from '@rbxts/services';
+import { RunService, UserInputService, Workspace } from '@rbxts/services';
 
 import React, { useEffect } from '@rbxts/react';
 import { useAtom } from '@rbxts/react-charm';
@@ -64,11 +64,6 @@ const StartScreen: React.FC = () => {
 	});
 	
 	useEventListener(RunService.PreRender, () => {
-		if (GuiService.ReducedMotionEnabled) {
-			Camera.cframeMotion.immediate(cameraPart.CFrame);
-			return;
-		}
-		
 		const camera = peek(Camera.instanceAtom);
 		if (camera === undefined) {
 			return;
@@ -133,18 +128,13 @@ const StartScreen: React.FC = () => {
 			const logoAnchorPoint = new Vector2(1, 1);
 			const buttonsAnchorPoint = new Vector2(0.3, 1);
 			
-			if (!GuiService.ReducedMotionEnabled) {
-				logoAnchorPointMotion.tween(logoAnchorPoint, tweenOptions);
-				
-				buttonsAnchorPointMotion.tween(buttonsAnchorPoint, {
-					time: 0.7,
-					style: Enum.EasingStyle.Elastic,
-					direction: Enum.EasingDirection.Out,
-				});
-			} else {
-				logoAnchorPointMotion.immediate(logoAnchorPoint);
-				buttonsAnchorPointMotion.immediate(buttonsAnchorPoint);
-			}
+			logoAnchorPointMotion.tween(logoAnchorPoint, tweenOptions);
+			
+			buttonsAnchorPointMotion.tween(buttonsAnchorPoint, {
+				time: 0.7,
+				style: Enum.EasingStyle.Elastic,
+				direction: Enum.EasingDirection.Out,
+			});
 		}, 0.5);
 		
 		return () => {
