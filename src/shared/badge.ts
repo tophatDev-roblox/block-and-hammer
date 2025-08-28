@@ -1,10 +1,12 @@
 import { BadgeService } from '@rbxts/services';
+
 import { setTimeout } from '@rbxts/set-timeout';
 
-import { Logger } from 'shared/logger';
 import { TimeSpan } from 'shared/time-span';
+import { Logger } from 'shared/logger';
 
 const logger = new Logger('badge');
+
 const awardBadge = Promise.promisify((userId: number, badgeId: number) => BadgeService.AwardBadge(userId, badgeId));
 const hasBadge = Promise.promisify((userId: number, badgeId: number) => BadgeService.UserHasBadgeAsync(userId, badgeId));
 

@@ -17,11 +17,11 @@ import { InputType } from 'shared/input-type';
 import { RichText } from 'shared/rich-text';
 import { Remotes } from 'shared/remotes';
 import { Logger } from 'shared/logger';
+import { Badge } from 'shared/badge';
 import { Units } from 'shared/units';
 
 import { Leaderstats } from 'server/leaderstats';
 import { PlayerData } from 'server/datastore';
-import { Badge } from 'server/badge';
 
 interface CharacterData {
 	body: Part;
