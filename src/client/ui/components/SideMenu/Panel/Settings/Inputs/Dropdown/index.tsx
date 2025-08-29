@@ -156,7 +156,7 @@ const Dropdown = <T extends number>({ label, value, index, onSelect }: DropdownP
 							/>
 							<UIListLayout
 								fillDirection={Enum.FillDirection.Vertical}
-								padding={px(settingsStyles.dropdown.padding)}
+								gap={px(settingsStyles.dropdown.padding)}
 							/>
 							<UIPadding
 								padding={px(settingsStyles.dropdown.padding)}

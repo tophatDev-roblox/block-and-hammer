@@ -44,7 +44,7 @@ const Accessory: React.FC<AccessoryProps> = ({ accessory, uid, order }) => {
 			/>
 			<UIListLayout
 				fillDirection={Enum.FillDirection.Vertical}
-				padding={px(componentStyles.gap)}
+				gap={px(componentStyles.gap)}
 			/>
 			<frame
 				BackgroundTransparency={1}

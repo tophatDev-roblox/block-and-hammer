@@ -27,7 +27,7 @@ const Badge: React.FC<React.PropsWithChildren> = ({ children }) => {
 			<UIListLayout
 				fillDirection={Enum.FillDirection.Horizontal}
 				alignY={Enum.VerticalAlignment.Center}
-				padding={px(componentStyles.gap)}
+				gap={px(componentStyles.gap)}
 			/>
 			<UIPadding
 				padding={px(componentStyles.padding)}

@@ -23,7 +23,7 @@ const Accessories = forwardRef<Frame>((_, ref) => {
 		>
 			<UIListLayout
 				fillDirection={Enum.FillDirection.Horizontal}
-				padding={px(pageStyles.gap)}
+				gap={px(pageStyles.gap)}
 				sortByName={false}
 			/>
 			<Categories

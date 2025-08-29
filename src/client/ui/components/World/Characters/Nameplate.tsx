@@ -50,7 +50,7 @@ const Nameplate: React.FC<NameplateProps> = ({ player, partsAtom }) => {
 			<UIListLayout
 				fillDirection={Enum.FillDirection.Vertical}
 				alignY={Enum.VerticalAlignment.Center}
-				padding={px(Styles.UI.world.nameplate.listPadding)}
+				gap={px(Styles.UI.world.nameplate.listPadding)}
 			/>
 			<Text
 				styles={Styles.UI.world.nameplate.displayName}

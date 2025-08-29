@@ -37,7 +37,7 @@ const Categories: React.FC = () => {
 			/>
 			<UIListLayout
 				fillDirection={Enum.FillDirection.Vertical}
-				padding={px(pageStyles.categories.gap)}
+				gap={px(pageStyles.categories.gap)}
 			/>
 			<Category
 				icon={Assets.Icons.CategoryHat}

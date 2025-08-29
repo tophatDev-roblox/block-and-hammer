@@ -21,7 +21,7 @@ const Tabs: React.FC = () => {
 		>
 			<UIListLayout
 				fillDirection={Enum.FillDirection.Horizontal}
-				padding={px(inventoryStyles.tabs.gap)}
+				gap={px(inventoryStyles.tabs.gap)}
 			/>
 			<Tab
 				text={'Accessories'}

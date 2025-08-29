@@ -23,7 +23,7 @@ const Buttons: React.FC = () => {
 		>
 			<UIListLayout
 				fillDirection={Enum.FillDirection.Horizontal}
-				padding={px(componentStyles.gap)}
+				gap={px(componentStyles.gap)}
 				alignX={Enum.HorizontalAlignment.Right}
 				alignY={Enum.VerticalAlignment.Bottom}
 			/>

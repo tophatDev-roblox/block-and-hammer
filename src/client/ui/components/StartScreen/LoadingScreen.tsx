@@ -41,7 +41,7 @@ const LoadingScreen: React.FC = () => {
 		>
 			<UIListLayout
 				fillDirection={Enum.FillDirection.Vertical}
-				padding={px(Styles.UI.loadingScreen.listPadding)}
+				gap={px(Styles.UI.loadingScreen.listPadding)}
 				alignX={Enum.HorizontalAlignment.Center}
 				alignY={Enum.VerticalAlignment.Center}
 			/>

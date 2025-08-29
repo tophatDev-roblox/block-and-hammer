@@ -31,7 +31,7 @@ const Inventory: React.FC = () => {
 			>
 				<UIListLayout
 					fillDirection={Enum.FillDirection.Vertical}
-					padding={px(inventoryStyles.gap)}
+					gap={px(inventoryStyles.gap)}
 				/>
 				<UIPadding
 					padding={px(inventoryStyles.padding)}

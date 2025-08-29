@@ -6,11 +6,11 @@ interface UIListLayoutProps {
 	alignY?: Enum.VerticalAlignment;
 	flexX?: Enum.UIFlexAlignment;
 	flexY?: Enum.UIFlexAlignment;
-	padding?: number | UDim;
+	gap?: number | UDim;
 	sortByName?: boolean;
 }
 
-const UIListLayout: React.FC<UIListLayoutProps> = ({ fillDirection, alignX, alignY, flexX, flexY, padding, sortByName = true }) => {
+const UIListLayout: React.FC<UIListLayoutProps> = ({ fillDirection, alignX, alignY, flexX, flexY, gap, sortByName = true }) => {
 	return (
 		<uilistlayout
 			FillDirection={fillDirection}
@@ -18,7 +18,7 @@ const UIListLayout: React.FC<UIListLayoutProps> = ({ fillDirection, alignX, alig
 			HorizontalFlex={flexX}
 			VerticalAlignment={alignY}
 			VerticalFlex={flexY}
-			Padding={typeIs(padding, 'number') ? new UDim(0, padding) : padding}
+			Padding={typeIs(gap, 'number') ? new UDim(0, gap) : gap}
 			SortOrder={sortByName ? Enum.SortOrder.Name : Enum.SortOrder.LayoutOrder}
 		/>
 	);

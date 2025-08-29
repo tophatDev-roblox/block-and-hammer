@@ -117,7 +117,7 @@ const SideMenu: React.FC = () => {
 					/>
 					<UIListLayout
 						fillDirection={Enum.FillDirection.Vertical}
-						padding={buttonGap}
+						gap={buttonGap}
 						alignY={Enum.VerticalAlignment.Bottom}
 						alignX={Enum.HorizontalAlignment.Right}
 					/>

@@ -93,7 +93,7 @@ const SideButton: React.FC<SideButtonProps> = ({ text, icon, iconScale = 0.7, on
 					<UIListLayout
 						fillDirection={Enum.FillDirection.Horizontal}
 						alignX={Enum.HorizontalAlignment.Left}
-						padding={px(Styles.UI.sideButton.padding)}
+						gap={px(Styles.UI.sideButton.padding)}
 					/>
 					<UIPadding
 						padding={px(Styles.UI.sideButton.padding)}

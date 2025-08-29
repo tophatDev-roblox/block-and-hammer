@@ -45,7 +45,7 @@ const HUD: React.FC = () => {
 					fillDirection={Enum.FillDirection.Vertical}
 					alignX={Enum.HorizontalAlignment.Center}
 					alignY={Enum.VerticalAlignment.Bottom}
-					padding={px(Styles.UI.hud.listPadding)}
+					gap={px(Styles.UI.hud.listPadding)}
 				/>
 				<Speedometer
 					bodyRef={bodyRef}
@@ -62,7 +62,7 @@ const HUD: React.FC = () => {
 					fillDirection={Enum.FillDirection.Vertical}
 					alignX={Enum.HorizontalAlignment.Left}
 					alignY={Enum.VerticalAlignment.Bottom}
-					padding={px(Styles.UI.hud.listPadding)}
+					gap={px(Styles.UI.hud.listPadding)}
 				/>
 				<Timer />
 			</frame>

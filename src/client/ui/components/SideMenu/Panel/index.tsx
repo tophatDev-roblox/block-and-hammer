@@ -153,7 +153,7 @@ const Panel: React.FC = () => {
 				/>
 				<UIListLayout
 					fillDirection={Enum.FillDirection.Vertical}
-					padding={px(15)}
+					gap={px(15)}
 				/>
 				{visible && (
 					panel === UI.SideMenu.Panel.Settings && (

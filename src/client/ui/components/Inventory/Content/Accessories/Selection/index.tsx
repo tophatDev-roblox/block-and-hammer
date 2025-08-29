@@ -50,7 +50,7 @@ const Selection: React.FC = () => {
 					/>
 					<UIListLayout
 						fillDirection={Enum.FillDirection.Vertical}
-						padding={px(componentStyles.gap)}
+						gap={px(componentStyles.gap)}
 						sortByName={false}
 					/>
 					<frame
@@ -103,7 +103,7 @@ const Selection: React.FC = () => {
 						<UIListLayout
 							fillDirection={Enum.FillDirection.Horizontal}
 							alignX={Enum.HorizontalAlignment.Center}
-							padding={px(componentStyles.badges.gap)}
+							gap={px(componentStyles.badges.gap)}
 						/>
 						<UIPadding
 							padding={px(componentStyles.badges.padding)}
