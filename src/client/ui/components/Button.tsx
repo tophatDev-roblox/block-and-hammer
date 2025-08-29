@@ -42,6 +42,7 @@ const Button: React.FC<React.InstanceProps<TextButton>> = (props) => {
 			ref={buttonRef}
 			Text={''}
 			TextTransparency={1}
+			BorderSizePixel={0}
 			AutoButtonColor={false}
 			{...props}
 		/>

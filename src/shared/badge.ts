@@ -1,4 +1,4 @@
-import { BadgeService } from '@rbxts/services';
+import { BadgeService, Players } from '@rbxts/services';
 
 import { setTimeout } from '@rbxts/set-timeout';
 
@@ -26,16 +26,16 @@ export namespace Badge {
 			
 			return;
 		} catch (err) {
-			logger.warn(`failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
+			logger.warn(`failed to award badge ${badgeId} to ${player.Name} - error: ${err}`);
 			setTimeout(() => Badge.award(badgeId, player), 0.5);
 		}
 	}
 	
-	export async function has(badgeId: Badge.Id, player: Player): Promise<boolean> {
+	export async function has(badgeId: Badge.Id, player: Player = Players.LocalPlayer): Promise<boolean> {
 		try {
 			return await hasBadge(player.UserId, badgeId);
 		} catch (err) {
-			logger.warn(`failed to award badge ${badgeId} to ${player.Name} error: ${err}`);
+			logger.warn(`failed to check badge ${badgeId} of ${player.Name} - error: ${err}`);
 			
 			await TimeSpan.sleep(0.5);
 			return await Badge.has(badgeId, player);

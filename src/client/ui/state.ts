@@ -1,4 +1,6 @@
-import { atom, peek } from '@rbxts/charm';
+import { atom, batch, peek } from '@rbxts/charm';
+
+import { Accessories } from 'shared/accessories';
 
 import { TransitionState } from './transition-state';
 
@@ -37,10 +39,29 @@ export namespace UI {
 	
 	export namespace Inventory {
 		export const tabAtom = atom<Tab>(Tab.Accessories);
+		export const categoryAtom = atom<Accessories.Category>(Accessories.Category.Hats);
+		export const accessoryAtom = atom<Accessories.BaseAccessory>();
+		export const accessoryUidAtom = atom<string>();
+		export const boughtAccessoriesAtom = atom<Set<string>>(new Set());
+		export const temporaryAccessoriesAtom = atom<Accessories.EquippedAccessories>();
 		
 		export const enum Tab {
 			Accessories,
-			Customization,
+			Colors,
+		}
+		
+		export function selectAccessoryAtom(accessory: Accessories.BaseAccessory, uid: string): void {
+			batch(() => {
+				accessoryAtom(accessory);
+				accessoryUidAtom(uid);
+			});
+		}
+		
+		export function unselectAccessoryAtom(): void {
+			batch(() => {
+				accessoryAtom(undefined);
+				accessoryUidAtom(undefined);
+			});
 		}
 	}
 }

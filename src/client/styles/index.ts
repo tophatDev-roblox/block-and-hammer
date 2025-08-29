@@ -1,6 +1,7 @@
 export namespace Styles {
 	const fontRegular = new Font('rbxassetid://12187365364', Enum.FontWeight.Regular, Enum.FontStyle.Normal);
 	const fontMedium = new Font('rbxassetid://12187365364', Enum.FontWeight.Medium, Enum.FontStyle.Normal);
+	const fontSemiBold = new Font('rbxassetid://12187365364', Enum.FontWeight.SemiBold, Enum.FontStyle.Normal);
 	const fontBold = new Font('rbxassetid://12187365364', Enum.FontWeight.Bold, Enum.FontStyle.Normal);
 	const fontExtraBold = new Font('rbxassetid://12187365364', Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
 	const fontHeavy = new Font('rbxassetid://12187365364', Enum.FontWeight.Heavy, Enum.FontStyle.Normal);
@@ -13,6 +14,9 @@ export namespace Styles {
 		if (color.type === 'plain') {
 			props.BackgroundColor3 = color.color;
 			props.BackgroundTransparency = 1 - (color.alpha ?? 0);
+		} else {
+			props.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+			props.BackgroundTransparency = 0;
 		}
 		
 		return props;
@@ -27,6 +31,9 @@ export namespace Styles {
 		if (color.type === 'plain') {
 			props.ImageColor3 = color.color;
 			props.ImageTransparency = 1 - (color.alpha ?? 0);
+		} else {
+			props.ImageColor3 = Color3.fromRGB(255, 255, 255);
+			props.ImageTransparency = 0;
 		}
 		
 		return props;
@@ -41,6 +48,9 @@ export namespace Styles {
 		if (color.type === 'plain') {
 			props.TextColor3 = color.color;
 			props.BackgroundTransparency = 1 - (color.alpha ?? 0);
+		} else {
+			props.TextColor3 = Color3.fromRGB(255, 255, 255);
+			props.BackgroundTransparency = 0;
 		}
 		
 		return props;
@@ -59,6 +69,16 @@ export namespace Styles {
 		rotation,
 		rotationsPerSecond,
 	});
+	
+	export const createUniformColorSequence = (...colors: Array<Color3>): ColorSequence => {
+		const keypoints = new Array<ColorSequenceKeypoint>();
+		
+		for (const [i, color] of ipairs(colors)) {
+			keypoints.push(new ColorSequenceKeypoint(math.map(i, 1, colors.size(), 0, 1), color));
+		}
+		
+		return new ColorSequence(keypoints);
+	};
 	
 	export interface Color {
 		type: 'plain';
@@ -172,25 +192,100 @@ export namespace Styles {
 			};
 		};
 		inventory: {
+			padding: number;
+			gap: number;
+			buttons: {
+				gap: number;
+				button: {
+					padding: number;
+					background: Color;
+					backgroundHover: Color;
+					image: Color | Gradient;
+				};
+			};
 			tabs: {
-				text: Text;
-				background: Color | Gradient;
-				unselectedBackground: Color;
-				selectedBackground: Color;
-				hoveredBackground: Color;
-				padding: number;
+				gap: number;
+				tab: {
+					padding: number;
+					text: Text;
+					background: Color;
+					borderRadius: number;
+					backgroundHover: Color;
+					borderRadiusHover: number;
+					backgroundSelected: Color;
+					borderRadiusSelected: number;
+				};
 			};
 			content: {
-				text: Text;
-				background: Color | Gradient;
+				accessories: {
+					gap: number;
+					categories: {
+						padding: number;
+						gap: number;
+						borderRadius: number;
+						background: Color | Gradient;
+						category: {
+							padding: number;
+							borderRadius: number;
+							background: Color | Gradient;
+							icon: Color | Gradient;
+							selected: {
+								borderRadius: number;
+								background: Color;
+							};
+						};
+					};
+					listing: {
+						padding: number;
+						gap: number;
+						borderRadius: number;
+						background: Color | Gradient;
+						accessory: {
+							gap: number;
+							borderRadius: number;
+							width: number;
+							background: Color | Gradient;
+							info: {
+								padding: number;
+								background: Color | Gradient;
+								text: Text;
+							};
+						};
+					};
+					selection: {
+						padding: number;
+						gap: number;
+						borderRadius: number;
+						background: Color | Gradient;
+						preview: {
+							background: Color | Gradient;
+							borderRadius: number;
+						};
+						name: Text;
+						description: Text;
+						badges: {
+							padding: number;
+							gap: number;
+							badge: {
+								padding: number;
+								gap: number;
+								borderRadius: number;
+								background: Color | Gradient;
+							};
+							price: {
+								currency: Text;
+								amount: Text;
+							};
+						};
+						buttons: {
+							borderRadius: number;
+							purchase: Omit<ButtonText, 'icon'>;
+							equip: Omit<ButtonText, 'icon'>;
+							unequip: Omit<ButtonText, 'icon'>;
+						};
+					};
+				};
 			};
-			buttons: {
-				button: Omit<ButtonIcon, 'background'>;
-				background: Color;
-				hoveredBackground: Color;
-			};
-			padding: number;
-			listPadding: number;
 		};
 	}
 	
@@ -334,39 +429,163 @@ export namespace Styles {
 			},
 		},
 		inventory: {
-			tabs: {
-				text: {
-					font: fontBold,
-					color: plainColor(Color3.fromRGB(255, 255, 255)),
-					size: 40,
+			padding: 20,
+			gap: 20,
+			buttons: {
+				gap: 20,
+				button: {
+					padding: 10,
+					background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+					backgroundHover: plainColor(Color3.fromRGB(0, 0, 0), 0.2),
+					image: plainColor(Color3.fromRGB(255, 255, 255), 1),
 				},
-				background: gradientColor(new ColorSequence(Color3.fromRGB(0, 0, 0)), new NumberSequence(0.5, 0.8), 20),
-				unselectedBackground: plainColor(Color3.fromRGB(255, 255, 255), 0.08),
-				selectedBackground: plainColor(Color3.fromRGB(255, 255, 255), 0.3),
-				hoveredBackground: plainColor(Color3.fromRGB(255, 255, 255), 0.2),
-				padding: 10,
+			},
+			tabs: {
+				gap: 20,
+				tab: {
+					padding: 20,
+					text: {
+						font: fontBold,
+						color: plainColor(Color3.fromRGB(255, 255, 255)),
+						size: 45,
+					},
+					background: plainColor(Color3.fromRGB(0, 0, 0), 0.6),
+					borderRadius: 50,
+					backgroundHover: plainColor(Color3.fromRGB(0, 0, 0), 0.4),
+					borderRadiusHover: 50,
+					backgroundSelected: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+					borderRadiusSelected: 20,
+				},
 			},
 			content: {
-				text: {
-					font: fontRegular,
-					color: plainColor(Color3.fromRGB(255, 255, 255)),
-					size: 40,
-				},
-				background: gradientColor(new ColorSequence(Color3.fromRGB(0, 0, 0)), new NumberSequence(0.5, 0.8), 20),
-			},
-			buttons: {
-				button: {
-					icon: {
-						color: plainColor(Color3.fromRGB(255, 255, 255)),
+				accessories: {
+					gap: 20,
+					categories: {
+						padding: 10,
+						gap: 10,
+						borderRadius: 30,
+						background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+						category: {
+							padding: 10,
+							borderRadius: 20,
+							background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+							icon: plainColor(Color3.fromRGB(255, 255, 255), 0.7),
+							selected: {
+								borderRadius: 10,
+								background: plainColor(Color3.fromRGB(255, 255, 255), 0.05),
+							},
+						},
 					},
-					size: 48,
-					padding: 8,
+					listing: {
+						padding: 10,
+						gap: 10,
+						borderRadius: 30,
+						background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+						accessory: {
+							gap: 0,
+							borderRadius: 20,
+							width: 200,
+							background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+							info: {
+								padding: 5,
+								background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+								text: {
+									font: fontSemiBold,
+									color: plainColor(Color3.fromRGB(255, 255, 255)),
+									size: 30,
+								},
+							},
+						},
+					},
+					selection: {
+						padding: 10,
+						gap: 10,
+						borderRadius: 30,
+						background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+						preview: {
+							background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+							borderRadius: 20,
+						},
+						name: {
+							font: fontSemiBold,
+							color: plainColor(Color3.fromRGB(255, 255, 255)),
+							size: 40,
+						},
+						description: {
+							font: fontRegular,
+							color: plainColor(Color3.fromRGB(255, 255, 255)),
+							size: 30,
+						},
+						badges: {
+							padding: 0,
+							gap: 10,
+							badge: {
+								padding: 10,
+								gap: 3,
+								borderRadius: 10,
+								background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
+							},
+							price: {
+								currency: {
+									font: fontExtraBold,
+									color: plainColor(Color3.fromRGB(147, 235, 143)),
+									size: 25,
+								},
+								amount: {
+									font: fontExtraBold,
+									color: plainColor(Color3.fromRGB(255, 255, 255)),
+									size: 35,
+								},
+							},
+						},
+						buttons: {
+							borderRadius: 20,
+							purchase: {
+								background: gradientColor(createUniformColorSequence(
+									Color3.fromRGB(80, 220, 150),
+									Color3.fromRGB(166, 237, 201),
+									Color3.fromRGB(80, 220, 150),
+								), new NumberSequence(0), 30),
+								padding: 10,
+								text: {
+									font: fontHeavy,
+									color: plainColor(Color3.fromRGB(255, 255, 255)),
+									size: 40,
+									outline: genericTextOutline,
+								},
+							},
+							equip: {
+								background: gradientColor(createUniformColorSequence(
+									Color3.fromRGB(80, 145, 220),
+									Color3.fromRGB(166, 199, 237),
+									Color3.fromRGB(80, 145, 220),
+								), new NumberSequence(0), 30),
+								padding: 10,
+								text: {
+									font: fontHeavy,
+									color: plainColor(Color3.fromRGB(255, 255, 255)),
+									size: 40,
+									outline: genericTextOutline,
+								},
+							},
+							unequip: {
+								background: gradientColor(createUniformColorSequence(
+									Color3.fromRGB(80, 215, 220),
+									Color3.fromRGB(166, 235, 237),
+									Color3.fromRGB(80, 215, 220),
+								), new NumberSequence(0), 30),
+								padding: 10,
+								text: {
+									font: fontHeavy,
+									color: plainColor(Color3.fromRGB(255, 255, 255)),
+									size: 40,
+									outline: genericTextOutline,
+								},
+							},
+						},
+					},
 				},
-				background: plainColor(Color3.fromRGB(0, 0, 0), 0.5),
-				hoveredBackground: plainColor(Color3.fromRGB(0, 0, 0), 0.7),
 			},
-			padding: 10,
-			listPadding: 10,
 		},
 	};
 	

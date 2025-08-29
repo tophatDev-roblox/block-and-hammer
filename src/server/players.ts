@@ -41,16 +41,16 @@ const characterData = new Map<Model, CharacterData>();
 let baseCharacter: Model;
 let areasFolder: Folder;
 
-const onFullReset = throttle(async (player: Player): Promise<true> => {
+const fullReset = throttle(async (player: Player): Promise<true> => {
 	await respawn(player);
 	return true;
 }, 0.2);
 
-const onInputTypeChanged = throttle((player: Player, inputType: InputType): void => {
+const inputTypeChanged = throttle((player: Player, inputType: InputType): void => {
 	player.SetAttribute('inputType', inputType);
 }, 1);
 
-const onUpdateSettings = throttle((player: Player, userSettings: UserSettings.Value): void => {
+const updateSettings = throttle((player: Player, userSettings: UserSettings.Value): void => {
 	const documentAtom = PlayerData.documentAtoms.get(player);
 	
 	if (documentAtom === undefined) {
@@ -62,15 +62,31 @@ const onUpdateSettings = throttle((player: Player, userSettings: UserSettings.Va
 	}));
 }, 2);
 
-const onApplyAccessories = throttle((player: Player, accessories: Accessories.PlayerAccessories): void => {
+const applyAccessories = throttle(async (player: Player, accessories: Accessories.EquippedAccessories): Promise<void> => {
 	const documentAtom = PlayerData.documentAtoms.get(player);
 	
 	if (documentAtom === undefined) {
 		return;
 	}
 	
+	const document = peek(documentAtom);
+	
+	for (const uid of accessories.hat) {
+		const hat = Accessories.Accessories.Hats[uid];
+		
+		if (hat === undefined) {
+			return;
+		}
+		
+		const isOwned = await Accessories.doesOwnAccessory(hat, uid, document.inventory.bought, player);
+		
+		if (!isOwned) {
+			return;
+		}
+	}
+	
 	documentAtom((document) => Immut.produce(document, (draft) => {
-		draft.accessories = accessories;
+		draft.inventory.equipped = accessories;
 	}));
 	
 	const character = player.Character;
@@ -80,6 +96,18 @@ const onApplyAccessories = throttle((player: Player, accessories: Accessories.Pl
 			.then((characterParts) => Accessories.applyAccessories(characterParts, accessories));
 	}
 }, 2);
+
+const getInventoryInfo = throttle((player: Player): [Accessories.EquippedAccessories, Color3] => {
+	const documentAtom = PlayerData.documentAtoms.get(player);
+	
+	if (documentAtom === undefined) {
+		return [Accessories.defaultEquippedAccessories, computeNameColor(player.Name)];
+	}
+	
+	const document = peek(documentAtom);
+	
+	return [document.inventory.equipped, document.color ?? computeNameColor(player.Name)];
+}, 1);
 
 async function respawn(player: Player): Promise<void> {
 	const documentAtom = PlayerData.documentAtoms.get(player);
@@ -136,7 +164,7 @@ async function respawn(player: Player): Promise<void> {
 	body.SetNetworkOwner(player);
 	
 	CharacterParts.create(character)
-		.then((characterParts) => Accessories.applyAccessories(characterParts, document.accessories));
+		.then((characterParts) => Accessories.applyAccessories(characterParts, document.inventory.equipped));
 }
 
 function onUnloadCharacter(player: Player): void {
@@ -248,11 +276,13 @@ for (const player of Players.GetPlayers()) {
 	onPlayerAdded(player);
 }
 
-Remotes.updateInputType.connect((player, inputType) => onInputTypeChanged(player, inputType));
-Remotes.fullReset.onRequest((player) => onFullReset(player));
-Remotes.updateSettings.connect((player, userSettings) => onUpdateSettings(player, userSettings));
-Remotes.applyAccessories.connect((player, accessories) => onApplyAccessories(player, accessories));
+Remotes.updateInputType.connect((player, inputType) => inputTypeChanged(player, inputType));
+Remotes.updateSettings.connect((player, userSettings) => updateSettings(player, userSettings));
+Remotes.applyAccessories.connect((player, accessories) => applyAccessories(player, accessories));
 Remotes.unloadCharacter.connect(onUnloadCharacter);
+
+Remotes.fullReset.onRequest((player) => fullReset(player));
+Remotes.getInventoryInfo.onRequest((player) => getInventoryInfo(player));
 
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);

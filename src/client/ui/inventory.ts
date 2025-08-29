@@ -1,8 +1,11 @@
 import { Workspace } from '@rbxts/services';
 
-import { effect } from '@rbxts/charm';
+import { effect, peek, subscribe } from '@rbxts/charm';
 
+import { CharacterParts } from 'shared/character-parts';
 import { waitForChild } from 'shared/wait-for-child';
+import { Accessories } from 'shared/accessories';
+import { Remotes } from 'shared/remotes';
 
 import { Camera } from 'client/camera';
 
@@ -10,36 +13,56 @@ import { CharacterState } from 'client/character/state';
 
 import { UI } from 'client/ui/state';
 
-let wasInventoryOpen = false;
-
+let previewCharacterModel: Model;
 let cameraPart: Part;
+let body: Part;
 
 (async () => {
 	const areaFolder = await waitForChild(Workspace, 'InventoryArea', 'Folder');
 	
 	cameraPart = await waitForChild(areaFolder, 'Camera', 'Part');
+	previewCharacterModel = await waitForChild(areaFolder, 'Character', 'Model');
+	body = await waitForChild(previewCharacterModel, 'Body', 'Part');
 })();
 
-effect(() => {
-	const state = UI.stateAtom();
-	
-	if (state === UI.State.Inventory) {
-		if (wasInventoryOpen) {
-			return;
-		}
-		
-		wasInventoryOpen = true;
-		
+function onUpdateBoughtAccessories(boughtAccessories: Set<string>): void {
+	UI.Inventory.boughtAccessoriesAtom(boughtAccessories);
+}
+
+Remotes.updateBoughtAccessories.connect(onUpdateBoughtAccessories);
+
+subscribe(() => UI.stateAtom() === UI.State.Inventory, (isInventoryOpen) => {
+	if (isInventoryOpen) {
 		CharacterState.disableCameraAtom(true);
 		
 		Camera.cframeMotion.immediate(cameraPart.CFrame);
+		
+		UI.Inventory.temporaryAccessoriesAtom(Accessories.defaultEquippedAccessories);
+		
+		Remotes.getInventoryInfo()
+			.then(([equippedAccessories, color]) => {
+				UI.Inventory.temporaryAccessoriesAtom(equippedAccessories);
+				
+				body.Color = color;
+			});
 	} else {
-		if (!wasInventoryOpen) {
-			return;
-		}
-		
-		wasInventoryOpen = false;
-		
 		CharacterState.disableCameraAtom(false);
+		
+		const equippedAccessories = peek(UI.Inventory.temporaryAccessoriesAtom);
+		
+		if (equippedAccessories !== undefined) {
+			Remotes.applyAccessories(equippedAccessories);
+		}
 	}
+});
+
+effect(() => {
+	const equippedAccessories = UI.Inventory.temporaryAccessoriesAtom();
+	
+	if (equippedAccessories === undefined) {
+		return;
+	}
+	
+	CharacterParts.create(previewCharacterModel)
+		.then((previewCharacterParts) => Accessories.applyAccessories(previewCharacterParts, equippedAccessories));
 });

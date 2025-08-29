@@ -1,3 +1,4 @@
+import { findFirstChild } from 'shared/wait-for-child';
 import { Logger } from 'shared/logger';
 import { Number } from 'shared/number';
 
@@ -20,15 +21,18 @@ export class AreaManager {
 			return;
 		}
 		
-		const pointA = area.FindFirstChild('A');
-		const pointB = area.FindFirstChild('B');
-		if (!pointA?.IsA('Part') || !pointB?.IsA('Part')) {
-			logger.warn('area is missing A and B Part instances:', area);
+		const pointA = findFirstChild(area, 'A', 'Part');
+		const pointB = findFirstChild(area, 'B', 'Part');
+		
+		if (pointA === undefined || pointB === undefined) {
+			logger.warn('area is missing A and B Part instances:', area.GetFullName());
+			
 			return;
 		}
 		
 		const a = new Vector2(pointA.Position.X, pointA.Position.Y);
 		const b = new Vector2(pointB.Position.X, pointB.Position.Y);
+		
 		this.areas.set(area.Name as AreaManager.Area, [a.Min(b), a.Max(b)]);
 	}
 	
@@ -37,6 +41,7 @@ export class AreaManager {
 		const minimumY = region[0].Y;
 		const maximumX = region[1].X;
 		const maximumY = region[1].Y;
+		
 		return Number.isInRange(body.Position.X, minimumX, maximumX) && Number.isInRange(body.Position.Y, minimumY, maximumY);
 	}
 }

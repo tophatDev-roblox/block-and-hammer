@@ -20,7 +20,10 @@ const CollectionSchema = t.strictInterface({
 	color: t.optional(t.Color3),
 	dollars: t.number,
 	userSettings: UserSettings.Value,
-	accessories: Accessories.PlayerAccessories,
+	inventory: t.strictInterface({
+		equipped: Accessories.EquippedAccessories,
+		bought: t.set(t.string),
+	}),
 });
 
 const collection = createCollection<CollectionSchema>('player-data', {
@@ -28,8 +31,9 @@ const collection = createCollection<CollectionSchema>('player-data', {
 		color: undefined,
 		dollars: 100,
 		userSettings: UserSettings.defaultValue,
-		accessories: {
-			hat: undefined,
+		inventory: {
+			equipped: table.clone(Accessories.defaultEquippedAccessories),
+			bought: new Set(),
 		},
 	},
 	validate: CollectionSchema,

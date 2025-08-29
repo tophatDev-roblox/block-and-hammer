@@ -19,45 +19,53 @@ interface TabProps {
 }
 
 const Tab: React.FC<TabProps> = ({ text, tab }) => {
+	const inventoryStyles = Styles.UI.inventory;
+	
 	const [isHovered, setHovered] = useState<boolean>(false);
 	
-	const selectedTab = useAtom(UI.Inventory.tabAtom);
+	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion<number>(1 - inventoryStyles.tabs.tab.background.alpha);
+	const [borderRadius, borderRadiusMotion] = useMotion<UDim>(new UDim(0, inventoryStyles.tabs.tab.borderRadius));
+	const [backgroundColor, backgroundColorMotion] = useMotion<Color3>(inventoryStyles.tabs.tab.background.color);
 	
-	const tabStyles = Styles.UI.inventory.tabs;
-	
-	const [backgroundColor, backgroundColorMotion] = useMotion<Color3>(tabStyles.unselectedBackground.color);
-	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion<number>(1 - tabStyles.unselectedBackground.alpha);
+	const currentTab = useAtom(UI.Inventory.tabAtom);
 	
 	const px = usePx();
 	
 	useEffect(() => {
 		const options: Ripple.TweenOptions = {
-			style: Enum.EasingStyle.Linear,
-			time: 0.1,
+			style: Enum.EasingStyle.Sine,
+			direction: Enum.EasingDirection.Out,
+			time: 0.2,
 		};
 		
 		let color: Styles.Color;
 		
-		if (tab === selectedTab) {
-			color = tabStyles.selectedBackground;
+		if (currentTab === tab) {
+			color = inventoryStyles.tabs.tab.backgroundSelected;
+			
+			borderRadiusMotion.tween(new UDim(0, px(inventoryStyles.tabs.tab.borderRadiusSelected)), options);
 		} else {
 			if (isHovered) {
-				color = tabStyles.hoveredBackground;
+				color = inventoryStyles.tabs.tab.background;
+				
+				borderRadiusMotion.tween(new UDim(0, px(inventoryStyles.tabs.tab.borderRadiusHover)), options);
 			} else {
-				color = tabStyles.unselectedBackground;
+				color = inventoryStyles.tabs.tab.background;
+				
+				borderRadiusMotion.tween(new UDim(0, px(inventoryStyles.tabs.tab.borderRadius)), options);
 			}
 		}
 		
 		backgroundColorMotion.tween(color.color, options);
 		backgroundTransparencyMotion.tween(1 - color.alpha, options);
-	}, [tab, selectedTab, isHovered]);
+	}, [isHovered, currentTab]);
 	
 	return (
 		<Button
 			BackgroundColor3={backgroundColor}
 			BackgroundTransparency={backgroundTransparency}
-			Size={UDim2.fromScale(0, 0)}
-			AutomaticSize={Enum.AutomaticSize.XY}
+			Size={UDim2.fromScale(0, 1)}
+			AutomaticSize={Enum.AutomaticSize.X}
 			Event={{
 				MouseEnter: () => setHovered(true),
 				MouseLeave: () => setHovered(false),
@@ -65,16 +73,15 @@ const Tab: React.FC<TabProps> = ({ text, tab }) => {
 			}}
 		>
 			<uicorner
-				CornerRadius={new UDim(0, px(20 - tabStyles.padding))}
+				CornerRadius={borderRadius}
 			/>
 			<UIPadding
-				padding={px(tabStyles.padding)}
+				padding={[0, px(Styles.UI.inventory.tabs.tab.padding)]}
 			/>
 			<Text
-				styles={Styles.UI.inventory.tabs.text}
+				styles={Styles.UI.inventory.tabs.tab.text}
 				text={text}
 				autoWidth
-				autoHeight
 			/>
 		</Button>
 	);
