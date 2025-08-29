@@ -7,7 +7,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 import { Styles } from 'client/styles';
 
 import UIPadding from 'client/ui/components/UIPadding';
-import Gradient from 'client/ui/components/Gradient';
+import UIGradient from 'client/ui/components/UIGradient';
 import Outline from 'client/ui/components/Outline';
 import Text from 'client/ui/components/Text';
 
@@ -34,7 +34,7 @@ const Button: React.FC<ButtonProps> = ({ style, text, onClick, overrides }) => {
 			{...overrides}
 		>
 			{style.background.type === 'gradient' && (
-				<Gradient
+				<UIGradient
 					styles={style.background}
 				/>
 			)}

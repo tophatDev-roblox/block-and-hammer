@@ -21,7 +21,7 @@ import UIListLayout from '../UIListLayout';
 import UIPadding from '../UIPadding';
 import SideButton from '../SideButton';
 import ScreenGUI from '../ScreenGUI';
-import Gradient from '../Gradient';
+import UIGradient from '../UIGradient';
 
 import ButtonLayout from './ButtonLayout';
 import Panel from './Panel';
@@ -203,7 +203,7 @@ const SideMenu: React.FC = () => {
 						AnchorPoint={new Vector2(0, 1)}
 					>
 						{Styles.UI.sideMenu.background.type === 'gradient' && (
-							<Gradient
+							<UIGradient
 								styles={Styles.UI.sideMenu.background}
 							/>
 						)}

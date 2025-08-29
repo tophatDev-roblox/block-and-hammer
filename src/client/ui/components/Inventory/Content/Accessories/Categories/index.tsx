@@ -9,7 +9,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from 'client/ui/components/UIListLayout';
 import UIPadding from 'client/ui/components/UIPadding';
-import Gradient from 'client/ui/components/Gradient';
+import UIGradient from 'client/ui/components/UIGradient';
 
 import Category from './Category';
 
@@ -25,7 +25,7 @@ const Categories: React.FC = () => {
 			LayoutOrder={0}
 		>
 			{pageStyles.categories.background.type === 'gradient' && (
-				<Gradient
+				<UIGradient
 					styles={pageStyles.categories.background}
 				/>
 			)}

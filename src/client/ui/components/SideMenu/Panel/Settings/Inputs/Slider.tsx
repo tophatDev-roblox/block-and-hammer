@@ -17,7 +17,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from 'client/ui/components/UIListLayout';
 import UIPadding from 'client/ui/components/UIPadding';
-import Gradient from 'client/ui/components/Gradient';
+import UIGradient from 'client/ui/components/UIGradient';
 import Button from 'client/ui/components/Button';
 import Text from 'client/ui/components/Text';
 
@@ -95,7 +95,7 @@ const Slider: React.FC<SliderProps> = ({ label, value, min, max, step, decimals,
 				ZIndex={1}
 			>
 				{settingsStyles.item.background.type === 'gradient' && (
-					<Gradient
+					<UIGradient
 						styles={settingsStyles.item.background}
 					/>
 				)}
@@ -247,7 +247,7 @@ const Slider: React.FC<SliderProps> = ({ label, value, min, max, step, decimals,
 						AnchorPoint={new Vector2(0.5, 0.5)}
 					>
 						{settingsStyles.slider.thumb.type === 'gradient' && (
-							<Gradient
+							<UIGradient
 								styles={settingsStyles.slider.thumb}
 							/>
 						)}

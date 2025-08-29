@@ -9,7 +9,7 @@ import { UI } from 'client/ui/state';
 
 import UIListLayout from 'client/ui/components/UIListLayout';
 import UIPadding from 'client/ui/components/UIPadding';
-import Gradient from 'client/ui/components/Gradient';
+import UIGradient from 'client/ui/components/UIGradient';
 import Button from 'client/ui/components/Button';
 import Text from 'client/ui/components/Text';
 
@@ -35,7 +35,7 @@ const Accessory: React.FC<AccessoryProps> = ({ accessory, uid, order }) => {
 			}}
 		>
 			{componentStyles.background.type === 'gradient' && (
-				<Gradient
+				<UIGradient
 					styles={componentStyles.background}
 				/>
 			)}

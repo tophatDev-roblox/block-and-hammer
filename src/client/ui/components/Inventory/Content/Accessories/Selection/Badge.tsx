@@ -6,7 +6,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from 'client/ui/components/UIListLayout';
 import UIPadding from 'client/ui/components/UIPadding';
-import Gradient from 'client/ui/components/Gradient';
+import UIGradient from 'client/ui/components/UIGradient';
 
 const Badge: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const px = usePx();
@@ -20,7 +20,7 @@ const Badge: React.FC<React.PropsWithChildren> = ({ children }) => {
 			AutomaticSize={Enum.AutomaticSize.XY}
 		>
 			{componentStyles.background.type === 'gradient' && (
-				<Gradient
+				<UIGradient
 					styles={componentStyles.background}
 				/>
 			)}

@@ -7,7 +7,7 @@ interface GradientProps {
 	styles: Styles.Gradient;
 }
 
-const Gradient: React.FC<GradientProps> = ({ styles }) => {
+const UIGradient: React.FC<GradientProps> = ({ styles }) => {
 	const [rotation, rotationMotion] = useMotion<number>(styles.rotationsPerSecond === undefined ? (styles.rotation ?? 0) : 0);
 	
 	useEffect(() => {
@@ -33,5 +33,5 @@ const Gradient: React.FC<GradientProps> = ({ styles }) => {
 	);
 };
 
-export default Gradient;
+export default UIGradient;
 

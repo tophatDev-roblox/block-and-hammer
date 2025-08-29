@@ -14,7 +14,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 import { UI } from 'client/ui/state';
 
 import UIPadding from 'client/ui/components/UIPadding';
-import Gradient from 'client/ui/components/Gradient';
+import UIGradient from 'client/ui/components/UIGradient';
 import Button from 'client/ui/components/Button';
 
 interface CategoryProps {
@@ -57,7 +57,7 @@ const Category: React.FC<CategoryProps> = ({ category, icon, iconScale = 1 }) =>
 			}}
 		>
 			{categoryStyles.background.type === 'gradient' && (
-				<Gradient
+				<UIGradient
 					styles={categoryStyles.background}
 				/>
 			)}
@@ -86,7 +86,7 @@ const Category: React.FC<CategoryProps> = ({ category, icon, iconScale = 1 }) =>
 					AnchorPoint={new Vector2(0.5, 0.5)}
 				>
 					{categoryStyles.icon.type === 'gradient' && (
-						<Gradient
+						<UIGradient
 							styles={categoryStyles.icon}
 						/>
 					)}

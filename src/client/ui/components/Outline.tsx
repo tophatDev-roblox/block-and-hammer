@@ -4,7 +4,7 @@ import { Styles } from 'client/styles';
 
 import { usePx } from 'client/ui/hooks/use-px';
 
-import Gradient from './Gradient';
+import UIGradient from './UIGradient';
 
 interface OutlineProps {
 	styles: Styles.Outline;
@@ -36,7 +36,7 @@ const Outline: React.FC<OutlineProps> = (props) => {
 			{...overrides}
 		>
 			{color.type === 'gradient' && (
-				<Gradient
+				<UIGradient
 					styles={color}
 				/>
 			)}

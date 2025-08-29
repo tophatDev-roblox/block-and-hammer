@@ -16,7 +16,7 @@ import { UI } from 'client/ui/state';
 
 import UIListLayout from '../../UIListLayout';
 import UIPadding from '../../UIPadding';
-import Gradient from '../../Gradient';
+import UIGradient from '../../UIGradient';
 
 import Settings from './Settings';
 
@@ -94,7 +94,7 @@ const Panel: React.FC = () => {
 					AnchorPoint={new Vector2(0.5, 0)}
 				>
 					{Styles.UI.panel.background.type === 'gradient' && (
-						<Gradient
+						<UIGradient
 							styles={Styles.UI.panel.background}
 						/>
 					)}

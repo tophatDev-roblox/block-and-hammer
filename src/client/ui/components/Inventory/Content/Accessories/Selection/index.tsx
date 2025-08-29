@@ -12,7 +12,7 @@ import { UI } from 'client/ui/state';
 
 import UIListLayout from 'client/ui/components/UIListLayout';
 import UIPadding from 'client/ui/components/UIPadding';
-import Gradient from 'client/ui/components/Gradient';
+import UIGradient from 'client/ui/components/UIGradient';
 import Text from 'client/ui/components/Text';
 
 import Preview from '../Preview';
@@ -36,7 +36,7 @@ const Selection: React.FC = () => {
 			LayoutOrder={2}
 		>
 			{componentStyles.background.type === 'gradient' && (
-				<Gradient
+				<UIGradient
 					styles={componentStyles.background}
 				/>
 			)}

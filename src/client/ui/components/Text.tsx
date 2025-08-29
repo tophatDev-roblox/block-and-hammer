@@ -5,7 +5,7 @@ import { Styles } from 'client/styles';
 import { getAutomaticSize } from 'client/ui/get-automatic-size';
 import { usePx } from 'client/ui/hooks/use-px';
 
-import Gradient from './Gradient';
+import UIGradient from './UIGradient';
 import Outline from './Outline';
 
 interface TextProps extends React.PropsWithChildren {
@@ -79,7 +79,7 @@ const Text = forwardRef<TextLabel, TextProps>((props, ref) => {
 			{...properties}
 		>
 			{color.type === 'gradient' && (
-				<Gradient
+				<UIGradient
 					styles={color}
 				/>
 			)}

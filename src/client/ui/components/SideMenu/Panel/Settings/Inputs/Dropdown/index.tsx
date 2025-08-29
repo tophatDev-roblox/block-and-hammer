@@ -14,7 +14,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from 'client/ui/components/UIListLayout';
 import UIPadding from 'client/ui/components/UIPadding';
-import Gradient from 'client/ui/components/Gradient';
+import UIGradient from 'client/ui/components/UIGradient';
 import Button from 'client/ui/components/Button';
 import Text from 'client/ui/components/Text';
 
@@ -67,7 +67,7 @@ const Dropdown = <T extends number>({ label, value, index, onSelect }: DropdownP
 				ZIndex={1}
 			>
 				{settingsStyles.item.background.type === 'gradient' && (
-					<Gradient
+					<UIGradient
 						styles={settingsStyles.item.background}
 					/>
 				)}

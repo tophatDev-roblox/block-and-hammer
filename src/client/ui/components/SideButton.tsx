@@ -9,7 +9,7 @@ import { usePx } from 'client/ui/hooks/use-px';
 
 import UIListLayout from './UIListLayout';
 import UIPadding from './UIPadding';
-import Gradient from './Gradient';
+import UIGradient from './UIGradient';
 import Button from './Button';
 import Text from './Text';
 
@@ -86,7 +86,7 @@ const SideButton: React.FC<SideButtonProps> = ({ text, icon, iconScale = 0.7, on
 					SliceCenter={new Rect(256, 256, 512, 256)}
 				>
 					{Styles.UI.sideButton.background.type === 'gradient' && (
-						<Gradient
+						<UIGradient
 							styles={Styles.UI.sideButton.background}
 						/>
 					)}
@@ -108,7 +108,7 @@ const SideButton: React.FC<SideButtonProps> = ({ text, icon, iconScale = 0.7, on
 							CornerRadius={new UDim(1, 0)}
 						/>
 						{Styles.UI.sideButton.icon.background.type === 'gradient' && (
-							<Gradient
+							<UIGradient
 								styles={Styles.UI.sideButton.icon.background}
 							/>
 						)}
