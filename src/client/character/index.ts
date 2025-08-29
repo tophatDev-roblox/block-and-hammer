@@ -5,7 +5,7 @@ import Immut from '@rbxts/immut';
 import { effect, peek, subscribe } from '@rbxts/charm';
 
 import { CharacterParts } from 'shared/character-parts';
-import { waitForChild } from 'shared/wait-for-child';
+import { findFirstChild, waitForChild } from 'shared/wait-for-child';
 import { AreaManager } from 'shared/area-manager';
 import { TimeSpan } from 'shared/time-span';
 import { Raycast } from 'shared/raycast';
@@ -367,12 +367,12 @@ effect(() => {
 	
 	const userSettings = ClientSettings.stateAtom();
 	
-	const existingRangeDisplay = characterParts.model.FindFirstChild('RangeDisplay');
+	const existingRangeDisplay = findFirstChild(characterParts.model, 'RangeDisplay', 'Part');
 	if (userSettings.character.showRange) {
 		const hammerDistance = CharacterState.hammerDistanceAtom();
 		const size = new Vector3(0.001, hammerDistance * 2, hammerDistance * 2);
 		
-		if (existingRangeDisplay === undefined || !existingRangeDisplay.IsA('Part')) {
+		if (existingRangeDisplay === undefined) {
 			const clone = rangeDisplay.Clone();
 			clone.Size = size;
 			clone.PivotTo(characterParts.body.CFrame);

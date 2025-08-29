@@ -10,7 +10,7 @@ import computeNameColor from 'shared/NameColor';
 import type { UserSettings } from 'shared/user-settings';
 
 import { CharacterParts } from 'shared/character-parts';
-import { waitForChild } from 'shared/wait-for-child';
+import { findFirstChild, waitForChild } from 'shared/wait-for-child';
 import { Accessories } from 'shared/accessories';
 import { AreaManager } from 'shared/area-manager';
 import { InputType } from 'shared/input-type';
@@ -122,11 +122,13 @@ async function respawn(player: Player): Promise<void> {
 	const altitudeValue = await waitForChild(leaderstats, 'Altitude', 'IntValue');
 	const areaValue = await waitForChild(leaderstats, 'Area', 'StringValue');
 	
-	const existingCharacter = Workspace.FindFirstChild(player.Name) ?? player.Character;
-	if (existingCharacter?.IsA('Model') && existingCharacter.Parent !== undefined) {
+	const existingCharacter = findFirstChild(Workspace, player.Name, 'Model') ?? player.Character;
+	if (existingCharacter !== undefined && existingCharacter.Parent !== undefined) {
 		existingCharacter.Destroy();
 		characterData.delete(existingCharacter);
+		
 		player.Character = undefined;
+		
 		return;
 	}
 	
