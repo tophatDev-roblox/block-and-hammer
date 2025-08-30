@@ -135,8 +135,8 @@ export namespace Styles {
 	
 	export interface UI {
 		loadingScreen: {
+			gap: number;
 			background: Color;
-			listPadding: number;
 			title: Text;
 			status: Text;
 			progressBar: {
@@ -145,17 +145,17 @@ export namespace Styles {
 			};
 		};
 		startScreen: {
+			gap: number;
 			title: Text;
-			listPadding: number;
 		};
 		sideButton: ButtonText;
 		hud: {
+			padding: number;
+			gap: number;
 			altitude: Text;
 			speedometer: Text;
 			timer: Text;
 			timerUnstarted: Text;
-			padding: number;
-			listPadding: number;
 		};
 		sideMenu: {
 			background: Color | Gradient;
@@ -188,7 +188,7 @@ export namespace Styles {
 			nameplate: {
 				displayName: Text;
 				username: Text;
-				listPadding: number;
+				gap: number;
 			};
 		};
 		inventory: {
@@ -297,6 +297,7 @@ export namespace Styles {
 	
 	export const UI: UI = {
 		loadingScreen: {
+			gap: 20,
 			background: plainColor(Color3.fromRGB(0, 0, 0)),
 			title: {
 				font: fontHeavy,
@@ -308,13 +309,13 @@ export namespace Styles {
 				size: 25,
 				color: plainColor(Color3.fromRGB(210, 210, 210)),
 			},
-			listPadding: 20,
 			progressBar: {
 				loadedColor: plainColor(Color3.fromRGB(210, 210, 210)),
 				unloadedColor: plainColor(Color3.fromRGB(255, 255, 255), 0.1),
 			},
 		},
 		startScreen: {
+			gap: 10,
 			title: {
 				font: fontHeavy,
 				size: 60,
@@ -324,7 +325,6 @@ export namespace Styles {
 					thickness: 5,
 				},
 			},
-			listPadding: 10,
 		},
 		sideButton: {
 			background: gradientColor(new ColorSequence(Color3.fromRGB(0, 0, 0)), new NumberSequence(0.4, 0.6), -90),
@@ -340,6 +340,8 @@ export namespace Styles {
 			},
 		},
 		hud: {
+			padding: 5,
+			gap: 5,
 			speedometer: {
 				font: fontHeavy,
 				color: plainColor(Color3.fromRGB(255, 255, 255), 0.6),
@@ -364,8 +366,6 @@ export namespace Styles {
 				outline: genericTextOutline,
 				size: 50,
 			},
-			padding: 5,
-			listPadding: 5,
 		},
 		sideMenu: {
 			background: gradientColor(new ColorSequence(Color3.fromRGB(0, 0, 0)), new NumberSequence(0.5, 0.8), 20),
@@ -425,7 +425,7 @@ export namespace Styles {
 					outline: genericTextOutline,
 					size: 20,
 				},
-				listPadding: 5,
+				gap: 5,
 			},
 		},
 		inventory: {

@@ -178,7 +178,7 @@ const StartScreen: React.FC = () => {
 			>
 				<UIListLayout
 					fillDirection={Enum.FillDirection.Vertical}
-					gap={px(Styles.UI.startScreen.listPadding)}
+					gap={px(Styles.UI.startScreen.gap)}
 				/>
 				<SideButton
 					text={'Start'}
