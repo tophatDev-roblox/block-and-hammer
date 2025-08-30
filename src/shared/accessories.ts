@@ -135,13 +135,12 @@ export namespace Accessories {
 			}
 			
 			const model = await getAccessoryModel(accessory.modelName);
-			const rigidAttachment = model.FindFirstChild('RigidAttachment1', true);
 			
-			if (model !== undefined && rigidAttachment?.IsA('Attachment')) {
+			if (model !== undefined && model.FindFirstChild('RigidAttachment1', true)?.IsA('Attachment')) {
 				const hat = model.Clone();
 				hat.Name = Name.Hat;
 				
-				characterParts.accesories.constraints.hat.Attachment1 = rigidAttachment;
+				characterParts.accesories.constraints.hat.Attachment1 = hat.FindFirstChild('RigidAttachment1', true) as Attachment;
 				
 				hat.Parent = characterParts.model;
 			} else {
