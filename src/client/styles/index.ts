@@ -126,13 +126,6 @@ export namespace Styles {
 		outline?: Outline;
 	}
 	
-	export interface ButtonIcon extends Omit<ButtonText, 'text' | 'icon'> {
-		icon: {
-			color: Color | Gradient;
-		};
-		size: number;
-	}
-	
 	export interface UI {
 		loadingScreen: {
 			gap: number;
