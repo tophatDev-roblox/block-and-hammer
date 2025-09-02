@@ -1,7 +1,7 @@
 import { GuiService } from '@rbxts/services';
 
 import React, { useBinding, useEffect, useRef } from '@rbxts/react';
-import { useMotion } from '@rbxts/pretty-react-hooks';
+import { composeBindings, useMotion } from '@rbxts/pretty-react-hooks';
 import { useAtom } from '@rbxts/react-charm';
 
 import { setTimeout } from '@rbxts/set-timeout';
@@ -40,11 +40,15 @@ const Panel: React.FC = () => {
 	
 	const px = usePx();
 	
-	const scrollbarHeight = React.joinBindings({ contentHeight, viewportSize: viewportSizeBinding })
-		.map(({ contentHeight, viewportSize }) => (viewportSize.Y / contentHeight) * viewportSize.Y);
+	const scrollbarHeight = composeBindings(
+		contentHeight, viewportSizeBinding,
+		(contentHeight, viewportSize) => (viewportSize.Y / contentHeight) * viewportSize.Y,
+	);
 	
-	const scrollbarPosition = React.joinBindings({ scrollbarHeight, contentY, contentHeight, viewportSize: viewportSizeBinding })
-		.map(({ scrollbarHeight, contentY, contentHeight, viewportSize }) => (contentY / (contentHeight - viewportSize.Y)) * (viewportSize.Y - scrollbarHeight));
+	const scrollbarPosition = composeBindings(
+		scrollbarHeight, contentY, contentHeight, viewportSizeBinding,
+		(scrollbarHeight, contentY, contentHeight, viewportSize) => (contentY / (contentHeight - viewportSize.Y)) * (viewportSize.Y - scrollbarHeight),
+	);
 	
 	const offsetTopX = math.round(viewportSize.X * 0.55);
 	const offsetBottomX = offsetTopX + px(100);
