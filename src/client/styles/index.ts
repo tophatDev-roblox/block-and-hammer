@@ -231,6 +231,7 @@ export namespace Styles {
 					listing: {
 						padding: number;
 						gap: number;
+						scrollbarThickness: number;
 						borderRadius: number;
 						background: Color | Gradient;
 						accessory: {
@@ -472,6 +473,7 @@ export namespace Styles {
 					listing: {
 						padding: 10,
 						gap: 10,
+						scrollbarThickness: 10,
 						borderRadius: 30,
 						background: plainColor(Color3.fromRGB(0, 0, 0), 0.3),
 						accessory: {

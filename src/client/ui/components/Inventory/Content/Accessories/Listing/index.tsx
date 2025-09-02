@@ -65,8 +65,9 @@ const Listing: React.FC = () => {
 			/>
 			<scrollingframe
 				BackgroundTransparency={1}
+				BorderSizePixel={0}
 				Size={UDim2.fromScale(1, 1)}
-				ScrollBarThickness={px(10)}
+				ScrollBarThickness={px(pageStyles.listing.scrollbarThickness)}
 				CanvasSize={UDim2.fromScale(0, 1)}
 				AutomaticCanvasSize={Enum.AutomaticSize.Y}
 			>
@@ -78,6 +79,9 @@ const Listing: React.FC = () => {
 						AspectRatio={0.8}
 					/>
 				</uigridlayout>
+				<uipadding
+					PaddingRight={new UDim(0, px(pageStyles.listing.padding + pageStyles.listing.scrollbarThickness))}
+				/>
 				{items.map(({ accessory, uid }, i) => (
 					<Accessory
 						accessory={accessory}
