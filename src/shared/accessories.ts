@@ -1,4 +1,4 @@
-import { Players, ReplicatedStorage } from '@rbxts/services';
+import { BadgeService, ReplicatedStorage } from '@rbxts/services';
 
 import { t } from '@rbxts/t';
 
@@ -6,8 +6,6 @@ import { CharacterParts } from 'shared/character-parts';
 import { waitForChild } from 'shared/wait-for-child';
 import { Logger } from 'shared/logger';
 import { Badge } from 'shared/badge';
-
-const client = Players.LocalPlayer;
 
 const logger = new Logger('accessories');
 
@@ -39,6 +37,7 @@ export namespace Accessories {
 	
 	export type BaseAccessory = t.static<typeof BaseAccessory>;
 	export const BaseAccessory = t.strictInterface({
+		order: t.number,
 		type: tType,
 		category: tCategory,
 		displayName: t.string,
@@ -80,6 +79,7 @@ export namespace Accessories {
 	export const Accessories = {
 		Hats: {
 			tophatStack: {
+				order: 0,
 				type: Type.Model,
 				category: Category.Hats,
 				displayName: 'Tophat Stack',
@@ -165,9 +165,9 @@ export namespace Accessories {
 		return false;
 	}
 	
-	export async function doesOwnAccessory(accessory: BaseAccessory, uid: string, boughtAccessories: Set<string>, player: Player = client): Promise<boolean> {
+	export async function doesOwnAccessory(accessory: Accessories.BaseAccessory, uid: string, boughtAccessories: Set<string>, player: Player): Promise<boolean> {
 		if (accessory.obtainment.badgeId !== undefined) {
-			return await Badge.has(accessory.obtainment.badgeId, player);
+			return BadgeService.UserHasBadgeAsync(player.UserId, accessory.obtainment.badgeId);
 		} else if (accessory.obtainment.dollars !== undefined) {
 			return boughtAccessories.has(uid);
 		}

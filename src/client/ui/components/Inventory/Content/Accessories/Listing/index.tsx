@@ -3,6 +3,8 @@ import { useAtom } from '@rbxts/react-charm';
 
 import { Accessories } from 'shared/accessories';
 
+import { UserAccessories } from 'client/user-accessories';
+
 import { Styles } from 'client/styles';
 
 import { usePx } from 'client/ui/hooks/use-px';
@@ -12,8 +14,13 @@ import UIPadding from 'client/ui/components/UIPadding';
 
 import Accessory from './Accessory';
 
+interface ItemData {
+	accessory: Accessories.BaseAccessory;
+	uid: string;
+}
+
 const Listing: React.FC = () => {
-	const [items, setItems] = useState<Array<{ accessory: Accessories.BaseAccessory, uid: string }>>([]);
+	const [items, setItems] = useState<Array<ItemData>>([]);
 	const [columns] = useState<number>(3);
 	
 	const boughtAccessories = useAtom(UI.Inventory.boughtAccessoriesAtom);
@@ -22,12 +29,12 @@ const Listing: React.FC = () => {
 	const px = usePx();
 	
 	useEffect(() => {
-		const items = new Array<{ accessory: Accessories.BaseAccessory, uid: string }>();
+		const items = new Array<ItemData>();
 		const promises = new Array<Promise<void>>();
 		
 		for (const [uid, accessory] of pairs(Accessories.ofCategory(category))) {
 			promises.push(new Promise(async (resolve) => {
-				const isOwned = await Accessories.doesOwnAccessory(accessory, uid, boughtAccessories);
+				const isOwned = await UserAccessories.doesOwnAccessory(accessory, uid, boughtAccessories);
 				
 				if (!isOwned) {
 					return;
@@ -39,7 +46,11 @@ const Listing: React.FC = () => {
 			}));
 		}
 		
-		const promise = Promise.all(promises).then(() => setItems(items));
+		const promise = Promise.all(promises).then(() => {
+			items.sort((a, b) => a.accessory.order < b.accessory.order);
+			
+			setItems(items);
+		});
 		
 		return () => {
 			promise.cancel();
@@ -72,6 +83,7 @@ const Listing: React.FC = () => {
 				AutomaticCanvasSize={Enum.AutomaticSize.Y}
 			>
 				<uigridlayout
+					SortOrder={Enum.SortOrder.LayoutOrder}
 					CellPadding={UDim2.fromOffset(px(pageStyles.listing.gap), px(pageStyles.listing.gap))}
 					CellSize={new UDim2(1 / columns, px((pageStyles.listing.gap / columns) - pageStyles.listing.gap), 1, 0)}
 				>
@@ -84,9 +96,10 @@ const Listing: React.FC = () => {
 				/>
 				{items.map(({ accessory, uid }, i) => (
 					<Accessory
+						key={uid}
 						accessory={accessory}
 						uid={uid}
-						order={i}
+						index={i}
 					/>
 				))}
 			</scrollingframe>

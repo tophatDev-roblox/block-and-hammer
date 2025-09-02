@@ -16,4 +16,5 @@ export const Remotes = createRemotes({
 	applyAccessories: remote<Server, [accessories: Accessories.EquippedAccessories]>(Accessories.EquippedAccessories),
 	updateBoughtAccessories: remote<Client, [boughtAccessories: Set<string>]>(),
 	getInventoryInfo: remote<Server>().returns<[Accessories.EquippedAccessories, Color3]>(),
+	awardedBadge: remote<Client, [badgeId: number]>(),
 });

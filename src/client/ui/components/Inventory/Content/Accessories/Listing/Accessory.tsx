@@ -1,4 +1,5 @@
 import React from '@rbxts/react';
+import { useMotion, useMountEffect } from '@rbxts/pretty-react-hooks';
 
 import { Accessories } from 'shared/accessories';
 
@@ -18,63 +19,95 @@ import Preview from '../Preview';
 interface AccessoryProps {
 	accessory: Accessories.BaseAccessory;
 	uid: string;
-	order: number;
+	index: number;
 }
 
-const Accessory: React.FC<AccessoryProps> = ({ accessory, uid, order }) => {
+const Accessory: React.FC<AccessoryProps> = ({ accessory, uid, index }) => {
 	const px = usePx();
+	
+	const [position, positionMotion] = useMotion<UDim2>(UDim2.fromOffset(0, px(-70)));
+	const [groupTransparency, groupTransparencyMotion] = useMotion<number>(1);
 	
 	const componentStyles = Styles.UI.inventory.content.accessories.listing.accessory;
 	
+	useMountEffect(() => {
+		const delayTime = (index - 1) * 0.05;
+		
+		groupTransparencyMotion.tween(0, {
+			style: Enum.EasingStyle.Linear,
+			time: 0.15,
+			delayTime,
+		});
+		
+		positionMotion.tween(UDim2.fromOffset(0, 0), {
+			style: Enum.EasingStyle.Bounce,
+			direction: Enum.EasingDirection.Out,
+			time: 0.5,
+			delayTime,
+		});
+	});
+	
 	return (
-		<Button
-			{...Styles.applyBackgroundColorProps(componentStyles.background)}
-			key={order}
-			Event={{
-				MouseButton1Click: () => UI.Inventory.selectAccessoryAtom(accessory, uid),
-			}}
+		<frame
+			BackgroundTransparency={1}
 		>
-			{componentStyles.background.type === 'gradient' && (
-				<UIGradient
-					styles={componentStyles.background}
-				/>
-			)}
-			<uicorner
-				CornerRadius={new UDim(0, px(componentStyles.borderRadius))}
-			/>
-			<UIListLayout
-				fillDirection={Enum.FillDirection.Vertical}
-				gap={px(componentStyles.gap)}
-			/>
-			<frame
+			<canvasgroup
 				BackgroundTransparency={1}
+				GroupTransparency={groupTransparency}
 				Size={UDim2.fromScale(1, 1)}
+				Position={position}
+				LayoutOrder={index}
 			>
-				<uiflexitem
-					FlexMode={Enum.UIFlexMode.Shrink}
-				/>
-				<Preview
-					accessory={accessory}
-				/>
-			</frame>
-			<frame
-				{...Styles.applyBackgroundColorProps(componentStyles.info.background)}
-				Size={UDim2.fromScale(1, 0)}
-				AutomaticSize={Enum.AutomaticSize.Y}
-			>
-				<uicorner
-					CornerRadius={new UDim(0, px(componentStyles.borderRadius))}
-				/>
-				<UIPadding
-					padding={px(componentStyles.info.padding)}
-				/>
-				<Text
-					styles={componentStyles.info.text}
-					text={accessory.displayName}
-					autoHeight
-				/>
-			</frame>
-		</Button>
+				<Button
+					{...Styles.applyBackgroundColorProps(componentStyles.background)}
+					Size={UDim2.fromScale(1, 1)}
+					Event={{
+						MouseButton1Click: () => UI.Inventory.selectAccessoryAtom(accessory, uid),
+					}}
+				>
+					{componentStyles.background.type === 'gradient' && (
+						<UIGradient
+							styles={componentStyles.background}
+						/>
+					)}
+					<uicorner
+						CornerRadius={new UDim(0, px(componentStyles.borderRadius))}
+					/>
+					<UIListLayout
+						fillDirection={Enum.FillDirection.Vertical}
+						gap={px(componentStyles.gap)}
+					/>
+					<frame
+						BackgroundTransparency={1}
+						Size={UDim2.fromScale(1, 1)}
+					>
+						<uiflexitem
+							FlexMode={Enum.UIFlexMode.Shrink}
+						/>
+						<Preview
+							accessory={accessory}
+						/>
+					</frame>
+					<frame
+						{...Styles.applyBackgroundColorProps(componentStyles.info.background)}
+						Size={UDim2.fromScale(1, 0)}
+						AutomaticSize={Enum.AutomaticSize.Y}
+					>
+						<uicorner
+							CornerRadius={new UDim(0, px(componentStyles.borderRadius))}
+						/>
+						<UIPadding
+							padding={px(componentStyles.info.padding)}
+						/>
+						<Text
+							styles={componentStyles.info.text}
+							text={accessory.displayName}
+							autoHeight
+						/>
+					</frame>
+				</Button>
+			</canvasgroup>
+		</frame>
 	);
 };
 
