@@ -1,9 +1,13 @@
 export namespace Units {
+	export const conversionFactors = {
+		meters: 0.28,
+	} as const;
+	
 	export function studsToMeters(studs: number): number {
-		return studs * 0.28;
+		return studs * conversionFactors.meters;
 	}
 	
 	export function metersToStuds(meters: number): number {
-		return meters / 0.28;
+		return meters / conversionFactors.meters;
 	}
 }
