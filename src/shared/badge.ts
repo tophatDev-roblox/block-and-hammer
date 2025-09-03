@@ -1,4 +1,4 @@
-import { BadgeService } from '@rbxts/services';
+import { BadgeService, RunService } from '@rbxts/services';
 
 import { setTimeout } from '@rbxts/set-timeout';
 
@@ -16,6 +16,10 @@ export namespace Badge {
 	}
 	
 	export async function award(badgeId: Badge.Id, player: Player): Promise<void> {
+		if (RunService.IsClient()) {
+			throw logger.format('cannot award badge on client-side');
+		}
+		
 		try {
 			if (badgeId !== -1) {
 				await awardBadge(player.UserId, badgeId);
