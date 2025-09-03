@@ -29,7 +29,7 @@ function onUpdateBoughtAccessories(boughtAccessories: Set<string>): void {
 	UI.Inventory.boughtAccessoriesAtom(boughtAccessories);
 }
 
-Remotes.updateBoughtAccessories.connect(onUpdateBoughtAccessories);
+Remotes.player.updateBoughtAccessories.connect(onUpdateBoughtAccessories);
 
 subscribe(() => UI.stateAtom() === UI.State.Inventory, (isInventoryOpen) => {
 	if (isInventoryOpen) {
@@ -39,7 +39,7 @@ subscribe(() => UI.stateAtom() === UI.State.Inventory, (isInventoryOpen) => {
 		
 		UI.Inventory.temporaryAccessoriesAtom(Accessories.defaultEquippedAccessories);
 		
-		Remotes.getInventoryInfo()
+		Remotes.player.getInventoryInfo()
 			.then(([equippedAccessories, color]) => {
 				UI.Inventory.temporaryAccessoriesAtom(equippedAccessories);
 				
@@ -51,7 +51,7 @@ subscribe(() => UI.stateAtom() === UI.State.Inventory, (isInventoryOpen) => {
 		const equippedAccessories = peek(UI.Inventory.temporaryAccessoriesAtom);
 		
 		if (equippedAccessories !== undefined) {
-			Remotes.applyAccessories(equippedAccessories);
+			Remotes.player.applyAccessories(equippedAccessories);
 		}
 	}
 });

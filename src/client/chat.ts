@@ -17,7 +17,7 @@ import { waitForChild } from 'shared/wait-for-child';
 		return undefined;
 	};
 	
-	Remotes.sendSystemMessage.connect((message) => {
+	Remotes.chat.sendSystemMessage.connect((message) => {
 		rbxGeneral.DisplaySystemMessage(message);
 	});
 })();

@@ -9,8 +9,8 @@ import computeNameColor from 'shared/NameColor';
 
 import type { UserSettings } from 'shared/user-settings';
 
-import { CharacterParts } from 'shared/character-parts';
 import { findFirstChild, waitForChild } from 'shared/wait-for-child';
+import { CharacterParts } from 'shared/character-parts';
 import { Accessories } from 'shared/accessories';
 import { AreaManager } from 'shared/area-manager';
 import { InputType } from 'shared/input-type';
@@ -169,8 +169,9 @@ async function respawn(player: Player): Promise<void> {
 		.then((characterParts) => Accessories.applyAccessories(characterParts, document.inventory.equipped));
 }
 
-function onUnloadCharacter(player: Player): void {
+function onCharacterUnload(player: Player): void {
 	const character = player.Character;
+	
 	if (character === undefined) {
 		return;
 	}
@@ -197,10 +198,10 @@ async function onPlayerAdded(player: Player): Promise<void> {
 	Badge.award(Badge.Id.Welcome, player);
 	Leaderstats.apply(player);
 	
-	Remotes.loadSettings.fire(player, document.userSettings);
+	Remotes.player.loadSettings.fire(player, document.userSettings);
 	
 	const playerRichText = new RichText({ font: { color: player.GetAttribute('color') as Color3 } });
-	Remotes.sendSystemMessage.fireAllExcept(player, joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} joined the server`)));
+	Remotes.chat.sendSystemMessage.fireAllExcept(player, joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} joined the server`)));
 }
 
 function onPlayerRemoving(player: Player): void {
@@ -214,7 +215,7 @@ function onPlayerRemoving(player: Player): void {
 	PlayerData.unload(player);
 	
 	const playerRichText = new RichText({ font: { color: player.GetAttribute('color') as Color3 } });
-	Remotes.sendSystemMessage.fireAll(joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} left the server`)));
+	Remotes.chat.sendSystemMessage.fireAll(joinLeaveRichText.apply(playerRichText.apply(`${player.DisplayName} left the server`)));
 }
 
 function onPreSimulation(): void {
@@ -278,13 +279,13 @@ for (const player of Players.GetPlayers()) {
 	onPlayerAdded(player);
 }
 
-Remotes.updateInputType.connect((player, inputType) => inputTypeChanged(player, inputType));
-Remotes.updateSettings.connect((player, userSettings) => updateSettings(player, userSettings));
-Remotes.applyAccessories.connect((player, accessories) => applyAccessories(player, accessories));
-Remotes.unloadCharacter.connect(onUnloadCharacter);
+Remotes.player.updateInputType.connect((player, inputType) => inputTypeChanged(player, inputType));
+Remotes.player.updateSettings.connect((player, userSettings) => updateSettings(player, userSettings));
+Remotes.player.applyAccessories.connect((player, accessories) => applyAccessories(player, accessories));
+Remotes.player.getInventoryInfo.onRequest((player) => getInventoryInfo(player));
 
-Remotes.fullReset.onRequest((player) => fullReset(player));
-Remotes.getInventoryInfo.onRequest((player) => getInventoryInfo(player));
+Remotes.character.unload.connect(onCharacterUnload);
+Remotes.character.fullReset.onRequest((player) => fullReset(player));
 
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoving);

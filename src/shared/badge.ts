@@ -23,7 +23,7 @@ export namespace Badge {
 				logger.warn('placeholder badge');
 			}
 			
-			Remotes.awardedBadge.fire(player, badgeId);
+			Remotes.player.awardedBadge.fire(player, badgeId);
 			
 			return;
 		} catch (err) {

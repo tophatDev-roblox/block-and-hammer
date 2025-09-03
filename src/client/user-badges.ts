@@ -14,7 +14,7 @@ export namespace UserBadges {
 	
 	const hasBadge = Promise.promisify((userId: number, badgeId: number) => BadgeService.UserHasBadgeAsync(userId, badgeId));
 	
-	Remotes.awardedBadge.connect((badgeId) => {
+	Remotes.player.awardedBadge.connect((badgeId) => {
 		cache.set(badgeId, true);
 	});
 	

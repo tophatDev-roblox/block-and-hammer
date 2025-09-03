@@ -32,7 +32,7 @@ subscribe(UI.stateAtom, (state, previousState) => {
 		CoreGuis.playerListAtom(!isInStartScreen);
 		
 		if (isInStartScreen) {
-			Remotes.unloadCharacter.fire();
+			Remotes.character.unload.fire();
 			
 			const characterParts = peek(CharacterState.partsAtom);
 			if (characterParts !== undefined) {
@@ -41,7 +41,7 @@ subscribe(UI.stateAtom, (state, previousState) => {
 				CharacterState.partsAtom(undefined);
 			}
 		} else {
-			Remotes.fullReset()
+			Remotes.character.fullReset()
 				.catch((err) => logger.warn('failed to fire `fullReset` -', err));
 		}
 	});

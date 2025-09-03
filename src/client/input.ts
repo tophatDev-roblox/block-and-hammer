@@ -33,7 +33,7 @@ function onInputTypeChanged(userInputType: Enum.UserInputType): void {
 }
 
 subscribe(clientInputTypeAtom, (inputType) => {
-	Remotes.updateInputType(inputType);
+	Remotes.player.updateInputType(inputType);
 });
 
 onInputTypeChanged(UserInputService.GetLastInputType());

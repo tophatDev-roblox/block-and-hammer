@@ -7,7 +7,7 @@ import { Logger } from 'shared/logger';
 
 const logger = new Logger('client-settings');
 
-Remotes.loadSettings.connect((userSettings) => {
+Remotes.player.loadSettings.connect((userSettings) => {
 	logger.print('loading settings:', userSettings);
 	
 	ClientSettings.stateAtom(userSettings);
@@ -16,7 +16,7 @@ Remotes.loadSettings.connect((userSettings) => {
 const onSettingsUpdate = debounce((userSettings: UserSettings.Value) => {
 	logger.print('saving settings:', userSettings);
 	
-	Remotes.updateSettings.fire(userSettings);
+	Remotes.player.updateSettings.fire(userSettings);
 }, 10);
 
 export namespace ClientSettings {
