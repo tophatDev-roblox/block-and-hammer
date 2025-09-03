@@ -5,6 +5,8 @@ import { useEventListener } from '@rbxts/pretty-react-hooks';
 
 import { peek } from '@rbxts/charm';
 
+import { TimeSpan } from 'shared/time-span';
+import { Shake } from 'shared/shake';
 import { Units } from 'shared/units';
 
 import { Styles } from 'client/styles';
@@ -12,8 +14,6 @@ import { Styles } from 'client/styles';
 import { CharacterState } from 'client/character/state';
 
 import Text from '../Text';
-import { Shake } from 'shared/shake';
-import { TimeSpan } from 'shared/time-span';
 
 interface AltitudeProps {
 	bodyRef: React.RefObject<Part>;

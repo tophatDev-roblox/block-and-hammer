@@ -11,10 +11,11 @@ import { Shake } from 'shared/shake';
 
 import { CharacterState } from 'client/character/state';
 
+import { usePx } from 'client/ui/hooks/use-px';
+
 import { Styles } from 'client/styles';
 
 import Text from '../Text';
-import { usePx } from 'client/ui/hooks/use-px';
 
 const Timer: React.FC = () => {
 	const [isStarted, setStarted] = useState<boolean>(false);
