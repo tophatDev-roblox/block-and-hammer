@@ -16,7 +16,7 @@ import { Character } from 'client/character';
 
 import { Materials } from './materials';
 
-const logger = new Logger();
+const logger = new Logger('effects');
 const RNG = new Random();
 
 let mapFolder: Folder;

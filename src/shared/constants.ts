@@ -1,7 +1,7 @@
 import { RunService } from '@rbxts/services';
 
 export namespace Constants {
-	export const GameVersion = '0.3.0';
+	export const GameVersion = '0.3.1';
 	
 	export const MaxDollars = 999_999_999;
 	export const MinDollars = -999_999_999;
